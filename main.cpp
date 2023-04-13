@@ -13,7 +13,7 @@ const char* fragmentShaderSource = "#version 330 core\n"
 "out vec4 FragColor;\n"
 "void main()\n"
 "{\n"
-"   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+"   FragColor = vec4(0.0f, 0.0f, 1.0f, 0.2f);\n"
 "}\n\0";
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -36,10 +36,14 @@ int main() {
 	}
 	
 	float vertices[] = {
-		0.5f, 0.5f, 0.0f, // top right
-		0.5f, -0.5f, 0.0f, // bottom right
-		-0.5f, -0.5f, 0.0f, // bottom left
-		-0.5f, 0.5f, 0.0f // top left
+		// first triangle
+		-0.9f, -0.5f, 0.0f,  // left 
+		-0.0f, -0.5f, 0.0f,  // right
+		-0.45f, 0.5f, 0.0f,  // top 
+		// second triangle
+		 0.0f, -0.5f, 0.0f,  // left
+		 0.9f, -0.5f, 0.0f,  // right
+		 0.45f, 0.5f, 0.0f   // top 
 	};
 	unsigned int indices[] = { // note that we start from 0!
 		0, 1, 3, // first triangle
@@ -138,15 +142,17 @@ int main() {
 
 	while(!glfwWindowShouldClose(window))
 	{
+
 		glfwSwapBuffers(window);
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		glUseProgram(shaderProgram);
-		//glBindVertexArray(VAO);
+		//glBindVertexArray(VAO); it does not need to be bind here because it is being bound after the creation
+
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-		//glDrawArrays(GL_TRIANGLES, 0, 3);
+		
+		glDrawArrays(GL_TRIANGLES, 0, 6);
 
 		processInput(window);	
 		glfwPollEvents();
@@ -167,4 +173,5 @@ void processInput(GLFWwindow *window)
 {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
+	
 }
