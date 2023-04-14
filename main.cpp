@@ -18,9 +18,10 @@ const char* fragmentShaderSource = "#version 330 core\n"
 
 const char* fragmentShaderSource2 = "#version 330 core\n"
 "out vec4 FragColor;\n"
+"uniform vec4 ourColor;\n"
 "void main()\n"
 "{\n"
-"   FragColor = vec4(0.0f, 1.0f, 1.0f, 1.0f);\n"
+"   FragColor = ourColor;\n"
 "}\n\0";
 
 
@@ -67,7 +68,6 @@ int main() {
 		std::cout << "Failed to initialize GLAD" << std::endl;
 		return -1;
 	}
-
 
 	//loading shaders
 	unsigned int vertexShader;
@@ -161,7 +161,11 @@ int main() {
 		glBindVertexArray(VAOs[0]);
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 
+		float timeValue = glfwGetTime();
+		float greenVlaue = (sin(timeValue) / 2.0f) + 0.5f;
+		int vertexColorLocation = glGetUniformLocation(shaderProgram2, "ourColor");
 		glUseProgram(shaderProgram2);
+		glUniform4f(vertexColorLocation, 0.0f, greenVlaue, 0.2, 1.0);
 		glBindVertexArray(VAOs[1]);
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 		
