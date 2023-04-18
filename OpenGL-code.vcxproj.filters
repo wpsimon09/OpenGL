@@ -19,12 +19,18 @@
     <Filter Include="Source Files\Vertex">
       <UniqueIdentifier>{046be1d7-5985-41e1-85cf-fb4899b7356d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Libraries">
+      <UniqueIdentifier>{9486bef3-7dc4-49ef-8240-10f260c41a6d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\3rdPartyLibraries\Includes\glad\glad.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Shader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="stb_image.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -36,7 +42,10 @@
       <Filter>Header Files</Filter>
     </ClCompile>
     <ClCompile Include="Shader.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Libraries</Filter>
+    </ClCompile>
+    <ClCompile Include="stb_image.cpp">
+      <Filter>Source Files\Libraries</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -46,5 +55,13 @@
     <None Include="VertexShader.glsl">
       <Filter>Source Files\Vertex</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\BookRepo\LearnOpenGL\resources\textures\container.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="awesomeface.png">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>
