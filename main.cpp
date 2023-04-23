@@ -3,10 +3,15 @@
 #include <iostream>
 #include "Shader.h"
 #include "stb_image.h"
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
 void processInput(GLFWwindow* window);
+
+float opacityOfTexture(GLFWwindow* window, Shader shader);
 
 
 int main() {
@@ -74,9 +79,9 @@ int main() {
 	//for the texture in vertex shader layout (location = 2)
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
 	glEnableVertexAttribArray(2);
+
 	//calls the function that handles the usr input
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-
 
 	//texture processing
 	int width, height, nrChannels;
@@ -126,12 +131,23 @@ int main() {
 	shader.use(); // don’t forget to activate the shader first!
 	shader.setInt("ourTexture", 0); // seeting which sampler belongs to which GL_TEXTURE in the glActivateTexture
 	shader.setInt("ourTexture2", 1); //
+	float textureOpacity = 0.0f;
+
+
 	while(!glfwWindowShouldClose(window))
 	{
 		processInput(window);	
-
+		
 		shader.use();
+		
+		glm::mat4 trans= glm::mat4(1.0f);
+		trans = glm::rotate(trans, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		trans = glm::scale(trans, glm::vec3(0.5, 0.5, 0.5));
 
+
+		unsigned int transformLoc = glGetUniformLocation(shader.ID, "transform");
+		glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
+		
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, texture[0]);
 
@@ -142,7 +158,10 @@ int main() {
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
+		textureOpacity += opacityOfTexture(window, shader);
 	
+		shader.setFloat("textureOpacity", textureOpacity);
+
 		glBindVertexArray(VAO);	
 		//glDrawArrays(GL_TRIANGLES, 0, 3);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
@@ -165,5 +184,14 @@ void processInput(GLFWwindow *window)
 {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
-	
+}
+
+float opacityOfTexture(GLFWwindow* window, Shader shader) {
+	if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
+		return 0.001f;
+	}
+	if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
+		return -0.001f;
+	}
+	return 0;
 }
