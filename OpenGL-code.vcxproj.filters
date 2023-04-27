@@ -41,9 +41,6 @@
     <ClCompile Include="..\3rdPartyLibraries\Includes\glad\glad.c">
       <Filter>Header Files</Filter>
     </ClCompile>
-    <ClCompile Include="Shader.cpp">
-      <Filter>Source Files\Libraries</Filter>
-    </ClCompile>
     <ClCompile Include="stb_image.cpp">
       <Filter>Source Files\Libraries</Filter>
     </ClCompile>
