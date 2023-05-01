@@ -13,9 +13,24 @@ void processInput(GLFWwindow* window);
 
 float opacityOfTexture(GLFWwindow* window, Shader shader);
 
+void mouse_callback(GLFWwindow* window, double xpos, double ypos);
+
 glm::vec3 cameraPos = glm::vec3(0, 0, 3);
 glm::vec3 cameraFront = glm::vec3(0, 0, -1);
 glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+
+float deltaTime = 0.0f;
+float lastFrame = 0.0f;
+
+float lastX = 400; //setting the mouse to the default position (middle of the screen)
+float lastY = 300;
+
+float yaw = -90.0f;
+float pitch;
+
+bool firstMouse = true;
+
+glm::vec3 direction;
 
 int main() {
 	glfwInit();
@@ -98,6 +113,9 @@ int main() {
 	glfwMakeContextCurrent(window);
 	gladLoadGL();
 	glEnable(GL_DEPTH_TEST);
+	glfwSetCursorPosCallback(window, mouse_callback);
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
 	
 
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
@@ -199,11 +217,14 @@ int main() {
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, texture[1]);
 
+		float currentFrame = glfwGetTime();
+		deltaTime = currentFrame - lastFrame;
+		lastFrame = currentFrame;
+
 		shader.use();
 
 		const float camX = sin(glfwGetTime()) * radius;
-		const float camZ = cos(glfwGetTime()) * radius
-			;
+		const float camZ = cos(glfwGetTime()) * radius;
 
 		glm::mat4 view = glm::mat4(1.0f); 
 		view = glm::lookAt(cameraPos, cameraFront + cameraPos , cameraUp); 
@@ -252,16 +273,16 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 void processInput(GLFWwindow *window)
 {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-		glfwSetWindowShouldClose(window, true)
-		;
-	const float cameraSpeed = 0.05f; // adjust accordingly
+		glfwSetWindowShouldClose(window, true);
+
+
+	const float cameraSpeed = 2.5f * deltaTime; // adjust accordingly
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 		cameraPos += cameraSpeed * cameraFront;
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
 		cameraPos -= cameraSpeed * cameraFront;
-	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-		cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) *
-		cameraSpeed;
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) 
+		cameraPos -= glm::cross(cameraFront, cameraUp) * cameraSpeed;
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 		cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) *
 		cameraSpeed;
@@ -275,4 +296,44 @@ float opacityOfTexture(GLFWwindow* window, Shader shader) {
 		return -0.001f;
 	}
 	return 0;
+}
+
+void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
+	
+	if (firstMouse) // initially set to true
+	{
+		lastX = xpos;
+		lastY = ypos;
+		firstMouse = false;
+	}
+
+	float xOffset = xpos - lastX;
+	float yOffset = ypos - lastY; //calculate how much does mouse move 
+
+	lastX = xpos;
+	lastY = ypos; //update last mouse position 
+
+	const float sensitivy = 0.1f;
+	xOffset *= sensitivy;
+	yOffset *= sensitivy;
+
+	yaw += xOffset;
+	pitch += yOffset;
+
+	if (pitch > 89.0f) {
+		pitch = 89.0f;
+	}
+	if (pitch < -89.0f) {
+		pitch = -89.0f;
+	}
+
+	glm::vec3 direction;
+
+	direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+	direction.y = -sin(glm::radians(pitch));
+	direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+	
+	cameraFront = glm::normalize(direction);
+
+
 }
