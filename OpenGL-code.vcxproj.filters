@@ -27,37 +27,40 @@
     <ClInclude Include="..\3rdPartyLibraries\Includes\glad\glad.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Shader.h">
+    <ClInclude Include="Includes\Shader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="stb_image.h">
+    <ClInclude Include="Includes\stb_image.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Includes\camera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
+    <ClCompile Include="source\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\3rdPartyLibraries\Includes\glad\glad.c">
       <Filter>Header Files</Filter>
     </ClCompile>
-    <ClCompile Include="stb_image.cpp">
+    <ClCompile Include="source\stb_image.cpp">
       <Filter>Source Files\Libraries</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="FragmentShader.glsl">
+    <None Include="FragmentShader\FragmentShader.glsl">
       <Filter>Source Files\Fragment</Filter>
     </None>
-    <None Include="VertexShader.glsl">
+    <None Include="VertexShader\VertexShader.glsl">
       <Filter>Source Files\Vertex</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="..\BookRepo\LearnOpenGL\resources\textures\container.jpg">
+    <Image Include="Assets\Textures\awesomeface.png">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="awesomeface.png">
+    <Image Include="Assets\Textures\container.jpg">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>
