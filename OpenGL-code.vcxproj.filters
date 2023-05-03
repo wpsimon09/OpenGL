@@ -55,6 +55,8 @@
     <None Include="VertexShader\VertexShader.glsl">
       <Filter>Source Files\Vertex</Filter>
     </None>
+    <None Include="VertexShader\LightVertexShader.glsl" />
+    <None Include="FragmentShader\LightFragmentShader.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\Textures\awesomeface.png">

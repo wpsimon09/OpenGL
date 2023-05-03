@@ -28,6 +28,10 @@ float deltaTime = 0.0f;	// time between current frame and last frame
 float lastFrame = 0.0f;
 
 
+//light possition
+glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
+
+
 int main() {
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -123,6 +127,7 @@ int main() {
 	stbi_set_flip_vertically_on_load(true);
 
 	Shader shader("VertexShader/vertexShader.glsl", "FragmentShader/fragmentShader.glsl");
+	Shader light("VertexShader/LightVertexShader.glsl", "FragmentShader/LightfragmentShader.glsl");
 
 	unsigned int VBO, VAO, EBO;
 	glGenBuffers(1, &EBO);
@@ -143,6 +148,17 @@ int main() {
 	//for the texture in vertex shader layout (location = 1)
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
 	glEnableVertexAttribArray(1);
+
+	//for the light source
+	unsigned int lightVAO;
+	glGenVertexArrays(1, &lightVAO);
+
+	glBindVertexArray(lightVAO);
+
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float),(void*) 0);
+	glEnableVertexAttribArray(0);
 
 	//calls the function that handles the usr input
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
@@ -219,6 +235,8 @@ int main() {
 
 
 		shader.use();
+		shader.setVec3("objectColor", glm::vec3(1.0f, 0.5f, 0.31f));
+		shader.setVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
 
 		const float camX = sin(glfwGetTime()) * radius;
 		const float camZ = cos(glfwGetTime()) * radius;
@@ -238,16 +256,24 @@ int main() {
 
 		glBindVertexArray(VAO);
 		shader.use();
-		for (unsigned int i = 0; i < 10; i++)
-		{
-			//MODEL MATRIX
-			//operates on the object itself
-			glm::mat4 model = glm::mat4(1.0f);
-			model = glm::translate(model, cubePositions[i]);
-			shader.setMat4("model", model);
-			glDrawArrays(GL_TRIANGLES, 0, 36);
-		}
+		//MODEL MATRIX
+		//operates on the object itself
+		glm::mat4 model = glm::mat4(1.0f);
+		model = glm::translate(model, glm::vec3(0.0f));
+		shader.setMat4("model", model);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
 
+		glBindVertexArray(lightVAO);
+		light.use();
+
+		glm::mat4 lightModel(1.0f);
+		lightModel = glm::translate(lightModel, lightPos);
+		lightModel = glm::scale(lightModel, glm::vec3(0.3f));
+		light.setMat4("view", view);
+		light.setMat4("projection", projection);
+		light.setMat4("model", lightModel);
+
+		glDrawArrays(GL_TRIANGLES, 0, 36);
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
