@@ -29,7 +29,7 @@ float lastFrame = 0.0f;
 
 
 //light possition
-glm::vec3 lightPos(0.5f, 0.0f, 2.0f);
+glm::vec3 lightPos(0.5f, 0.4f, 2.0f);
 
 
 int main() {
@@ -217,7 +217,7 @@ int main() {
 	{
 		processInput(window);
 
-		glClearColor(0.5f, 0.6f, 0.5f, 1.0f);
+		glClearColor(0.0f, 0.01f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		glActiveTexture(GL_TEXTURE0);
@@ -263,6 +263,8 @@ int main() {
 
 		glBindVertexArray(lightVAO);
 		light.use();
+		lightPos.x = 1.0f + sin(glfwGetTime()) * 2.0f;
+		lightPos.y = sin(glfwGetTime() / 2.0f) * 1.0f;
 
 		glm::mat4 lightModel(1.0f);
 		lightModel = glm::translate(lightModel, lightPos);
