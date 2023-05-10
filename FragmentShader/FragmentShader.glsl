@@ -1,5 +1,26 @@
 #version 330
 
+
+//specifies the color of each ambient, diffuses, specular to simulat different materials
+//shinines is for how big is the radius of specular hightlights
+//-----------
+struct Material {
+	vec3 ambient;
+	vec3 diffuse;
+	vec3 specular;
+	float shininess;
+};
+
+//specifies the intesity the light has on each of the properties
+//in summary its the strength of the givven light component
+//-----------
+struct Light {
+	vec3 position;
+	vec3 ambient;
+	vec3 diffuse;
+	vec3 specular;
+};
+
 in vec3 ourColor;
 in vec2 TexCoord;
 in vec3 Normal;
@@ -17,12 +38,13 @@ uniform vec3 viewPos;
 
 uniform float textureOpacity;
 
+uniform Material material;
+uniform Light light;
+
 void main() {
 	//ambient
 	//------------
-	float ambientStrengt = 0.7f;
-
-	vec3 ambient = ambientStrengt * lightColor;
+	vec3 ambient = light.ambient * material.ambient;
 
 	//diffuse
 	//------------
@@ -37,7 +59,7 @@ void main() {
 	float diff = max(dot(norm, lightDir), 0);
 
 	//calculating diffuse strength for each fragment
-	vec3 diffuse = diff * lightColor;
+	vec3 diffuse = light.diffuse * (diff * material.diffuse);
 
 	//specular
 	//----------
@@ -50,12 +72,13 @@ void main() {
 	vec3 reflctDir = reflect(-lightDir, norm);
 
 	//calculating specular strengt
-	float spec = pow(max(dot(viewDirection, reflctDir), 0.0f), 64);
+	float spec = pow(max(dot(viewDirection, reflctDir), 0.0f), material.shininess);
 	
 	//calculating color of specular lighting
-	vec3 specular = specularStrength * spec * lightColor;
+	vec3 specular = light.specular * (spec * material.specular);
 
-	vec3 resoult = (ambient + diffuse + specular) * objectColor;
-
+	//resoult
+	//------------
+	vec3 resoult = ambient + diffuse + specular;
 	fragmentColor = vec4(resoult, 1.0);
 }
