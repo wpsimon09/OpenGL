@@ -29,7 +29,7 @@ float lastFrame = 0.0f;
 
 
 //light possition
-glm::vec3 lightPos(0.5f, 0.0f, 2.0f);
+glm::vec3 lightPos(0.0f, 0.0f, 2.0f);
 
 
 int main() {
@@ -207,7 +207,7 @@ int main() {
 	glViewport(0, 0, 800, 600);	
 
 	shader.use(); // don’t forget to activate the shader first!
-	shader.setInt("ourTexture", 0); // seeting which sampler belongs to which GL_TEXTURE in the glActivateTexture
+	shader.setInt("material.diffuse", 0); // seeting which sampler2D (in shader) belongs to which GL_TEXTURE in the glActivateTexture
 	shader.setInt("ourTexture2", 1); //
 	float textureOpacity = 0.0f;
 
@@ -220,11 +220,9 @@ int main() {
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, texture[0]);
 
-		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, texture[1]);
+		//glActiveTexture(GL_TEXTURE1);
+		//glBindTexture(GL_TEXTURE_2D, texture[1]);
 
 		float currentFrame = static_cast<float>(glfwGetTime());
 		deltaTime = currentFrame - lastFrame;
@@ -238,22 +236,15 @@ int main() {
 
 		//setting colors of the material
 		//-----------------
-		shader.setVec3("material.ambient", 1.0f, 0.5f, 0.31f);
-		shader.setVec3("material.diffuse", 0.0f, 0.5f, 0.31f);
-		shader.setVec3("material.specular", 0.5f, 0.5f, 0.5f);
+		shader.setVec3("material.ambient", 0.0f, 0.1f, 0.06f);
+		shader.setVec3("material.diffuse", 0.0f, 0.50980392f, 0.50980392f);
+		shader.setVec3("material.specular", 0.50196078f, 0.50196078f, 0.50196078f);
 		shader.setFloat("material.shininess", 32.0f);
-
-		glm::vec3 lightColor;
-		lightColor.x = sin(glfwGetTime() * 2.0f);
-		lightColor.y = sin(glfwGetTime() * 0.7f);
-		lightColor.z = sin(glfwGetTime() * 1.3f);
-		glm::vec3 diffuseColor = lightColor * glm::vec3(0.5f);
-		glm::vec3 ambientColor = diffuseColor * glm::vec3(0.2f);
 
 		//setting colors colors (strengs) of each components 
 		//-----------------
-		shader.setVec3("light.ambient", ambientColor);
-		shader.setVec3("light.diffuse", diffuseColor); // darkened
+		shader.setVec3("light.ambient", glm::vec3(1.0f));
+		shader.setVec3("light.diffuse", glm::vec3(1.0f)); // darkened
 		shader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
 
 		const float camX = sin(glfwGetTime()) * radius;
@@ -278,10 +269,15 @@ int main() {
 		//MODEL MATRIX
 		//operates on the object itself
 		glm::mat4 model = glm::mat4(1.0f);
-		model = glm::translate(model, glm::vec3(0.0f));
 		shader.setMat4("model", model);
+
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, texture[0]);
+
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 
+		//LIGHT
+		//_____
 		glBindVertexArray(lightVAO);
 		light.use();
 
@@ -292,12 +288,13 @@ int main() {
 		light.setMat4("projection", projection);
 		light.setMat4("model", lightModel);
 
-		light.setVec3("lightColor", ambientColor * diffuseColor);
+		light.setVec3("lightColor", glm::vec3(1.0f));
 
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
+
 	}
 
 	glfwTerminate();

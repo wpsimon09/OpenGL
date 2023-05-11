@@ -5,8 +5,7 @@
 //shinines is for how big is the radius of specular hightlights
 //-----------
 struct Material {
-	vec3 ambient;
-	vec3 diffuse;
+	sampler2D diffuse;
 	vec3 specular;
 	float shininess;
 };
@@ -28,8 +27,8 @@ in vec3 FragPos;
 
 out vec4 fragmentColor;
 
-uniform sampler2D ourTexture;
-uniform sampler2D ourTexture2;
+//uniform sampler2D ourTexture;
+//uniform sampler2D ourTexture2;
 
 uniform vec3 objectColor;
 uniform vec3 lightColor;
@@ -44,7 +43,7 @@ uniform Light light;
 void main() {
 	//ambient
 	//------------
-	vec3 ambient = light.ambient * material.ambient;
+	vec3 ambient = light.ambient * vec3(texture(material.diffuse, TexCoord));
 
 	//diffuse
 	//------------
@@ -59,7 +58,7 @@ void main() {
 	float diff = max(dot(norm, lightDir), 0);
 
 	//calculating diffuse strength for each fragment
-	vec3 diffuse = light.diffuse * (diff * material.diffuse);
+	vec3 diffuse = light.diffuse * diff * vec3(texture(material.diffuse, TexCoord));
 
 	//specular
 	//----------
