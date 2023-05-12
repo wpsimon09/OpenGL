@@ -162,7 +162,7 @@ int main() {
 
 	//texture processing
 	int width, height, nrChannels;
-	unsigned char* data = stbi_load("Assets/Textures/container.jpg", &width, &height, &nrChannels, 0);
+	unsigned char* data = stbi_load("Assets/Textures/container2.png", &width, &height, &nrChannels, 0);
 	
 	unsigned int texture[2];
 	glGenTextures(2, texture);
@@ -176,12 +176,12 @@ int main() {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 	if (data) {
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
 
 		glGenerateMipmap(GL_TEXTURE_2D);
 	}
 	else {
-		std::cout << "Failed to load texture";
+		std::cout << "Failed to load texture 1";
 	}
 
 	glBindTexture(GL_TEXTURE_2D, texture[1]);
@@ -191,7 +191,7 @@ int main() {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-	data = stbi_load("Assets/Textures/awesomeface.png", &width, &height, &nrChannels, 0);
+	data = stbi_load("Assets/Textures/container2_specular.png", &width, &height, &nrChannels, 0);
 
 	if (data) {
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
@@ -208,10 +208,10 @@ int main() {
 
 	shader.use(); // don’t forget to activate the shader first!
 	shader.setInt("material.diffuse", 0); // seeting which sampler2D (in shader) belongs to which GL_TEXTURE in the glActivateTexture
-	shader.setInt("ourTexture2", 1); //
+	shader.setInt("material.specular", 1); //
 	float textureOpacity = 0.0f;
 
-	const float radius = 30.0f;
+	const float radius = 10.0f;
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -237,7 +237,7 @@ int main() {
 		//setting colors of the material
 		//-----------------
 		shader.setVec3("material.ambient", 0.0f, 0.1f, 0.06f);
-		shader.setVec3("material.diffuse", 0.0f, 0.50980392f, 0.50980392f);
+		shader.setVec3("material.diffuse", 0.0f, 0.0f, 0.0f);
 		shader.setVec3("material.specular", 0.50196078f, 0.50196078f, 0.50196078f);
 		shader.setFloat("material.shininess", 32.0f);
 
@@ -245,7 +245,7 @@ int main() {
 		//-----------------
 		shader.setVec3("light.ambient", glm::vec3(1.0f));
 		shader.setVec3("light.diffuse", glm::vec3(1.0f)); // darkened
-		shader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
+		shader.setVec3("light.specular",glm::vec3(1.0f));
 
 		const float camX = sin(glfwGetTime()) * radius;
 		const float camZ = cos(glfwGetTime()) * radius;
@@ -273,14 +273,15 @@ int main() {
 
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, texture[0]);
-
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, texture[1]);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 
 		//LIGHT
 		//_____
 		glBindVertexArray(lightVAO);
 		light.use();
-
+		lightPos = glm::vec3((float)sin(glfwGetTime() * 0.5) * radius, ((float)sin(glm::radians(glfwGetTime() * 0.5)) * radius), (float)cos(glfwGetTime()) * radius);
 		glm::mat4 lightModel(1.0f);
 		lightModel = glm::translate(lightModel, lightPos);
 		lightModel = glm::scale(lightModel, glm::vec3(0.2f));

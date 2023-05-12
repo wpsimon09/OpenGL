@@ -6,7 +6,7 @@
 //-----------
 struct Material {
 	sampler2D diffuse;
-	vec3 specular;
+	sampler2D specular;
 	float shininess;
 };
 
@@ -74,7 +74,7 @@ void main() {
 	float spec = pow(max(dot(viewDirection, reflctDir), 0.0f), material.shininess);
 	
 	//calculating color of specular lighting
-	vec3 specular = light.specular * (spec * material.specular);
+	vec3 specular = light.specular * spec * vec3((texture(material.specular, TexCoord)));
 
 	//resoult
 	//------------
