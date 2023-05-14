@@ -164,8 +164,8 @@ int main() {
 	int width, height, nrChannels;
 	unsigned char* data = stbi_load("Assets/Textures/container2.png", &width, &height, &nrChannels, 0);
 	
-	unsigned int texture[2];
-	glGenTextures(2, texture);
+	unsigned int texture[3];
+	glGenTextures(3, texture);
 
 	glBindTexture(GL_TEXTURE_2D, texture[0]);
 
@@ -199,7 +199,24 @@ int main() {
 	}
 	else 
 	{
-		std::cout << "Texture note found";
+		std::cout << "Texture not found";
+	}
+
+	glBindTexture(GL_TEXTURE_2D, texture[2]);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	data = stbi_load("Assets/Textures/matrix.jpg", &width, &height, &nrChannels, 0);
+
+	if(data) {
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else {
+		std::cout << "Texture not found";
 	}
 
 	stbi_image_free(data);
@@ -209,6 +226,7 @@ int main() {
 	shader.use(); // don’t forget to activate the shader first!
 	shader.setInt("material.diffuse", 0); // seeting which sampler2D (in shader) belongs to which GL_TEXTURE in the glActivateTexture
 	shader.setInt("material.specular", 1); //
+	shader.setInt("material.emmision", 2);
 	float textureOpacity = 0.0f;
 
 	const float radius = 10.0f;
@@ -217,7 +235,7 @@ int main() {
 	{
 		processInput(window);
 
-		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		glClearColor(0.1f, 0.01f, 0.1f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
@@ -228,9 +246,7 @@ int main() {
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
 
-
 		shader.use();
-		shader.setVec3("objectColor", glm::vec3(0.0f, 0.5f, 0.31f));
 		shader.setVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
 		shader.setVec3("lightPos", lightPos);
 
@@ -239,12 +255,12 @@ int main() {
 		shader.setVec3("material.ambient", 0.0f, 0.1f, 0.06f);
 		shader.setVec3("material.diffuse", 0.0f, 0.0f, 0.0f);
 		shader.setVec3("material.specular", 0.50196078f, 0.50196078f, 0.50196078f);
-		shader.setFloat("material.shininess", 32.0f);
+		shader.setFloat("material.shininess", 64.0f);
 
 		//setting colors colors (strengs) of each components 
 		//-----------------
 		shader.setVec3("light.ambient", glm::vec3(1.0f));
-		shader.setVec3("light.diffuse", glm::vec3(1.0f)); // darkened
+		shader.setVec3("light.diffuse", glm::vec3(0.8f)); // darkened
 		shader.setVec3("light.specular",glm::vec3(1.0f));
 
 		const float camX = sin(glfwGetTime()) * radius;
@@ -275,6 +291,9 @@ int main() {
 		glBindTexture(GL_TEXTURE_2D, texture[0]);
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, texture[1]);
+		glActiveTexture(GL_TEXTURE2);
+		glBindTexture(GL_TEXTURE_2D, texture[2]);
+
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 
 		//LIGHT

@@ -68,5 +68,11 @@
     <Image Include="Assets\Textures\container2.png">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="Assets\Textures\container2_specular_colored.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Assets\Textures\matrix.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>
