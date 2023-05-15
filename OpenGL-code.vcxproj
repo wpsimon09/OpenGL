@@ -150,6 +150,7 @@
   <ItemGroup>
     <ClInclude Include="..\3rdPartyLibraries\Includes\glad\glad.h" />
     <ClInclude Include="Includes\camera.h" />
+    <ClInclude Include="Includes\Cube.h" />
     <ClInclude Include="Includes\Shader.h" />
     <ClInclude Include="Includes\stb_image.h" />
   </ItemGroup>
