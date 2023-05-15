@@ -19,6 +19,10 @@ struct Light {
 	vec3 ambient;
 	vec3 diffuse;
 	vec3 specular;
+
+	float constant;
+	float linear;
+	float quadratic;
 };
 
 in vec3 ourColor;
@@ -81,6 +85,13 @@ void main() {
 	
 	//calculating color of specular lighting (map)
 	vec3 specular = light.specular * spec * vec3((texture(material.specular, TexCoord)));
+
+	float distance = length(light.position - FragPos);
+	float attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * (distance * distance));
+
+	ambient *= attenuation;
+	diffuse *= attenuation;
+	ambient *= attenuation;
 
 	//resoult
 	//------------
