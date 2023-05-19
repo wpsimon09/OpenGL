@@ -7,6 +7,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include "camera.h"
+#include "Cube.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
@@ -17,6 +18,7 @@ float opacityOfTexture(GLFWwindow* window, Shader shader);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
+
 // camera
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 float lastX = 800.0f / 2.0f;
@@ -31,6 +33,7 @@ float lastFrame = 0.0f;
 //light possition
 glm::vec3 lightPos(0.0f, 0.0f, 2.0f);
 
+Cube cubes[10];
 
 int main() {
 	glfwInit();
@@ -259,10 +262,16 @@ int main() {
 
 		//setting colors colors (strengs) of each components 
 		//-----------------
-		shader.setVec3("light.ambient", glm::vec3(1.0f));
-		shader.setVec3("light.diffuse", glm::vec3(0.8f)); // darkened
+		shader.setVec3("light.ambient", glm::vec3(0.2f));
+		shader.setVec3("light.diffuse", glm::vec3(0.9f)); // darkened
 		shader.setVec3("light.specular",glm::vec3(1.0f));
+		shader.setVec3("light.direciton", -0.2f, -1.0f, -0.3f);
 
+		//setting the values to calculate Attenuation
+		//-----------------
+		shader.setFloat("light.constant", 1.0f);
+		shader.setFloat("light.linear", 0.09f);
+		shader.setFloat("light.quadratic", 0.032f);
 		const float camX = sin(glfwGetTime()) * radius;
 		const float camZ = cos(glfwGetTime()) * radius;
 
@@ -279,26 +288,38 @@ int main() {
 		shader.setFloat("textureOpacity", textureOpacity);
 		shader.setVec3("viewPos", camera.Position);
 
+		//setting values for calculating spotligh 
+		//-----------------
+		shader.setVec3("light.position", camera.Position);
+		shader.setVec3("light.direciton", camera.Front);
+		shader.setFloat("light.cutOff", glm::cos(glm::radians(20.0f)));
+
+
 		glBindVertexArray(VAO);
 		shader.use();
-
-		//MODEL MATRIX
-		//operates on the object itself
-		glm::mat4 model = glm::mat4(1.0f);
-		shader.setMat4("model", model);
 
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, texture[0]);
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, texture[1]);
-		glActiveTexture(GL_TEXTURE2);
-		glBindTexture(GL_TEXTURE_2D, texture[2]);
 
-		glDrawArrays(GL_TRIANGLES, 0, 36);
+
+		//MODEL MATRIX
+		//operates on the object itself
+		for (unsigned int i = 0; i < 10; i++)
+		{
+			glm::mat4 model = glm::mat4(1.0f);
+			model = glm::translate(model, cubePositions[i]);
+			float angle = 20.0f * i;
+			model = glm::rotate(model, glm::radians(angle),
+				glm::vec3(1.0f, 0.3f, 0.5f));
+			shader.setMat4("model", model);
+			glDrawArrays(GL_TRIANGLES, 0, 36);
+		}
 
 		//LIGHT
 		//_____
-		glBindVertexArray(lightVAO);
+		/*glBindVertexArray(lightVAO);
 		light.use();
 		lightPos = glm::vec3((float)sin(glfwGetTime() * 0.5) * radius, ((float)sin(glm::radians(glfwGetTime() * 0.5)) * radius), (float)cos(glfwGetTime()) * radius);
 		glm::mat4 lightModel(1.0f);
@@ -310,7 +331,7 @@ int main() {
 
 		light.setVec3("lightColor", glm::vec3(1.0f));
 
-		glDrawArrays(GL_TRIANGLES, 0, 36);
+		glDrawArrays(GL_TRIANGLES, 0, 36);*/
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();

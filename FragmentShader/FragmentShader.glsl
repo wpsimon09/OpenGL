@@ -16,9 +16,15 @@ struct Material {
 //-----------
 struct Light {
 	vec3 position;
+	vec3 direciton;
 	vec3 ambient;
 	vec3 diffuse;
 	vec3 specular;
+
+	float cutOff;
+	float constant;
+	float linear;
+	float quadratic;
 };
 
 in vec3 ourColor;
@@ -43,47 +49,62 @@ uniform Light light;
 
 void main() {
 
-	//emmision
-	//------------
-	vec3 emmision = vec3(texture(material.emmision, TexCoord));
-
-	//ambient
-	//------------
-	vec3 ambient = light.ambient * vec3(texture(material.diffuse, TexCoord));
-
-	//diffuse
-	//------------
-	vec3 norm = normalize(Normal);
-
 	// here we are calclating light direction vector to do it we have
 	//to subtract light position from framgnet position
 	//currently it is pointing from the fragment to the light possition
 	vec3 lightDir = normalize(lightPos - FragPos);
 
-	//calculating diffuse strength on each fragment
-	float diff = max(dot(norm, lightDir), 0);
+	float theta = dot(lightDir, normalize(-light.direciton));
 
-	//calculating diffuse strength for each fragment
-	vec3 diffuse = light.diffuse * diff * vec3(texture(material.diffuse, TexCoord));
-
-	//specular
-	//----------
-	float specularStrength = 0.5f;
+	//comparing if fragment is withting the light radius
+	//if yes calculate the lightning color
+	//---------------
+	if(theta > light.cutOff) {
 	
-	//callculating view direction vector
-	vec3 viewDirection = normalize(viewPos - FragPos);
-	
-	//calculating reflect direciton whiwch is reflectec light direciton vector around normal vector
-	vec3 reflctDir = reflect(-lightDir, norm);
+		//ambient
+		//------------
+		vec3 ambient = light.ambient * vec3(texture(material.diffuse, TexCoord));
 
-	//calculating specular strengt
-	float spec = pow(max(dot(viewDirection, reflctDir), 0.0f), material.shininess);
-	
-	//calculating color of specular lighting (map)
-	vec3 specular = light.specular * spec * vec3((texture(material.specular, TexCoord)));
+		//diffuse
+		//------------
+		vec3 norm = normalize(Normal);
 
-	//resoult
-	//------------
-	vec3 resoult = ambient + diffuse + specular + emmision;
-	fragmentColor = vec4(resoult, 1.0);
+		//calculating diffuse strength on each fragment
+		float diff = max(dot(norm, lightDir), 0);
+
+		//calculating diffuse strength for each fragment
+		vec3 diffuse = light.diffuse * diff * vec3(texture(material.diffuse, TexCoord));
+
+		//specular
+		//----------
+		float specularStrength = 0.5f;
+	
+		//callculating view direction vector
+		vec3 viewDirection = normalize(viewPos - FragPos);
+	
+		//calculating reflect direciton whiwch is reflectec light direciton vector around normal vector
+		vec3 reflctDir = reflect(-lightDir, norm);
+
+		//calculating specular strengt
+		float spec = pow(max(dot(viewDirection, reflctDir), 0.0f), material.shininess);
+	
+		//calculating color of specular lighting (map)
+		vec3 specular = light.specular * spec * vec3((texture(material.specular, TexCoord)));
+
+		float distance = length(light.position - FragPos);
+		float attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * (distance * distance));
+
+		//ambient *= attenuation;
+		diffuse *= attenuation;
+		ambient *= attenuation;
+
+		//resoult
+		//------------
+		vec3 resoult = ambient + diffuse + specular;
+		fragmentColor = vec4(resoult, 1.0);
+	}
+	else {
+		fragmentColor = vec4(light.ambient * texture(material.diffuse, TexCoord).rgb, 1.0);
+
+	}
 }
