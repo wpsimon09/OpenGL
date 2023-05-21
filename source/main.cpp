@@ -33,7 +33,12 @@ float lastFrame = 0.0f;
 //light possition
 glm::vec3 lightPos(0.0f, 0.0f, 2.0f);
 
-Cube cubes[10];
+glm::vec3 pointLightPositions[] = {
+glm::vec3(0.7f, 0.2f, 2.0f),
+glm::vec3(2.3f, -3.3f, -4.0f),
+glm::vec3(-4.0f, 2.0f, -12.0f),
+glm::vec3(0.0f, 0.0f, -3.0f)
+};
 
 int main() {
 	glfwInit();
@@ -233,14 +238,13 @@ int main() {
 	float textureOpacity = 0.0f;
 
 	const float radius = 10.0f;
-
+	bool isFlashOn = true;
 	while (!glfwWindowShouldClose(window))
 	{
 		processInput(window);
 
 		glClearColor(0.1f, 0.01f, 0.1f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
 
 		//glActiveTexture(GL_TEXTURE1);
 		//glBindTexture(GL_TEXTURE_2D, texture[1]);
@@ -252,28 +256,66 @@ int main() {
 		shader.use();
 		shader.setVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
 		shader.setVec3("lightPos", lightPos);
-
-		//setting colors of the material
-		//-----------------
-		shader.setVec3("material.ambient", 0.0f, 0.1f, 0.06f);
-		shader.setVec3("material.diffuse", 0.0f, 0.0f, 0.0f);
-		shader.setVec3("material.specular", 0.50196078f, 0.50196078f, 0.50196078f);
 		shader.setFloat("material.shininess", 64.0f);
 
-		//setting colors colors (strengs) of each components 
-		//-----------------
-		shader.setVec3("light.ambient", glm::vec3(0.2f));
-		shader.setVec3("light.diffuse", glm::vec3(0.9f)); // darkened
-		shader.setVec3("light.specular",glm::vec3(1.0f));
-		shader.setVec3("light.direciton", -0.2f, -1.0f, -0.3f);
+		//setting values for light collors/intesitites
+		glm::vec3 ambient = glm::vec3(0.2f);
+		glm::vec3 diffuse = glm::vec3(1.0f);
+		glm::vec3 specular = glm::vec3(1.0f);
 
-		//setting the values to calculate Attenuation
+		//Setting values for DirLight struct
 		//-----------------
-		shader.setFloat("light.constant", 1.0f);
-		shader.setFloat("light.linear", 0.09f);
-		shader.setFloat("light.quadratic", 0.032f);
-		const float camX = sin(glfwGetTime()) * radius;
-		const float camZ = cos(glfwGetTime()) * radius;
+		//TODO
+		//
+		shader.setVec3("dirLight.direction", -0.2f, -1.0f, -0.3f);
+		shader.setVec3("dirLight.ambient", ambient);
+		shader.setVec3("dirLight.diffuse", diffuse);
+		shader.setVec3("dirLight.specular", specular);
+
+		//Setting values for PointLight struct
+		//---------------
+		//TODO
+		//
+		shader.setVec3("pointLights[0].position", pointLightPositions[0]);
+		shader.setVec3("pointLights[1].position", pointLightPositions[1]);
+
+		shader.setVec3("pointLights[0].ambient", ambient);
+		shader.setVec3("pointLights[1].ambient", ambient);
+
+		shader.setVec3("pointLights[0].diffuse", diffuse);
+		shader.setVec3("pointLights[1].diffuse", diffuse);
+
+		shader.setVec3("pointLights[0].specular", specular);
+		shader.setVec3("pointLights[1].specular", specular);
+
+		shader.setFloat("pointLights[0].constant", 1.0f);
+		shader.setFloat("pointLights[1].constant", 1.0f);
+
+		shader.setFloat("pointLights[0].linear", 0.09f);
+		shader.setFloat("pointLights[1].linear", 0.09f);
+
+		shader.setFloat("pointLights[0].quadratic", 0.032f);
+		shader.setFloat("pointLights[1].quadratic", 0.032f);
+
+		//Setting values for SpotLight struct
+		//---------------
+		//TODO:
+		// Finish it
+		//
+		
+		shader.setFloat("spotLight.cutOff", glm::cos(glm::radians(12.5f)));
+		shader.setFloat("spotLight.outerCutOff", glm::cos(glm::radians(17.5f)));
+		
+		shader.setFloat("spotLight.constant", 1.0f);
+		shader.setFloat("spotLight.linear", 0.09f);
+		shader.setFloat("spotLight.quadratic", 0.032f);
+	
+		shader.setVec3("spotLight.position", camera.Position);
+		shader.setVec3("spotLight.direciton", camera.Front);
+
+		shader.setVec3("spotLight.ambient", ambient);
+		shader.setVec3("spotLight.diffuse", diffuse);
+		shader.setVec3("spotLight.specular", specular);
 
 		glm::mat4 view = glm::mat4(1.0f); 
 		view = camera.GetViewMatrix();
@@ -288,13 +330,6 @@ int main() {
 		shader.setFloat("textureOpacity", textureOpacity);
 		shader.setVec3("viewPos", camera.Position);
 
-		//setting values for calculating spotligh 
-		//-----------------
-		shader.setVec3("light.position", camera.Position);
-		shader.setVec3("light.direciton", camera.Front);
-		shader.setFloat("light.cutOff", glm::cos(glm::radians(20.0f)));
-
-
 		glBindVertexArray(VAO);
 		shader.use();
 
@@ -303,7 +338,16 @@ int main() {
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, texture[1]);
 
-
+		if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS) {
+			if (isFlashOn)
+			{
+				isFlashOn = false;
+			}
+			else {
+				isFlashOn = true;	
+			}
+				shader.setBool("spotLight.isOn", isFlashOn);
+		}
 		//MODEL MATRIX
 		//operates on the object itself
 		for (unsigned int i = 0; i < 10; i++)
@@ -319,23 +363,25 @@ int main() {
 
 		//LIGHT
 		//_____
-		/*glBindVertexArray(lightVAO);
+		glBindVertexArray(lightVAO);
 		light.use();
-		lightPos = glm::vec3((float)sin(glfwGetTime() * 0.5) * radius, ((float)sin(glm::radians(glfwGetTime() * 0.5)) * radius), (float)cos(glfwGetTime()) * radius);
-		glm::mat4 lightModel(1.0f);
-		lightModel = glm::translate(lightModel, lightPos);
-		lightModel = glm::scale(lightModel, glm::vec3(0.2f));
 		light.setMat4("view", view);
 		light.setMat4("projection", projection);
-		light.setMat4("model", lightModel);
 
 		light.setVec3("lightColor", glm::vec3(1.0f));
 
-		glDrawArrays(GL_TRIANGLES, 0, 36);*/
+		for (int i = 0; i < 2; i++)
+		{
+			glm::mat4 lightModel(1.0f);
+			lightModel = glm::translate(lightModel, pointLightPositions[i]);
+			lightModel = glm::scale(lightModel, glm::vec3(0.2f));
+			light.setMat4("model", lightModel);
+			glDrawArrays(GL_TRIANGLES, 0, 36);
+		}
+
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
-
 	}
 
 	glfwTerminate();
