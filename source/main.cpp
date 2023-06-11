@@ -297,12 +297,8 @@ int main() {
 		shader.setFloat("pointLights[0].quadratic", 0.032f);
 		shader.setFloat("pointLights[1].quadratic", 0.032f);
 
-		//Setting values for SpotLight struct
-		//---------------
-		//TODO:
-		// Finish it
-		//
-		
+		//SETTING VALUES FOR SPOTLIGTH VALUES
+		//-------------------------------
 		shader.setFloat("spotLight.cutOff", glm::cos(glm::radians(12.5f)));
 		shader.setFloat("spotLight.outerCutOff", glm::cos(glm::radians(17.5f)));
 		
@@ -389,7 +385,7 @@ int main() {
 	return 0;
 }
 
-//function that will handle resizing the window
+//function that will handle resizing of the window
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
 	glViewport(0, 0, width, height);
