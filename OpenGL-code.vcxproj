@@ -153,6 +153,7 @@
     <ClInclude Include="Includes\config.h" />
     <ClInclude Include="Includes\Cube.h" />
     <ClInclude Include="Includes\Mesh.h" />
+    <ClInclude Include="Includes\Model.h" />
     <ClInclude Include="Includes\Shader.h" />
     <ClInclude Include="Includes\stb_image.h" />
   </ItemGroup>
