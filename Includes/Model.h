@@ -103,18 +103,66 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene) {
 	for (unsigned int i = 0; i < mesh->mNumVertices; i++)
 	{
 		Vertex vertex;
-		//proccess vertex positions, normals and texture coordinates
+		//proccess vertex positions
+
 		glm::vec3 tempVertex;
 		tempVertex.x = mesh->mVertices[i].x;
 		tempVertex.y = mesh->mVertices[i].y;
 		tempVertex.z = mesh->mVertices[i].z;
-
 		vertex.Postion = tempVertex;
+		
+		//process normal vectors
+		tempVertex.x = mesh->mNormals[i].x;
+		tempVertex.y = mesh->mNormals[i].y;
+		tempVertex.z = mesh->mNormals[i].z;
+
+		vertex.Normal = tempVertex;
+
+		//process texture coordinates
+		glm::vec2 tempTexCoords;
+
+		if (mesh->mTextureCoords)
+		{
+			//asimp allows for 8 different texture coorinates per verex
+			//but we are only interted in the first one 
+			tempTexCoords.x = mesh->mTextureCoords[0][i].x;
+			tempTexCoords.y = mesh->mTextureCoords[0][i].y;
+			vertex.TexCoords = tempTexCoords;
+		}
+		else
+			vertex.TexCoords = glm::vec2(0.0f, 0.0f);
+		vertecies.push_back(vertex);
 	}
 
-	tempprocess indecies
-
+	//process indecies
+	for (unsigned int i = 0; i < mesh->mNumFaces; i++)
+	{
+		aiFace face = mesh->mFaces[i];
+		//each mesh contains n number of faces
+		//each face contains mnumber of indecies 
+		for (unsigned int j = 0; j < face.mNumIndices; j++)
+		{
+			indecies.push_back(face.mIndices[j]);
+		}
+	}
 	//process material
+	if (mesh->mMaterialIndex >0)
+	{
+		// load diffuse textures
+		aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
+		
+		std::vector<Texture> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
+		//insert on the end of texture vector
+		//from diffuse maps begin to diffuse map end
+		textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
+
+		// load specular textures
+		std::vector<Texture> specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
+
+		textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
+	}
+
+	//TODO: load material texture
 
 	return Mesh(vertecies, indecies, textures);
 }
