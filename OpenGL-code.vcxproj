@@ -163,17 +163,46 @@
     <ClCompile Include="source\stb_image.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Assets\Model\backpack\backpack.mtl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </None>
     <None Include="FragmentShader\FragmentShader.glsl" />
     <None Include="FragmentShader\LightFragmentShader.glsl" />
     <None Include="VertexShader\LightVertexShader.glsl" />
     <None Include="VertexShader\VertexShader.glsl" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="Assets\Model\backpack\ao.jpg">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </Image>
+    <Image Include="Assets\Model\backpack\diffuse.jpg">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </Image>
+    <Image Include="Assets\Model\backpack\normal.png">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </Image>
+    <Image Include="Assets\Model\backpack\roughness.jpg">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </Image>
+    <Image Include="Assets\Model\backpack\specular.jpg">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </Image>
     <Image Include="Assets\Textures\container.jpg" />
     <Image Include="Assets\Textures\container2.png" />
     <Image Include="Assets\Textures\container2_specular.png" />
     <Image Include="Assets\Textures\container2_specular_colored.png" />
     <Image Include="Assets\Textures\matrix.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Assets\Model\backpack\backpack.obj">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <FileType>Document</FileType>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Assets\Model\backpack\source_attribution.txt">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </Text>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

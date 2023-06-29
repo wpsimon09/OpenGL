@@ -16,6 +16,7 @@ struct Vertex
 struct Texture
 {
 	unsigned int id;
+	std::string path;
 	std::string type;
 };
 
@@ -98,6 +99,9 @@ void Mesh::Draw(Shader& shader) {
 			number = std::to_string(specularNr++);
 		}
 		shader.setFloat(("material." + name + number).c_str(), i);
+		//std::cout << "TEXTURE::LOADED::ASS:\n";
+		//std::cout << ("material." + name + number).c_str();
+		//std::cout << "\n";
 		glBindTexture(GL_TEXTURE_2D, textures[i].id);
 	}
 	glActiveTexture(GL_TEXTURE0);
