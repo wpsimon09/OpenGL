@@ -76,9 +76,9 @@ void Model::loadModel(std::string path) {
 		return;
 	}
 	this->directory = path.substr(0, path.find_last_of('/'));
-	std::cout << "model loaded from directory:\n";
-	std::cout << path;
 	processNode(scene->mRootNode, scene);
+	std::cout << "-------------------MODEL PROCESSED------------------------\n\n\n";
+
 }
 
 
@@ -108,36 +108,45 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene) {
 	{
 		Vertex vertex;
 		//proccess vertex positions
-
 		glm::vec3 tempVertex;
 		tempVertex.x = mesh->mVertices[i].x;
 		tempVertex.y = mesh->mVertices[i].y;
 		tempVertex.z = mesh->mVertices[i].z;
 		vertex.Postion = tempVertex;
 		
+		if (mesh->HasNormals())
+		{
+
+			tempVertex.x = mesh->mNormals[i].x;
+			tempVertex.y = mesh->mNormals[i].y;
+			tempVertex.z = mesh->mNormals[i].z;
+			
+			vertex.Normal = tempVertex;
+			
+		}
+		else 
+			std::cout << "ERROR::ASSIMP::PROCCESSING::NORMALS - There are no normal vectors in the model\n";
+	
 		//process normal vectors
-		tempVertex.x = mesh->mNormals[i].x;
-		tempVertex.y = mesh->mNormals[i].y;
-		tempVertex.z = mesh->mNormals[i].z;
-
-		vertex.Normal = tempVertex;
-
 		//process texture coordinates
 		glm::vec2 tempTexCoords;
 
-		if (mesh->mTextureCoords)
-		{
+		if (mesh->mTextureCoords[0])
+		{			
 			//asimp allows for 8 different texture coorinates per verex
 			//but we are only interted in the first one 
 			tempTexCoords.x = mesh->mTextureCoords[0][i].x;
 			tempTexCoords.y = mesh->mTextureCoords[0][i].y;
 			vertex.TexCoords = tempTexCoords;
+
 		}
-		else
+		else {
+			std::cout << "ERROR::ASSIMP::PROCCESSING::TEXTURE::COORDINATES - There are no texture coordinates to process\n";
 			vertex.TexCoords = glm::vec2(0.0f, 0.0f);
+		}
 		vertecies.push_back(vertex);
 	}
-
+	
 	//process indecies
 	for (unsigned int i = 0; i < mesh->mNumFaces; i++)
 	{
@@ -149,7 +158,7 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene) {
 			indecies.push_back(face.mIndices[j]);
 		}
 	}
-
+	
 	//process material
 	if (mesh->mMaterialIndex >0)
 	{
@@ -166,9 +175,15 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene) {
 
 		textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
 	}
+	else 
+		std::cout << "ERROR::ASSIMP::PROCCESSING::MATERIALS - There are no materials to be proccessed\n";
 
-	
-
+	std::cout << "--------------------------------------------------------------\n";
+	std::cout << "--------------------MESH LOADING DONE-------------------------\n";
+	std::cout << "-------------------VERTECIES PROCESSED------------------------\n";
+	std::cout << "-------------------INDECIES PROCESSED-------------------------\n";
+	std::cout << "-------------------MATERIALS PROCESSED------------------------\n";
+	std::cout << "--------------------------------------------------------------\n\n\n";
 	return Mesh(vertecies, indecies, textures);
 }
 
@@ -192,7 +207,7 @@ std::vector<Texture> Model::loadMaterialTextures(aiMaterial* mat, aiTextureType 
 		if (!skip)
 		{ // if texture hasn’t been loaded already, load it
 			Texture texture;
-			texture.id = TextureFromFile(str.C_Str(), directory);
+			texture.id = TextureFromFile(str.C_Str(), this->directory);
 			texture.type = typeName;
 			texture.path = str.C_Str();
 			textures.push_back(texture);
