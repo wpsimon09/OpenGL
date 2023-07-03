@@ -98,21 +98,25 @@ int main() {
 
 		// render
 		// ------
-		glClearColor(1.0f, 0.05f, 0.05f, 1.0f);
+		glClearColor(0.0f, 0.05f, 0.05f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		// don't forget to enable shader before setting uniforms
 		shader.use();
 
-		//glm::vec3 direction = glm::vec3(0.0f,1.0f,0.0f);
-		//glm::vec3 ambient = glm::vec3(0.3f);
-		//glm::vec3 diffuse = glm::vec3(1.0f);
-		//glm::vec3 specular = glm::vec3(1.0F);
-		//
-		//shader.setVec3("dirLight.direction", direction);
-		//shader.setVec3("dirLight.ambient", ambient);
-		//shader.setVec3("dirLight.diffuse", diffuse);
-		//shader.setVec3("dirLight.specular", specular);
+		glm::vec3 direction = glm::vec3(-0.7f,-1.0f,-0.6f);
+		glm::vec3 ambient = glm::vec3(0.5f);
+		glm::vec3 diffuse = glm::vec3(1.0f);
+		glm::vec3 specular = glm::vec3(1.0F);
+		
+		shader.setVec3("dirLight.direction", direction);
+		shader.setVec3("dirLight.ambient", ambient);
+		shader.setVec3("dirLight.diffuse", diffuse);
+		shader.setVec3("dirLight.specular", specular);
+		shader.setFloat("material.shininess", 64.0f);
+
+
+		shader.setVec3("viewPos", camera.Position);
 
 		// view/projection transformations
 		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);

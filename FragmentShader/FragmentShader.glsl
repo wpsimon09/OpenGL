@@ -82,12 +82,12 @@ vec3 CalcSpotLight(SpotLight light, vec3 normal, vec3 fragPostition, vec3 viewDi
 void main() {
 	
 	vec3 norm = normalize(Normal);
-	//vec3 viewDir = normalize(viewPos - FragPos);
+	vec3 viewDir = normalize(viewPos - FragPos);
 
 	//Directional lighting
-	//vec3 result = CalcDirLight(dirLight, norm, viewDir);
+	vec3 result = CalcDirLight(dirLight, norm, viewDir);
 
-	fragmentColor = texture(material.texture_diffuse0, TexCoord);
+	fragmentColor = vec4(result, 1.0f);
 }
 
 //calculating direction light
