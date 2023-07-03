@@ -152,6 +152,7 @@
     <ClInclude Include="Includes\camera.h" />
     <ClInclude Include="Includes\config.h" />
     <ClInclude Include="Includes\Cube.h" />
+    <ClInclude Include="Includes\HelperFunctions.h" />
     <ClInclude Include="Includes\Mesh.h" />
     <ClInclude Include="Includes\Model.h" />
     <ClInclude Include="Includes\Shader.h" />

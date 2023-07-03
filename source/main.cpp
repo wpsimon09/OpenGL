@@ -9,6 +9,7 @@
 #include "camera.h"
 #include "Cube.h"
 #include "Model.h"
+#include "HelperFunctions.h";
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
@@ -105,8 +106,8 @@ int main() {
 		shader.use();
 
 		glm::vec3 direction = glm::vec3(-0.7f,-1.0f,-0.6f);
-		glm::vec3 ambient = glm::vec3(0.5f);
-		glm::vec3 diffuse = glm::vec3(1.0f);
+		glm::vec3 ambient = glm::vec3(0.4f);
+		glm::vec3 diffuse = COLOR_SUN;
 		glm::vec3 specular = glm::vec3(1.0F);
 		
 		shader.setVec3("dirLight.direction", direction);

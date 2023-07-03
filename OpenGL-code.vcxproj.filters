@@ -48,6 +48,9 @@
     <ClInclude Include="Includes\Model.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Includes\HelperFunctions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\main.cpp">
