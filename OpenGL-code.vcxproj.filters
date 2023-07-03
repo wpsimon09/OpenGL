@@ -45,6 +45,9 @@
     <ClInclude Include="Includes\Mesh.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Includes\Model.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\main.cpp">
@@ -66,6 +69,7 @@
     </None>
     <None Include="VertexShader\LightVertexShader.glsl" />
     <None Include="FragmentShader\LightFragmentShader.glsl" />
+    <None Include="Assets\Model\backpack\backpack.mtl" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\Textures\container.jpg">
@@ -83,5 +87,24 @@
     <Image Include="Assets\Textures\matrix.jpg">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="Assets\Model\backpack\ao.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Assets\Model\backpack\diffuse.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Assets\Model\backpack\normal.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Assets\Model\backpack\roughness.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Assets\Model\backpack\specular.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Assets\Model\backpack\backpack.obj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Assets\Model\backpack\source_attribution.txt" />
   </ItemGroup>
 </Project>

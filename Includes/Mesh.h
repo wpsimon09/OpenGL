@@ -16,6 +16,7 @@ struct Vertex
 struct Texture
 {
 	unsigned int id;
+	std::string path;
 	std::string type;
 };
 
@@ -27,9 +28,10 @@ public:
 
 	Mesh(std::vector<Vertex> vertecies, std::vector<unsigned int> indecies, std::vector<Texture> texutres);
 	void Draw(Shader& shader);
+	unsigned int VAO;
 
 private:
-	unsigned int VAO, VBO, EBO;
+	unsigned int  VBO, EBO;
 
 	//initialize the buffers
 	//--------------
@@ -53,7 +55,7 @@ void Mesh::setupMesh()
 	glGenBuffers(1, &this->EBO);
 
 	glBindVertexArray(VAO);
-	glBindBuffer(GL_ARRAY_BUFFER, VAO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
 	glBufferData(GL_ARRAY_BUFFER, vertecies.size() * sizeof(Vertex), &vertecies[0], GL_STATIC_DRAW);
 
@@ -81,11 +83,36 @@ void Mesh::Draw(Shader& shader) {
 	unsigned int diffuseNr = 0;
 	unsigned int specularNr = 0;
 
+	//looping throught each texture and setting coresponding value
+	//in the shader
+	// TODO: set texture's name in the shader as well
+	//----------------
+	shader.use();
 	for (unsigned int i = 0; i < textures.size(); i++) {
-		glActiveTexture(GL_TEXTURE0 + 1);
-
-
+		glActiveTexture(GL_TEXTURE0 + i);
+		std::string number;
+		std::string name = textures[i].type;
+		if (name == "texture_diffuse")
+		{
+			number = std::to_string(diffuseNr++);
+		}
+		else if (name == "texture_specular")
+		{
+			number = std::to_string(specularNr++);
+		}
+		shader.setFloat(("material." + name + number).c_str(), i);
+		//std::cout << "TEXTURE::LOADED::ASS:\n";
+		//std::cout << ("material." + name + number).c_str();
+		//std::cout << "\n";
+		glBindTexture(GL_TEXTURE_2D, textures[i].id);
 	}
-}
+	glActiveTexture(GL_TEXTURE0);
 
+	//draw mesh
+	glBindVertexArray(VAO);
+	glDrawElements(GL_TRIANGLES, indecies.size(), GL_UNSIGNED_INT, 0);
+	glBindVertexArray(0);
+
+	glActiveTexture(GL_TEXTURE0);
+}
 #endif // !1
