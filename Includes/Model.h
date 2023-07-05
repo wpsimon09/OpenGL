@@ -174,6 +174,9 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene) {
 		std::vector<Texture> specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
 
 		textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
+
+		// load emision textures
+		std::vector<Texture> emisionMaps = loadMaterialTextures(material, aiTextureType_EMISSION_COLOR, "texture_emmision");
 	}
 	else 
 		std::cout << "ERROR::ASSIMP::PROCCESSING::MATERIALS - There are no materials to be proccessed\n";

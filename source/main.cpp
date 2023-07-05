@@ -79,6 +79,7 @@ int main() {
 	Shader shader("VertexShader/vertexShader.glsl", "FragmentShader/fragmentShader.glsl");
 	Shader light("VertexShader/LightVertexShader.glsl", "FragmentShader/LightfragmentShader.glsl");
 	Model ourModel("Assets/Model/backpack/backpack.obj");
+	Model lightModel("Assets/Model/light/light.fbx");
 
 	glViewport(0, 0, 800, 600);	
 	float textureOpacity = 0.0f;
@@ -97,27 +98,38 @@ int main() {
 		// -----
 		processInput(window);
 
-		// render
-		// ------
-		glClearColor(0.0f, 0.05f, 0.05f, 1.0f);
+		glClearColor(0.501f, 0.501f, 0.501f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		// don't forget to enable shader before setting uniforms
 		shader.use();
 
 		glm::vec3 direction = glm::vec3(-0.7f,-1.0f,-0.6f);
 		glm::vec3 ambient = glm::vec3(0.4f);
 		glm::vec3 diffuse = COLOR_SUN;
 		glm::vec3 specular = glm::vec3(1.0F);
-		
+
+		glm::vec3 diffusePoint = COLOR_RED;
+
+		float constant = 1.0f;
+		float linear = 0.22f;
+		float quadratic = 0.20f;
+			
 		shader.setVec3("dirLight.direction", direction);
 		shader.setVec3("dirLight.ambient", ambient);
 		shader.setVec3("dirLight.diffuse", diffuse);
 		shader.setVec3("dirLight.specular", specular);
-		shader.setFloat("material.shininess", 64.0f);
-
+		shader.setFloat("material.shininess", 128.0f);
 
 		shader.setVec3("viewPos", camera.Position);
+
+		shader.setFloat("pointLights.constant", constant);
+		shader.setFloat("pointLights.linear", linear);
+		shader.setFloat("pointLights.quadratic", quadratic);
+		
+		shader.setVec3("pointLights.position", glm::vec3(0.0f, 0.0f, 2.0f));
+		shader.setVec3("pointLights.ambient", ambient);
+		shader.setVec3("pointLights.diffuse", diffusePoint);
+		shader.setVec3("pointLights.specular", specular);
 
 		// view/projection transformations
 		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
@@ -130,9 +142,11 @@ int main() {
 		model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
 		model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));	// it's a bit too big for our scene, so scale it down
 		shader.setMat4("model", model);
+
+		// render
+		// ------
 		ourModel.Draw(shader);
-
-
+		
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
 		// -------------------------------------------------------------------------------
 		glfwSwapBuffers(window);

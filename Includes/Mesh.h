@@ -82,7 +82,7 @@ void Mesh::setupMesh()
 void Mesh::Draw(Shader& shader) {
 	unsigned int diffuseNr = 0;
 	unsigned int specularNr = 0;
-
+	unsigned int emisionNr = 0;
 	//looping throught each texture and setting coresponding value
 	//in the shader
 	// TODO: set texture's name in the shader as well
@@ -99,6 +99,10 @@ void Mesh::Draw(Shader& shader) {
 		else if (name == "texture_specular")
 		{
 			number = std::to_string(specularNr++);
+		}
+		else if (name == "texture_emmision")
+		{
+			number = std::to_string(emisionNr++);
 		}
 		shader.setFloat(("material." + name + number).c_str(), i);
 		//std::cout << "TEXTURE::LOADED::ASS:\n";
