@@ -46,6 +46,7 @@ class Light
 	public:
 		Light(glm::vec3 direction, glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular);
 		Light(float constant, float linear, float quadratic, glm::vec3 position, glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular);
+		Light(float cutOff, float outerCutOFF,float constant, float linear, float quadratic, bool isOn, glm::vec3 position, glm::vec3 direction, glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular);
 
 		void setLight(Shader &shader);
 
@@ -67,6 +68,22 @@ Light::Light(glm::vec3 direction, glm::vec3 ambient, glm::vec3 diffuse, glm::vec
 	this->lightType = "dir";
 }
 
+Light::Light(float cutOff, float outerCutOFF, float constant, float linear, float quadratic,bool isOn, glm::vec3 position, glm::vec3 direction, glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular)
+{
+	this->_spotLight.constant = constant;
+	this->_spotLight.linear = linear;
+	this->_spotLight.quadratic = quadratic;
+
+	this->_spotLight.isOn = isOn;
+	this->_spotLight.position = position;
+	
+	this->_spotLight.ambient = ambient;
+	this->_spotLight.diffuse = diffuse;
+	this->_spotLight.specular = specular;
+
+	this->lightType = "spot";
+}
+
 Light::Light(float constant, float linear, float quadratic, glm::vec3 position, glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular) {
 	this->_pointLight.constant = constant;
 	this->_pointLight.linear = linear;
@@ -81,6 +98,7 @@ Light::Light(float constant, float linear, float quadratic, glm::vec3 position, 
 
 void Light::setLight(Shader& shader) {
 	shader.use();
+	shader.setFloat("material.shininess", 32);
 	if (this->lightType == "dir")
 	{
 		shader.setVec3("dirLight.direction", this->_dirLight.direction);
@@ -100,6 +118,20 @@ void Light::setLight(Shader& shader) {
 		shader.setVec3("pointLights.ambient", this->_pointLight.ambient);
 		shader.setVec3("pointLights.diffuse", this->_pointLight.diffuse);
 		shader.setVec3("pointLights.specular", this->_pointLight.specular);
+	}
+
+	if (this->lightType == "spot")
+	{
+		shader.setFloat("spotLight.constant", this->_spotLight.constant);
+		shader.setFloat("spotLight.linear", this->_spotLight.linear);
+		shader.setFloat("spotLight.quadratic", this->_spotLight.quadratic);
+		
+		shader.setBool("spotLight.isOn", this->_spotLight.isOn);
+		shader.setVec3("spotLight.position", this->_spotLight.position);
+		
+		shader.setVec3("spotLight.ambient", this->_spotLight.ambient);
+		shader.setVec3("spotLight.diffuse", this->_spotLight.diffuse);
+		shader.setVec3("spotLight.specular", this->_spotLight.specular);
 	}
 }
 
