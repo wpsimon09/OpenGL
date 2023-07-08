@@ -126,14 +126,14 @@ int main() {
 		shader.setVec3("viewPos", camera.Position);
 		
 
-		shader.setFloat("pointLights.constant", constant);
-		shader.setFloat("pointLights.linear", linear);
-		shader.setFloat("pointLights.quadratic", quadratic);
-		
-		shader.setVec3("pointLights.position", glm::vec3(0.0f, 0.0f, 2.0f));
-		shader.setVec3("pointLights.ambient", ambient);
-		shader.setVec3("pointLights.diffuse", diffusePoint);
-		shader.setVec3("pointLights.specular", COLOR_RED);
+		//shader.setFloat("pointLights.constant", constant);
+		//shader.setFloat("pointLights.linear", linear);
+		//shader.setFloat("pointLights.quadratic", quadratic);
+		//
+		//shader.setVec3("pointLights.position", glm::vec3(0.0f, 0.0f, 2.0f));
+		//shader.setVec3("pointLights.ambient", ambient);
+		//shader.setVec3("pointLights.diffuse", diffusePoint);
+		//shader.setVec3("pointLights.specular", COLOR_RED);
 
 		// view/projection transformations
 		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
