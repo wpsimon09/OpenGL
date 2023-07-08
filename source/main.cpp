@@ -10,6 +10,7 @@
 #include "Cube.h"
 #include "Model.h"
 #include "HelperFunctions.h";
+#include "Light.h";
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
@@ -33,6 +34,18 @@ bool firstMouse = true;
 // timing
 float deltaTime = 0.0f;	// time between current frame and last frame
 float lastFrame = 0.0f;
+
+// light properties
+glm::vec3 direction = glm::vec3(0.2f, -1.0f, -0.6f);
+glm::vec3 ambient = glm::vec3(0.4f);
+glm::vec3 diffuse = COLOR_SUN;
+glm::vec3 specular = glm::vec3(1.0F);
+
+glm::vec3 diffusePoint = COLOR_SUN;
+
+float constant = 1.0f;
+float linear = 0.22f;
+float quadratic = 0.20f;
 
 
 //light possition
@@ -76,16 +89,21 @@ int main() {
 
 	stbi_set_flip_vertically_on_load(true);
 
+
 	Shader shader("VertexShader/vertexShader.glsl", "FragmentShader/fragmentShader.glsl");
 	Shader light("VertexShader/LightVertexShader.glsl", "FragmentShader/LightfragmentShader.glsl");
 	Model ourModel("Assets/Model/backpack/backpack.obj");
-	Model lightModel("Assets/Model/light/light.fbx");
 
 	glViewport(0, 0, 800, 600);	
 	float textureOpacity = 0.0f;
 
 	const float radius = 10.0f;
 	bool isFlashOn = true;
+
+	shader.use();
+	Light directional(direction, ambient, diffuse, specular);
+	directional.setLight(shader);
+
 	while (!glfwWindowShouldClose(window))
 	{
 		// per-frame time logic
@@ -103,34 +121,10 @@ int main() {
 
 		shader.use();
 
-		glm::vec3 direction = glm::vec3(-0.7f,-1.0f,-0.6f);
-		glm::vec3 ambient = glm::vec3(0.4f);
-		glm::vec3 diffuse = COLOR_SUN;
-		glm::vec3 specular = glm::vec3(1.0F);
-
-		glm::vec3 diffusePoint = COLOR_RED;
-
-		float constant = 1.0f;
-		float linear = 0.22f;
-		float quadratic = 0.20f;
-			
-		shader.setVec3("dirLight.direction", direction);
-		shader.setVec3("dirLight.ambient", ambient);
-		shader.setVec3("dirLight.diffuse", diffuse);
-		shader.setVec3("dirLight.specular", specular);
-		shader.setFloat("material.shininess", 128.0f);
-
+		Light point(constant, linear, quadratic, lightPos, ambient, diffusePoint, specular);
+		point.setLight(shader);
 		shader.setVec3("viewPos", camera.Position);
-
-		shader.setFloat("pointLights.constant", constant);
-		shader.setFloat("pointLights.linear", linear);
-		shader.setFloat("pointLights.quadratic", quadratic);
 		
-		shader.setVec3("pointLights.position", glm::vec3(0.0f, 0.0f, 2.0f));
-		shader.setVec3("pointLights.ambient", ambient);
-		shader.setVec3("pointLights.diffuse", diffusePoint);
-		shader.setVec3("pointLights.specular", specular);
-
 		// view/projection transformations
 		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
 		glm::mat4 view = camera.GetViewMatrix();
