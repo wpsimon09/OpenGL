@@ -149,6 +149,10 @@ int main() {
 		shader.setMat4("view", view);
 		shader.setMat4("projection", projection);
 
+
+		//----------------------
+		// DRAW CUBE 1
+		//----------------------
 		glBindVertexArray(cubeVAO);
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, cubeTexture);
@@ -156,20 +160,27 @@ int main() {
 		shader.setMat4("model", model);
 
 		glDrawArrays(GL_TRIANGLES, 0, 36);
-		
+
+		//----------------------
+		// DRAW CUBE 2
+		//----------------------
 		model = glm::mat4(1.0f);
 		model = glm::translate(model, glm::vec3(2.0f, 0.0f, 0.0f));
 		shader.setMat4("model", model);
 		
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 
+
+		//----------------------
+		// DRAW PLANE AS A FLOOR
+		//----------------------
 		glBindVertexArray(planeVAO);
 		glBindTexture(GL_TEXTURE_2D, floorTexture);
 		shader.setMat4("model", glm::mat4(1.0f));
 		glDrawArrays(GL_TRIANGLES, 0, 6);
-		glBindVertexArray(0);
 
 		
+		glBindVertexArray(0);
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
 		// -------------------------------------------------------------------------------
 		glfwSwapBuffers(window);
