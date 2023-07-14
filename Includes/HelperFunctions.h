@@ -114,3 +114,16 @@ float planeVertices[] = {
 	-5.0f, -0.5f, -5.0f,  0.0f, 2.0f,
 	 5.0f, -0.5f, -5.0f,  2.0f, 2.0f
 };
+
+
+//TODO add one more triangle because now its something strange
+float grassVertices[] = {
+
+	0.0f, 0.0f, 0.0f,	  0.0f, 0.0f,
+	1.0f, 0.0f, 0.0f,	  1.0f, 0.0f,
+	0.0f, 1.0f, 0.0f,	  0.0f, 1.0f,
+
+	1.0f, 0.0f, 0.0f,	  1.0f, 0.0f,
+	1.0f, 1.0f, 0.0f,	  1.0f, 1.0f,
+	0.0f, 1.0f, 0.0f,	  0.0f, 1.0f
+};
