@@ -167,6 +167,7 @@ int main() {
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 		glBindVertexArray(0);
 
+		//in stencil buffer place one where the cubes are located
 		glStencilFunc(GL_ALWAYS, 1, 0xFF); //0xFF represents 1
 		glStencilMask(0xFF);
 
@@ -190,6 +191,10 @@ int main() {
 		
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 
+		//dicard fragment where there is already a 1 written
+		//with this we can discard fragemtns of the green cube and only leaving
+		//fragments that are in the different postition that the original cube
+		//thus creating the ilusion of border
 		glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
 		glStencilMask(0x00);
 		glDisable(GL_DEPTH_TEST);
