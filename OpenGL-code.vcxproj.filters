@@ -154,6 +154,9 @@
     <Image Include="Assets\Textures\Blending\grass.png">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="Assets\Textures\Blending\window.png">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Assets\Model\backpack\source_attribution.txt" />

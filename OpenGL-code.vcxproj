@@ -204,6 +204,7 @@
     <Image Include="Assets\Model\spaceship\model\texture\mainMat_nrm.png" />
     <Image Include="Assets\Model\spaceship\model\texture\mainMat_rough.png" />
     <Image Include="Assets\Textures\Blending\grass.png" />
+    <Image Include="Assets\Textures\Blending\window.png" />
     <Image Include="Assets\Textures\container.jpg" />
     <Image Include="Assets\Textures\container2.png" />
     <Image Include="Assets\Textures\container2_specular.png" />
