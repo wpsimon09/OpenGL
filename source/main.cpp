@@ -99,6 +99,15 @@ int main() {
 	windows.push_back(glm::vec3(-0.3f,-0.5f, -2.3f));
 	windows.push_back(glm::vec3(0.5f, -0.5f, -0.6f));
 
+
+	std::map<float, glm::vec3> sorted;
+	for (int i = 0; i < windows.size(); i++)
+	{
+		float distance = glm::length(camera.Position - windows[i]);
+		sorted[distance] = windows[i];
+	}
+
+
 	Shader shader("VertexShader/DepthTestingVertex.glsl", "FragmentShader/DepthTestingFragment.glsl");
 	
 	
@@ -205,17 +214,17 @@ int main() {
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 
 		//----------------------
-		// DRAW GRASS
+		// DRAW WINDOWS
 		//----------------------
 		glBindVertexArray(windowVAO);
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, windowTexture);
-		for (int i = 0; i < windows.size(); i++)
+		for (std::map<float, glm::vec3>::reverse_iterator it = sorted.rbegin(); it != sorted.rend(); ++it)
 		{
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 			model = glm::mat4(1.0f);
-			model = glm::translate(model, windows[i]);
+			model = glm::translate(model, it->second);
 			shader.setMat4("model", model);
 			glDrawArrays(GL_TRIANGLES, 0, 6);
 		}
