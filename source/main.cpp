@@ -229,7 +229,7 @@ int main() {
 			glDrawArrays(GL_TRIANGLES, 0, 6);
 		}
 
-		
+			
 		glBindVertexArray(0);
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
 		// -------------------------------------------------------------------------------
