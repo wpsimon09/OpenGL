@@ -11,6 +11,7 @@
 #include "Model.h"
 #include "HelperFunctions.h";
 #include "Light.h";
+#include <vector>;
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
@@ -58,6 +59,7 @@ glm::vec3(-4.0f, 2.0f, -12.0f),
 glm::vec3(0.0f, 0.0f, -3.0f)
 };
 
+
 int main() {
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -88,6 +90,13 @@ int main() {
 	}
 
 	stbi_set_flip_vertically_on_load(true);
+
+	std::vector<glm::vec3> vegetation;
+	vegetation.push_back(glm::vec3(-1.5f,-0.5f, -0.48f));
+	vegetation.push_back(glm::vec3(1.5f, -0.5f, 0.51f));
+	vegetation.push_back(glm::vec3(0.0f, -0.5f, 0.7f));
+	vegetation.push_back(glm::vec3(-0.3f,-0.5f, -2.3f));
+	vegetation.push_back(glm::vec3(0.5f, -0.5f, -0.6f));
 
 	Shader shader("VertexShader/DepthTestingVertex.glsl", "FragmentShader/DepthTestingFragment.glsl");
 	
@@ -191,10 +200,13 @@ int main() {
 		glBindVertexArray(grassVAO);
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, grassTexture);
-		model = glm::mat4(1.0f);
-		model = glm::translate(model, glm::vec3(0.0f, -1.0f, 2.0f));
-
-		glDrawArrays(GL_TRIANGLES, 0, 6);
+		for (int i = 0; i < vegetation.size(); i++)
+		{
+			model = glm::mat4(1.0f);
+			model = glm::translate(model, vegetation[i]);
+			shader.setMat4("model", model);
+			glDrawArrays(GL_TRIANGLES, 0, 6);
+		}
 		
 		//----------------------
 		// DRAW PLANE AS A FLOOR

@@ -54,6 +54,9 @@
     <ClInclude Include="Includes\Grid.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Includes\Light.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\main.cpp">
@@ -77,6 +80,8 @@
     <None Include="FragmentShader\LightFragmentShader.glsl" />
     <None Include="Assets\Model\backpack\backpack.mtl" />
     <None Include="Assets\Model\spaceship\model\texture\spaceShip.fbx" />
+    <None Include="FragmentShader\DepthTestingFragment.glsl" />
+    <None Include="VertexShader\DepthTestingVertex.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\Textures\container.jpg">
@@ -135,6 +140,18 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="Assets\Model\spaceship\model\texture\mainMat_rough.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\BookRepo\LearnOpenGL\resources\textures\marble.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Assets\Textures\DepthTesting\marble.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Assets\Textures\DepthTesting\metal.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Assets\Textures\Blending\grass.png">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>
