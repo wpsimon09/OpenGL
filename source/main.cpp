@@ -202,6 +202,8 @@ int main() {
 		glBindTexture(GL_TEXTURE_2D, grassTexture);
 		for (int i = 0; i < vegetation.size(); i++)
 		{
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 			model = glm::mat4(1.0f);
 			model = glm::translate(model, vegetation[i]);
 			shader.setMat4("model", model);
