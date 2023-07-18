@@ -24,86 +24,90 @@ glm::vec3 colorOf(float r, float g, float b) {
 
 unsigned int loadTexture(char const* path)
 {
-    unsigned int textureID;
-    glGenTextures(1, &textureID);
+	unsigned int textureID;
+	glGenTextures(1, &textureID);
 
-    int width, height, nrComponents;
-    unsigned char* data = stbi_load(path, &width, &height, &nrComponents, 0);
-    if (data)
-    {
-        GLenum format;
-        if (nrComponents == 1)
-            format = GL_RED;
-        else if (nrComponents == 3)
-            format = GL_RGB;
-        else if (nrComponents == 4)
-            format = GL_RGBA;
+	int width, height, nrComponents;
+	unsigned char* data = stbi_load(path, &width, &height, &nrComponents, 0);
+	if (data)
+	{
+		GLenum format;
+		if (nrComponents == 1)
+			format = GL_RED;
+		else if (nrComponents == 3)
+			format = GL_RGB;
+		else if (nrComponents == 4)
+			format = GL_RGBA;
 
-        glBindTexture(GL_TEXTURE_2D, textureID);
-        glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
-        glGenerateMipmap(GL_TEXTURE_2D);
+		glBindTexture(GL_TEXTURE_2D, textureID);
+		glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
 
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-        stbi_image_free(data);
-    }
-    else
-    {
-        std::cout << "Texture failed to load at path: " << path << std::endl;
-        stbi_image_free(data);
-    }
+		stbi_image_free(data);
+	}
+	else
+	{
+		std::cout << "Texture failed to load at path: " << path << std::endl;
+		stbi_image_free(data);
+	}
 
-    return textureID;
+	return textureID;
 }
 
 
 float cubeVertices[] = {
 	// positions          // texture Coords
-	-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-	 0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
-	 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-	 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-	-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-	-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-
-	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-	 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-	 0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-	 0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-	-0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
-	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-
-	-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-	-0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-	-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-	-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-	-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-
-	 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-	 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-	 0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-	 0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-	 0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-	 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-
-	-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-	 0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
-	 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-	 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-	-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-
-	-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-	 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-	 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-	 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-	-0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
-	-0.5f,  0.5f, -0.5f,  0.0f, 1.0f
+	// back face
+	-0.5f, -0.5f, -0.5f, 0.0f, 0.0f, // bottom-left
+	0.5f, 0.5f, -0.5f, 1.0f, 1.0f, // top-right
+	0.5f, -0.5f, -0.5f, 1.0f, 0.0f, // bottom-right
+	0.5f, 0.5f, -0.5f, 1.0f, 1.0f, // top-right
+	-0.5f, -0.5f, -0.5f, 0.0f, 0.0f, // bottom-left
+	-0.5f, 0.5f, -0.5f, 0.0f, 1.0f, // top-left
+	
+	// front face
+	-0.5f, -0.5f, 0.5f, 0.0f, 0.0f, // bottom-left
+	0.5f, -0.5f, 0.5f, 1.0f, 0.0f, // bottom-right
+	0.5f, 0.5f, 0.5f, 1.0f, 1.0f, // top-right
+	0.5f, 0.5f, 0.5f, 1.0f, 1.0f, // top-right
+	-0.5f, 0.5f, 0.5f, 0.0f, 1.0f, // top-left
+	-0.5f, -0.5f, 0.5f, 0.0f, 0.0f, // bottom-left
+	
+	// left face
+	-0.5f, 0.5f, 0.5f, 1.0f, 0.0f, // top-right
+	-0.5f, 0.5f, -0.5f, 1.0f, 1.0f, // top-left
+	-0.5f, -0.5f, -0.5f, 0.0f, 1.0f, // bottom-left
+	-0.5f, -0.5f, -0.5f, 0.0f, 1.0f, // bottom-left
+	-0.5f, -0.5f, 0.5f, 0.0f, 0.0f, // bottom-right
+	-0.5f, 0.5f, 0.5f, 1.0f, 0.0f, // top-right
+	// right face
+	0.5f, 0.5f, 0.5f, 1.0f, 0.0f, // top-left
+	0.5f, -0.5f, -0.5f, 0.0f, 1.0f, // bottom-right
+	0.5f, 0.5f, -0.5f, 1.0f, 1.0f, // top-right
+	0.5f, -0.5f, -0.5f, 0.0f, 1.0f, // bottom-right
+	0.5f, 0.5f, 0.5f, 1.0f, 0.0f, // top-left
+	0.5f, -0.5f, 0.5f, 0.0f, 0.0f, // bottom-left
+	// bottom face
+	-0.5f, -0.5f, -0.5f, 0.0f, 1.0f, // top-right
+	0.5f, -0.5f, -0.5f, 1.0f, 1.0f, // top-left
+	0.5f, -0.5f, 0.5f, 1.0f, 0.0f, // bottom-left
+	0.5f, -0.5f, 0.5f, 1.0f, 0.0f, // bottom-left
+	-0.5f, -0.5f, 0.5f, 0.0f, 0.0f, // bottom-right
+	-0.5f, -0.5f, -0.5f, 0.0f, 1.0f, // top-right
+	// top face
+	-0.5f, 0.5f, -0.5f, 0.0f, 1.0f, // top-left
+	0.5f, 0.5f, 0.5f, 1.0f, 0.0f, // bottom-right
+	0.5f, 0.5f, -0.5f, 1.0f, 1.0f, // top-right
+	0.5f, 0.5f, 0.5f, 1.0f, 0.0f, // bottom-right
+	-0.5f, 0.5f, -0.5f, 0.0f, 1.0f, // top-left
+	-0.5f, 0.5f, 0.5f, 0.0f, 0.0f // bottom-left
 };
+
 float planeVertices[] = {
 	// positions          // texture Coords (note we set these higher than 1 (together with GL_REPEAT as texture wrapping mode). this will cause the floor texture to repeat)
 	 5.0f, -0.5f,  5.0f,  2.0f, 0.0f,
