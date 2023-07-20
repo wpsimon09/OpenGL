@@ -92,7 +92,6 @@ int main() {
 	Shader shader("VertexShader/DepthTestingVertex.glsl", "FragmentShader/DepthTestingFragment.glsl");
 	Shader screenShader("VertexShader/FrameBufferVertex.glsl", "FragmentShader/FrameBufferFragment.glsl");
 
-
 	// cube VAO
 	unsigned int cubeVAO, cubeVBO;
 	glGenVertexArrays(1, &cubeVAO);
@@ -175,7 +174,6 @@ int main() {
 			
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-
 	while (!glfwWindowShouldClose(window))
 	{
 		// per-frame time logic
@@ -194,13 +192,15 @@ int main() {
 		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
+		//---------------------------------
+		// RENDER SCENE IN OUR FRAME BUFFER
+		//---------------------------------
 		shader.use();
 		glm::mat4 model = glm::mat4(1.0f);
 		glm::mat4 view = camera.GetViewMatrix();
 		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
 		shader.setMat4("view", view);
 		shader.setMat4("projection", projection);
-
 
 		//----------------------
 		// DRAW CUBE 1
@@ -210,7 +210,6 @@ int main() {
 		glBindTexture(GL_TEXTURE_2D, cubeTexture);
 		model = glm::translate(model, glm::vec3(-1.0f, 0.0f, -1.0f));
 		shader.setMat4("model", model);
-
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 
 		//----------------------
@@ -219,7 +218,6 @@ int main() {
 		model = glm::mat4(1.0f);
 		model = glm::translate(model, glm::vec3(2.0f, 0.0f, 0.0f));
 		shader.setMat4("model", model);
-
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 
 		//----------------------
@@ -230,9 +228,11 @@ int main() {
 		shader.setMat4("model", glm::mat4(1.0f));
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 
-
 		glBindVertexArray(0);
 
+		//---------------------------------------------
+		// RENDER THE FRAME BUFFER CONTAINING OUR SCENE
+		//---------------------------------------------
 		glBindFramebuffer(GL_FRAMEBUFFER, 0); // back to default
 		glDisable(GL_DEPTH_TEST);
 		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
