@@ -4,7 +4,8 @@ in vec2 TexCoords;
 
 uniform sampler2D screenTexture;
 
-const float offset = 1.0/100.0;
+//intensity of some sort
+const float offset = 1.0/600.0;
 
 void main()
 {
@@ -21,9 +22,9 @@ void main()
 	);
 
 	float kernel[9] = float[](
-		1.0 / 16, 2.0 / 16, 1.0 / 16,
-		2.0 / 16, 4.0 / 16, 2.0 / 16,
-		1.0 / 16, 2.0 / 16, 1.0 / 16
+		1, 1, 1,
+		1, -8, 1,
+		1, 1, 1
 	);
 
 	vec3 sampleTex[9]; 
