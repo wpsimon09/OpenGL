@@ -48,12 +48,6 @@
     <ClInclude Include="Includes\Model.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Includes\HelperFunctions.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Includes\Grid.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\main.cpp">
@@ -76,7 +70,6 @@
     <None Include="VertexShader\LightVertexShader.glsl" />
     <None Include="FragmentShader\LightFragmentShader.glsl" />
     <None Include="Assets\Model\backpack\backpack.mtl" />
-    <None Include="Assets\Model\spaceship\model\texture\spaceShip.fbx" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\Textures\container.jpg">
@@ -110,33 +103,6 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="Assets\Model\backpack\backpack.obj" />
-    <Image Include="Assets\Model\spaceship\model\texture\auxielieryMat_alpha.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="Assets\Model\spaceship\model\texture\auxielieryMat_diffuse.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="Assets\Model\spaceship\model\texture\auxielieryMat_metal.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="Assets\Model\spaceship\model\texture\auxielieryMat_nrm.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="Assets\Model\spaceship\model\texture\mainMat_diffuse.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="Assets\Model\spaceship\model\texture\auxielieryMat_rough.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="Assets\Model\spaceship\model\texture\mainMat_metal.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="Assets\Model\spaceship\model\texture\mainMat_nrm.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="Assets\Model\spaceship\model\texture\mainMat_rough.png">
-      <Filter>Resource Files</Filter>
-    </Image>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Assets\Model\backpack\source_attribution.txt" />

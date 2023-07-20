@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -152,9 +152,6 @@
     <ClInclude Include="Includes\camera.h" />
     <ClInclude Include="Includes\config.h" />
     <ClInclude Include="Includes\Cube.h" />
-    <ClInclude Include="Includes\Grid.h" />
-    <ClInclude Include="Includes\HelperFunctions.h" />
-    <ClInclude Include="Includes\Light.h" />
     <ClInclude Include="Includes\Mesh.h" />
     <ClInclude Include="Includes\Model.h" />
     <ClInclude Include="Includes\Shader.h" />
@@ -169,18 +166,12 @@
     <None Include="Assets\Model\backpack\backpack.mtl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </None>
-    <None Include="Assets\Model\spaceship\model\texture\spaceShip.fbx" />
-    <None Include="FragmentShader\DepthTestingFragment.glsl" />
     <None Include="FragmentShader\FragmentShader.glsl" />
-    <None Include="FragmentShader\FrameBufferFragment.glsl" />
     <None Include="FragmentShader\LightFragmentShader.glsl" />
-    <None Include="VertexShader\DepthTestingVertex.glsl" />
-    <None Include="VertexShader\FrameBufferVertex.glsl" />
     <None Include="VertexShader\LightVertexShader.glsl" />
     <None Include="VertexShader\VertexShader.glsl" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="..\BookRepo\LearnOpenGL\resources\textures\marble.jpg" />
     <Image Include="Assets\Model\backpack\ao.jpg">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </Image>
@@ -196,21 +187,10 @@
     <Image Include="Assets\Model\backpack\specular.jpg">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </Image>
-    <Image Include="Assets\Model\spaceship\model\texture\auxielieryMat_alpha.png" />
-    <Image Include="Assets\Model\spaceship\model\texture\auxielieryMat_diffuse.png" />
-    <Image Include="Assets\Model\spaceship\model\texture\auxielieryMat_metal.png" />
-    <Image Include="Assets\Model\spaceship\model\texture\auxielieryMat_nrm.png" />
-    <Image Include="Assets\Model\spaceship\model\texture\auxielieryMat_rough.png" />
-    <Image Include="Assets\Model\spaceship\model\texture\mainMat_diffuse.png" />
-    <Image Include="Assets\Model\spaceship\model\texture\mainMat_metal.png" />
-    <Image Include="Assets\Model\spaceship\model\texture\mainMat_nrm.png" />
-    <Image Include="Assets\Model\spaceship\model\texture\mainMat_rough.png" />
     <Image Include="Assets\Textures\container.jpg" />
     <Image Include="Assets\Textures\container2.png" />
     <Image Include="Assets\Textures\container2_specular.png" />
     <Image Include="Assets\Textures\container2_specular_colored.png" />
-    <Image Include="Assets\Textures\DepthTesting\marble.jpg" />
-    <Image Include="Assets\Textures\DepthTesting\metal.png" />
     <Image Include="Assets\Textures\matrix.jpg" />
   </ItemGroup>
   <ItemGroup>
