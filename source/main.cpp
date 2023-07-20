@@ -25,8 +25,11 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 //screen coordinates
 int SCR_WIDTH = 800;
 int SCR_HEIGHT = 600;
+glm::vec3 mirrorPosition(0.0f, 0.2f, 2.5f);
+
 // camera
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
+Camera mirrorCamera(mirrorPosition);
 float lastX = 800.0f / 2.0f;
 float lastY = 600.0f / 2.0f;
 bool firstMouse = true;
@@ -199,15 +202,9 @@ int main() {
 		shader.use();
 		glm::mat4 model = glm::mat4(1.0f);
 
-		camera.Yaw += 180; //rotate camera by 180
-		
 		camera.ProcessMouseMovement(0, 0, false);
-		glm::mat4 view = camera.GetViewMatrix();
-
-		camera.Yaw -= 180; //reurn camera to its defualt state
-		
-		camera.ProcessMouseMovement(0, 0, true);
-		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+		glm::mat4 view = mirrorCamera.GetViewMatrix();
+		glm::mat4 projection = glm::perspective(glm::radians(80.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
 		shader.setMat4("view", view);
 		shader.setMat4("projection", projection);
 
@@ -226,6 +223,15 @@ int main() {
 		//----------------------
 		model = glm::mat4(1.0f);
 		model = glm::translate(model, glm::vec3(2.0f, 0.0f, 0.0f));
+		shader.setMat4("model", model);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+
+		//----------------------
+		// DRAW CUBE THAT REPRESENTS PLAYER
+		//----------------------
+		model = glm::mat4(1.0f);
+		model = glm::translate(model, glm::vec3(camera.Position));
+		model = glm::scale(model, glm::vec3(0.1f));
 		shader.setMat4("model", model);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 
@@ -275,6 +281,9 @@ int main() {
 		shader.setMat4("model", model);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 
+		
+
+		
 		//----------------------
 		// DRAW PLANE AS A FLOOR
 		//----------------------
@@ -285,9 +294,18 @@ int main() {
 
 		glBindVertexArray(0);
 
-		glDisable(GL_DEPTH_TEST);
-
+		//---------------------
+		// DRAW THE MIRROR in the frame buffer
+		//---------------------
 		screenShader.use();
+
+		model = glm::translate(model, glm::vec3(0.0f, 0.0f, 2.5));
+		model = glm::scale(model, glm::vec3(5.0f));
+		
+		screenShader.setMat4("model", model);
+		screenShader.setMat4("view", view);
+		screenShader.setMat4("projection", projection);
+		
 		glBindVertexArray(quadVAO);
 		glBindTexture(GL_TEXTURE_2D, fboTexture);
 		glDrawArrays(GL_TRIANGLES, 0, 6);

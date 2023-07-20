@@ -116,12 +116,15 @@ float planeVertices[] = {
 };
 
 float quadVertices[] = { // vertex attributes for a quad that fills the entire screen in Normalized Device Coordinates.
-	// positions   // texCoords
-	-0.3f,  1.0f,  0.0f, 1.0f,
-	-0.3f,  0.7f,  0.0f, 0.0f,
-	 0.3f,  0.7f,  1.0f, 0.0f,
+	// positions		 // texCoords
+	// positions    // texCoords
+	-0.5f,  0.5f,   0.0f, 1.0f,
+	-0.5f, -0.5f,   0.0f, 0.0f,
+	 0.5f, -0.5f,   1.0f, 0.0f,
 
-	-0.3f,  1.0f,  0.0f, 1.0f,
-	 0.3f,  0.7f,  1.0f, 0.0f,
-	 0.3f,  1.0f,  1.0f, 1.0f
+	// Triangle 2
+	// positions    // texCoords
+	-0.5f,  0.5f,   0.0f, 1.0f,
+	 0.5f, -0.5f,   1.0f, 0.0f,
+	 0.5f,  0.5f,   1.0f, 1.0f
 };
