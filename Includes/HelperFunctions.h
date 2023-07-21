@@ -59,6 +59,45 @@ unsigned int loadTexture(char const* path)
     return textureID;
 }
 
+/// <summary>
+/// Loads texture as a cube map
+/// </summary>
+/// <param name="faces">Path to the different texture for different face of the cube</param>
+/// <returns>Loaded cube map</returns>
+unsigned int loadCubeMaps(std::vector<std::string> faces)
+{
+	unsigned int textureID;
+	glGenTextures(1, &textureID);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
+
+	int width, height, nrChannels;
+
+	for (unsigned int i = 0; i < faces.size(); i++)
+	{
+		unsigned char* data = stbi_load(faces[i].c_str(), &width, &height, &nrChannels, 0);
+		
+		if (data)
+		{
+			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+			stbi_image_free(data);
+		}
+		else
+		{
+			std::cout << "ERROR::TEXTURE::FAILED TO LOAD TEXTURE\n";
+			std::cout << "PATH:\n"<<faces[i]<<"\n";
+			stbi_image_free(data);
+		}
+
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S,GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T,GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R,GL_CLAMP_TO_EDGE);
+	}
+
+	return textureID;
+}
+
 
 float cubeVertices[] = {
 	// positions          // texture Coords
@@ -113,4 +152,14 @@ float planeVertices[] = {
 	 5.0f, -0.5f,  5.0f,  2.0f, 0.0f,
 	-5.0f, -0.5f, -5.0f,  0.0f, 2.0f,
 	 5.0f, -0.5f, -5.0f,  2.0f, 2.0f
+};
+
+std::vector<std::string> skyboxTextures
+{
+	"Assets/Textures/Skybox/back.jpg",
+	"Assets/Textures/Skybox/bottom.jpg",
+	"Assets/Textures/Skybox/front.jpg",
+	"Assets/Textures/Skybox/left.jpg",
+	"Assets/Textures/Skybox/right.jpg",
+	"Assets/Textures/Skybox/top.jpg",
 };

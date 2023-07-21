@@ -118,9 +118,11 @@ int main() {
 	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
 	glBindVertexArray(0);
-	
+
 	unsigned int cubeTexture = loadTexture("Assets/Textures/DepthTesting/metal.png");
 	unsigned int floorTexture = loadTexture("Assets/Textures/DepthTesting/marble.jpg");
+	unsigned int skyBox = loadCubeMaps(skyboxTextures);
+
 
 	shader.use();
 	shader.setInt("texture1", 0);
