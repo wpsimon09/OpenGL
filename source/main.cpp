@@ -280,9 +280,6 @@ int main() {
 		model = glm::translate(model, glm::vec3(2.0f, 0.0f, 0.0f));
 		shader.setMat4("model", model);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
-
-		
-
 		
 		//----------------------
 		// DRAW PLANE AS A FLOOR
@@ -299,7 +296,7 @@ int main() {
 		//---------------------
 		screenShader.use();
 
-		model = glm::translate(model, glm::vec3(0.0f, 0.0f, 2.5));
+		model = glm::translate(model, glm::vec3(0.0f, 3.5f, -4.5));
 		model = glm::scale(model, glm::vec3(5.0f));
 		
 		screenShader.setMat4("model", model);
