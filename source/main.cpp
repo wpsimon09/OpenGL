@@ -91,7 +91,9 @@ int main() {
 
 	Shader shader("VertexShader/DepthTestingVertex.glsl", "FragmentShader/DepthTestingFragment.glsl");
 	Shader skyboxShader("VertexShader/SkyboxVertex.glsl", "FragmentShader/SkyBoxFragment.glsl");
-	
+	Model backpack("Assets/Model/backpack/backpack.obj");
+
+
 	// cube VAO
 	unsigned int cubeVAO, cubeVBO;
 	glGenVertexArrays(1, &cubeVAO);
@@ -158,12 +160,10 @@ int main() {
 		//----------------------
 		// DRAW CUBE 1
 		//----------------------
-		glBindVertexArray(cubeVAO);
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_CUBE_MAP, cubeTexture);
 
-		glDrawArrays(GL_TRIANGLES, 0, 36);
-		glBindVertexArray(0);
+		backpack.Draw(shader);
 
 		//----------------
 		// DRAW THE SKYBOX
