@@ -100,22 +100,9 @@ int main() {
 	glBindBuffer(GL_ARRAY_BUFFER, cubeVBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices), &cubeVertices, GL_STATIC_DRAW);
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-	glBindVertexArray(0);
-
-	// plane VAO
-	unsigned int planeVAO, planeVBO;
-	glGenVertexArrays(1, &planeVAO);
-	glGenBuffers(1, &planeVBO);
-	glBindVertexArray(planeVAO);
-	glBindBuffer(GL_ARRAY_BUFFER, planeVBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(planeVertices), &planeVertices, GL_STATIC_DRAW);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
 	glBindVertexArray(0);
 
 	// skybox VAO
@@ -130,13 +117,13 @@ int main() {
 	glBindVertexArray(0);
 
 
-	unsigned int cubeTexture = loadTexture("Assets/Textures/DepthTesting/metal.png");
+	unsigned int cubeTexture = loadCubeMaps(skyboxTextures);
 	unsigned int floorTexture = loadTexture("Assets/Textures/DepthTesting/marble.jpg");
 	unsigned int skyBox = loadCubeMaps(skyboxTextures);
 
 
 	shader.use();
-	shader.setInt("texture1", 0);
+	shader.setInt("skybox", 0);
 
 	skyboxShader.use();
 	skyboxShader.setInt("skybox", 0);
@@ -166,12 +153,14 @@ int main() {
 		shader.setMat4("projection", projection);
 		shader.setMat4("model", model);
 
+		shader.setVec3("cameraPos", camera.Position);
+
 		//----------------------
 		// DRAW CUBE 1
 		//----------------------
 		glBindVertexArray(cubeVAO);
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, cubeTexture);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, cubeTexture);
 
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 		glBindVertexArray(0);
@@ -182,7 +171,7 @@ int main() {
 		glDepthFunc(GL_LEQUAL);
 
 		skyboxShader.use();
-		view = camera.GetViewMatrix();
+		view = glm::mat4(glm::mat3(camera.GetViewMatrix()));
 		
 		skyboxShader.setMat4("projection", projection);
 		skyboxShader.setMat4("view", view);
