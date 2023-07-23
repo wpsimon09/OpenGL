@@ -173,8 +173,10 @@
     <None Include="FragmentShader\DepthTestingFragment.glsl" />
     <None Include="FragmentShader\FragmentShader.glsl" />
     <None Include="FragmentShader\LightFragmentShader.glsl" />
+    <None Include="FragmentShader\SkyBoxFragment.glsl" />
     <None Include="VertexShader\DepthTestingVertex.glsl" />
     <None Include="VertexShader\LightVertexShader.glsl" />
+    <None Include="VertexShader\SkyboxVertex.glsl" />
     <None Include="VertexShader\VertexShader.glsl" />
   </ItemGroup>
   <ItemGroup>

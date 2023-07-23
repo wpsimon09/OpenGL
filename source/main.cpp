@@ -23,8 +23,8 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 
 //screen coordinates
-int SCR_WIDTH = 800;
-int SCR_HEIGHT = 600;
+int SCR_WIDTH = 1000;
+int SCR_HEIGHT = 800;
 // camera
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 float lastX = 800.0f / 2.0f;
@@ -64,7 +64,7 @@ int main() {
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	GLFWwindow* window = glfwCreateWindow(800, 600, "OpenGL", NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "OpenGL", NULL, NULL);
 	if (window == NULL)
 	{
 		std::cout << "Failed to create GLFW window" << std::endl;
@@ -87,12 +87,11 @@ int main() {
 		return -1;
 	}
 
-	stbi_set_flip_vertically_on_load(true);
+	//stbi_set_flip_vertically_on_load(true);
 
 	Shader shader("VertexShader/DepthTestingVertex.glsl", "FragmentShader/DepthTestingFragment.glsl");
+	Shader skyboxShader("VertexShader/SkyboxVertex.glsl", "FragmentShader/SkyBoxFragment.glsl");
 	
-	
-
 	// cube VAO
 	unsigned int cubeVAO, cubeVBO;
 	glGenVertexArrays(1, &cubeVAO);
@@ -119,6 +118,18 @@ int main() {
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
 	glBindVertexArray(0);
 
+	// skybox VAO
+	unsigned int skyBoxVAO, skyBoxVBO;
+	glGenVertexArrays(1, &skyBoxVAO);
+	glGenBuffers(1, &skyBoxVBO);
+	glBindVertexArray(skyBoxVAO);
+	glBindBuffer(GL_ARRAY_BUFFER, skyBoxVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(skyBoxVertecies), &skyBoxVertecies, GL_STATIC_DRAW);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	glBindVertexArray(0);
+
+
 	unsigned int cubeTexture = loadTexture("Assets/Textures/DepthTesting/metal.png");
 	unsigned int floorTexture = loadTexture("Assets/Textures/DepthTesting/marble.jpg");
 	unsigned int skyBox = loadCubeMaps(skyboxTextures);
@@ -126,6 +137,9 @@ int main() {
 
 	shader.use();
 	shader.setInt("texture1", 0);
+
+	skyboxShader.use();
+	skyboxShader.setInt("skybox", 0);
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -135,22 +149,22 @@ int main() {
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
 
-		glClearColor(0.501f, 0.501f, 0.501f, 1.0f);
+		glClearColor(0.701f, 0.501f, 0.501f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		shader.use();
-		
+
 		// input
 		// -----
 		processInput(window);
-
 		shader.use();
+
 		glm::mat4 model = glm::mat4(1.0f);
 		glm::mat4 view = camera.GetViewMatrix();
 		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+
 		shader.setMat4("view", view);
 		shader.setMat4("projection", projection);
-
+		shader.setMat4("model", model);
 
 		//----------------------
 		// DRAW CUBE 1
@@ -158,30 +172,27 @@ int main() {
 		glBindVertexArray(cubeVAO);
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, cubeTexture);
-		model = glm::translate(model, glm::vec3(-1.0f, 0.0f, -1.0f));
-		shader.setMat4("model", model);
 
 		glDrawArrays(GL_TRIANGLES, 0, 36);
+		glBindVertexArray(0);
 
-		//----------------------
-		// DRAW CUBE 2
-		//----------------------
-		model = glm::mat4(1.0f);
-		model = glm::translate(model, glm::vec3(2.0f, 0.0f, 0.0f));
-		shader.setMat4("model", model);
+		//----------------
+		// DRAW THE SKYBOX
+		//----------------
+		glDepthFunc(GL_LEQUAL);
+
+		skyboxShader.use();
+		view = camera.GetViewMatrix();
 		
+		skyboxShader.setMat4("projection", projection);
+		skyboxShader.setMat4("view", view);
+
+		glBindVertexArray(skyBoxVAO);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, skyBox);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 
+		glDepthFunc(GL_LESS);
 
-		//----------------------
-		// DRAW PLANE AS A FLOOR
-		//----------------------
-		glBindVertexArray(planeVAO);
-		glBindTexture(GL_TEXTURE_2D, floorTexture);
-		shader.setMat4("model", glm::mat4(1.0f));
-		glDrawArrays(GL_TRIANGLES, 0, 6);
-
-		
 		glBindVertexArray(0);
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
 		// -------------------------------------------------------------------------------
