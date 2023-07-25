@@ -89,8 +89,8 @@ int main() {
 
 	stbi_set_flip_vertically_on_load(true);
 
+	glEnable(GL_PROGRAM_POINT_SIZE);
 	Shader shader("VertexShader/DepthTestingVertex.glsl", "FragmentShader/DepthTestingFragment.glsl");
-	
 	
 
 	// cube VAO
