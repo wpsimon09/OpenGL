@@ -92,6 +92,22 @@ int main() {
 	glEnable(GL_PROGRAM_POINT_SIZE);
 	Shader shader("VertexShader/DepthTestingVertex.glsl", "FragmentShader/DepthTestingFragment.glsl");
 	
+	Shader red("VertexShader/DepthTestingVertex.glsl", "FragmentShader/Colors/Red.glsl");
+	Shader green("VertexShader/DepthTestingVertex.glsl", "FragmentShader/Colors/Green.glsl");
+	Shader purple("VertexShader/DepthTestingVertex.glsl", "FragmentShader/Colors/Purple.glsl");
+	Shader blue("VertexShader/DepthTestingVertex.glsl", "FragmentShader/Colors/Blue.glsl");
+
+	//getting the unifrom block and binding it to the binding point
+
+	unsigned int shaderRed = glGetUniformBlockIndex(red.ID, "Matrices");
+	unsigned int shaderGreen = glGetUniformBlockIndex(green.ID, "Matrices");
+	unsigned int shaderPurple = glGetUniformBlockIndex(purple.ID, "Matrices");;
+	unsigned int shaderBlue = glGetUniformBlockIndex(blue.ID, "Matrices");;
+	
+	glUniformBlockBinding(red.ID, 0, shaderRed);
+	glUniformBlockBinding(green.ID, 0, shaderGreen);
+	glUniformBlockBinding(purple.ID, 0, shaderPurple);
+	glUniformBlockBinding(blue.ID, 0, shaderPurple);
 
 	// cube VAO
 	unsigned int cubeVAO, cubeVBO;
@@ -118,7 +134,20 @@ int main() {
 	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
 	glBindVertexArray(0);
+
+	//buffer uniform object
+	unsigned int ubo;
+	glGenBuffers(1, &ubo);
+	glBindBuffer(GL_UNIFORM_BUFFER, ubo);
+	glBufferData(GL_UNIFORM_BUFFER, 2* sizeof(glm::mat4), NULL, GL_STATIC_DRAW);
+	glBindBufferRange(GL_UNIFORM_BUFFER, 0, ubo, 0, 2 * sizeof(glm::mat4));
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 	
+	glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+	glBindBuffer(GL_UNIFORM_BUFFER, ubo);
+	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), glm::value_ptr(projection));
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
 	unsigned int cubeTexture = loadTexture("Assets/Textures/DepthTesting/metal.png");
 	unsigned int floorTexture = loadTexture("Assets/Textures/DepthTesting/marble.jpg");
 
@@ -142,44 +171,55 @@ int main() {
 		// -----
 		processInput(window);
 
-		shader.use();
 		glm::mat4 model = glm::mat4(1.0f);
 		glm::mat4 view = camera.GetViewMatrix();
-		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
-		shader.setMat4("view", view);
-		shader.setMat4("projection", projection);
+
+		// set the view in the uniform buffer object
+		glBindBuffer(GL_UNIFORM_BUFFER, ubo);
+		glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(view));
+		glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
 
 		//----------------------
 		// DRAW CUBE 1
 		//----------------------
+		red.use();
 		glBindVertexArray(cubeVAO);
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, cubeTexture);
-		model = glm::translate(model, glm::vec3(-1.0f, 0.0f, -1.0f));
-		shader.setMat4("model", model);
+		model = glm::translate(model, glm::vec3(-0.75f, 0.75f, 0.0f));
+		red.setMat4("model", model);
 
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 
 		//----------------------
 		// DRAW CUBE 2
 		//----------------------
+		green.use();
 		model = glm::mat4(1.0f);
-		model = glm::translate(model, glm::vec3(2.0f, 0.0f, 0.0f));
-		shader.setMat4("model", model);
-		
+		model = glm::translate(model, glm::vec3(0.75f, 0.75f, 0.0f));
+		green.setMat4("model", model);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+
+		//---------------------
+		// DRAW CUBE 3
+		//---------------------
+		blue.use();
+		model = glm::mat4(1.0f);
+		model = glm::translate(model, glm::vec3(-0.75f, -0.75f, 0.0f));
+		blue.setMat4("model", model);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+
+		//---------------------
+		// DRAW CUBE 4
+		//---------------------
+		purple.use();
+		model = glm::mat4(1.0f);
+		model = glm::translate(model, glm::vec3(0.75f, -0.75f, 0.0f));
+		purple.setMat4("model", model);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 
 
-		//----------------------
-		// DRAW PLANE AS A FLOOR
-		//----------------------
-		glBindVertexArray(planeVAO);
-		glBindTexture(GL_TEXTURE_2D, floorTexture);
-		shader.setMat4("model", glm::mat4(1.0f));
-		glDrawArrays(GL_TRIANGLES, 0, 6);
-
-		
 		glBindVertexArray(0);
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
 		// -------------------------------------------------------------------------------
