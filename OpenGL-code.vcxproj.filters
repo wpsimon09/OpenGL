@@ -24,9 +24,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\3rdPartyLibraries\Includes\glad\glad.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Includes\Shader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -54,16 +51,22 @@
     <ClInclude Include="Includes\Grid.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Includes\Light.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdPartyLibraries\Includes\glad\glad.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\3rdPartyLibraries\Includes\glad\glad.c">
-      <Filter>Header Files</Filter>
-    </ClCompile>
     <ClCompile Include="source\stb_image.cpp">
       <Filter>Source Files\Libraries</Filter>
+    </ClCompile>
+    <ClCompile Include="3rdPartyLibraries\Includes\glad\glad.c">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -75,8 +78,14 @@
     </None>
     <None Include="VertexShader\LightVertexShader.glsl" />
     <None Include="FragmentShader\LightFragmentShader.glsl" />
-    <None Include="Assets\Model\backpack\backpack.mtl" />
     <None Include="Assets\Model\spaceship\model\texture\spaceShip.fbx" />
+    <None Include="FragmentShader\DepthTestingFragment.glsl" />
+    <None Include="FragmentShader\FrameBufferFragment.glsl" />
+    <None Include="FragmentShader\SkyBoxFragment.glsl" />
+    <None Include="VertexShader\DepthTestingVertex.glsl" />
+    <None Include="VertexShader\FrameBufferVertex.glsl" />
+    <None Include="VertexShader\SkyboxVertex.glsl" />
+    <None Include="Assets\Model\backpack\backpack.mtl" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\Textures\container.jpg">
@@ -94,22 +103,6 @@
     <Image Include="Assets\Textures\matrix.jpg">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="Assets\Model\backpack\ao.jpg">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="Assets\Model\backpack\diffuse.jpg">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="Assets\Model\backpack\normal.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="Assets\Model\backpack\roughness.jpg">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="Assets\Model\backpack\specular.jpg">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="Assets\Model\backpack\backpack.obj" />
     <Image Include="Assets\Model\spaceship\model\texture\auxielieryMat_alpha.png">
       <Filter>Resource Files</Filter>
     </Image>
@@ -137,6 +130,46 @@
     <Image Include="Assets\Model\spaceship\model\texture\mainMat_rough.png">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="Assets\Textures\DepthTesting\marble.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Assets\Textures\DepthTesting\metal.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Assets\Textures\Skybox\back.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Assets\Textures\Skybox\bottom.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Assets\Textures\Skybox\front.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Assets\Textures\Skybox\left.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Assets\Textures\Skybox\right.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Assets\Textures\Skybox\top.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Assets\Model\backpack\ao.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Assets\Model\backpack\diffuse.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Assets\Model\backpack\roughness.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Assets\Model\backpack\normal.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Assets\Model\backpack\specular.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Assets\Model\backpack\backpack.obj" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Assets\Model\backpack\source_attribution.txt" />
