@@ -209,7 +209,7 @@
   <ItemGroup>
     <Image Include="Assets\Model\backpack\backpack.obj">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <FileType>Document</FileType>
+      <FileType>OBJ</FileType>
     </Image>
   </ItemGroup>
   <ItemGroup>
