@@ -89,7 +89,7 @@ int main() {
 
 	stbi_set_flip_vertically_on_load(true);
 
-	Shader shader("VertexShader/GeometryVertex.glsl", "FragmentShader/GeometryFragment.glsl");
+	Shader shader("VertexShader/GeometryVertex.glsl", "FragmentShader/GeometryFragment.glsl", "GeometryShader/GeometryShader.glsl");
 
 	glEnable(GL_PROGRAM_POINT_SIZE);
 	
