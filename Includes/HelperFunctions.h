@@ -210,7 +210,7 @@ std::vector<std::string> skyboxTextures
 	"Assets/Textures/Skybox/bottom.jpg",
 	"Assets/Textures/Skybox/front.jpg",
 	"Assets/Textures/Skybox/back.jpg",
-}
+};
 
 float quadVertices[] = { // vertex attributes for a quad that fills the entire screen in Normalized Device Coordinates.
 	// positions		 // texCoords
