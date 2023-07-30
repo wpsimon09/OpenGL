@@ -23,8 +23,8 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 
 //screen coordinates
-int SCR_WIDTH = 1000;
-int SCR_HEIGHT = 800;
+int SCR_WIDTH = 800;
+int SCR_HEIGHT = 600;
 // camera
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 float lastX = 800.0f / 2.0f;
@@ -64,7 +64,7 @@ int main() {
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "OpenGL", NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(800, 600, "OpenGL", NULL, NULL);
 	if (window == NULL)
 	{
 		std::cout << "Failed to create GLFW window" << std::endl;
@@ -87,48 +87,22 @@ int main() {
 		return -1;
 	}
 
-	//stbi_set_flip_vertically_on_load(true);
-
-	Shader shader("VertexShader/DepthTestingVertex.glsl", "FragmentShader/DepthTestingFragment.glsl");
-	Shader skyboxShader("VertexShader/SkyboxVertex.glsl", "FragmentShader/SkyBoxFragment.glsl");
-	Model backpack("Assets/Model/backpack/backpack.obj");
+	stbi_set_flip_vertically_on_load(true);
 
 
-	// cube VAO
-	unsigned int cubeVAO, cubeVBO;
-	glGenVertexArrays(1, &cubeVAO);
-	glGenBuffers(1, &cubeVBO);
-	glBindVertexArray(cubeVAO);
-	glBindBuffer(GL_ARRAY_BUFFER, cubeVBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices), &cubeVertices, GL_STATIC_DRAW);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
-	glBindVertexArray(0);
+	Shader shader("VertexShader/vertexShader.glsl", "FragmentShader/fragmentShader.glsl");
+	Shader light("VertexShader/LightVertexShader.glsl", "FragmentShader/LightfragmentShader.glsl");
+	Model ourModel("Assets/Model/backpack/backpack.obj");
 
-	// skybox VAO
-	unsigned int skyBoxVAO, skyBoxVBO;
-	glGenVertexArrays(1, &skyBoxVAO);
-	glGenBuffers(1, &skyBoxVBO);
-	glBindVertexArray(skyBoxVAO);
-	glBindBuffer(GL_ARRAY_BUFFER, skyBoxVBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(skyBoxVertecies), &skyBoxVertecies, GL_STATIC_DRAW);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-	glBindVertexArray(0);
+	glViewport(0, 0, 800, 600);
+	float textureOpacity = 0.0f;
 
-
-	unsigned int cubeTexture = loadCubeMaps(skyboxTextures);
-	unsigned int floorTexture = loadTexture("Assets/Textures/DepthTesting/marble.jpg");
-	unsigned int skyBox = loadCubeMaps(skyboxTextures);
-
+	const float radius = 10.0f;
+	bool isFlashOn = true;
 
 	shader.use();
-	shader.setInt("skybox", 0);
-
-	skyboxShader.use();
-	skyboxShader.setInt("skybox", 0);
+	Light directional(direction, ambient, COLOR_BLUE, COLOR_BLUE);
+	directional.setLight(shader);
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -138,51 +112,35 @@ int main() {
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
 
-		glClearColor(0.701f, 0.501f, 0.501f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-
 		// input
 		// -----
 		processInput(window);
+
+		glClearColor(0.501f, 0.501f, 0.501f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 		shader.use();
 
-		glm::mat4 model = glm::mat4(1.0f);
-		glm::mat4 view = camera.GetViewMatrix();
-		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+		Light point(constant, linear, quadratic, lightPos, ambient, COLOR_BLUE, COLOR_CYAN);
+		point.setLight(shader);
+		shader.setVec3("viewPos", camera.Position);
 
-		shader.setMat4("view", view);
+
+		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+		glm::mat4 view = camera.GetViewMatrix();
 		shader.setMat4("projection", projection);
+		shader.setMat4("view", view);
+
+		// render the loaded model
+		glm::mat4 model = glm::mat4(1.0f);
+		model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
+		model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));	// it's a bit too big for our scene, so scale it down
 		shader.setMat4("model", model);
 
-		shader.setVec3("cameraPos", camera.Position);
+		// render
+		// ------
+		ourModel.Draw(shader);
 
-		//----------------------
-		// DRAW CUBE 1
-		//----------------------
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_CUBE_MAP, cubeTexture);
-
-		backpack.Draw(shader);
-
-		//----------------
-		// DRAW THE SKYBOX
-		//----------------
-		glDepthFunc(GL_LEQUAL);
-
-		skyboxShader.use();
-		view = glm::mat4(glm::mat3(camera.GetViewMatrix()));
-
-		skyboxShader.setMat4("projection", projection);
-		skyboxShader.setMat4("view", view);
-
-		glBindVertexArray(skyBoxVAO);
-		glBindTexture(GL_TEXTURE_CUBE_MAP, skyBox);
-		glDrawArrays(GL_TRIANGLES, 0, 36);
-
-		glDepthFunc(GL_LESS);
-
-		glBindVertexArray(0);
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
 		// -------------------------------------------------------------------------------
 		glfwSwapBuffers(window);
