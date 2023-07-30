@@ -24,13 +24,15 @@ With this approach, I can see different results of the chapter simply just by ch
 
 # Scene
 
-In the scene you are able to move around with your mouse and with W, A, S, D
+In the scene, you are able to move around with your mouse and with W, A, S, D
 
 # Building
 
 **YOU THEORETICALLY NEED TO ONLY CLONE THE REPO IN ORDER FOR IT TO WORK**
 
-(and of course, opening the solution using Visual Studio 2022)
+**BUT DONT FORGET TO REBUILD YOUR SOLUTION**
+
+(and of course, opening the solution using Visual Studio 2022, and)
 
 This project contains several 3rd party libraries like glm, glad etc...
 
@@ -42,7 +44,7 @@ The project solution is using Visual Studio macros to tell the linker and compil
 
 # End of the basic OpenGL
 
-Contains rendered model using Assimp with Phong lighting model that has blueish color 
+Contains rendered model using Assimp with Phong lighting model that has a blueish color 
 
 Light sources are: point light, direction light 
 
