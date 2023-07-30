@@ -148,7 +148,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\3rdPartyLibraries\Includes\glad\glad.h" />
+    <ClInclude Include="3rdPartyLibraries\Includes\glad\glad.h" />
     <ClInclude Include="Includes\camera.h" />
     <ClInclude Include="Includes\config.h" />
     <ClInclude Include="Includes\Cube.h" />
@@ -161,7 +161,7 @@
     <ClInclude Include="Includes\stb_image.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\3rdPartyLibraries\Includes\glad\glad.c" />
+    <ClCompile Include="3rdPartyLibraries\Includes\glad\glad.c" />
     <ClCompile Include="source\main.cpp" />
     <ClCompile Include="source\stb_image.cpp" />
   </ItemGroup>
@@ -182,7 +182,6 @@
     <None Include="VertexShader\VertexShader.glsl" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="..\BookRepo\LearnOpenGL\resources\textures\marble.jpg" />
     <Image Include="Assets\Model\backpack\ao.jpg">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </Image>

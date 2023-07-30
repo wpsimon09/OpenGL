@@ -24,9 +24,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\3rdPartyLibraries\Includes\glad\glad.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Includes\Shader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -57,16 +54,19 @@
     <ClInclude Include="Includes\Light.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="3rdPartyLibraries\Includes\glad\glad.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\3rdPartyLibraries\Includes\glad\glad.c">
-      <Filter>Header Files</Filter>
-    </ClCompile>
     <ClCompile Include="source\stb_image.cpp">
       <Filter>Source Files\Libraries</Filter>
+    </ClCompile>
+    <ClCompile Include="3rdPartyLibraries\Includes\glad\glad.c">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -144,9 +144,6 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="Assets\Model\spaceship\model\texture\mainMat_rough.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\BookRepo\LearnOpenGL\resources\textures\marble.jpg">
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="Assets\Textures\DepthTesting\marble.jpg">
