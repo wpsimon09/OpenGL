@@ -174,14 +174,14 @@
     <None Include="FragmentShader\FragmentShader.glsl" />
     <None Include="FragmentShader\FrameBufferFragment.glsl" />
     <None Include="FragmentShader\LightFragmentShader.glsl" />
-    <None Include="GeometryShader\GeometryShader.glsl" />
+    <None Include="FragmentShader\SkyBoxFragment.glsl" />
     <None Include="VertexShader\DepthTestingVertex.glsl" />
     <None Include="VertexShader\FrameBufferVertex.glsl" />
     <None Include="VertexShader\LightVertexShader.glsl" />
+    <None Include="VertexShader\SkyboxVertex.glsl" />
     <None Include="VertexShader\VertexShader.glsl" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="..\BookRepo\LearnOpenGL\resources\textures\marble.jpg" />
     <Image Include="Assets\Model\backpack\ao.jpg">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </Image>
@@ -213,6 +213,12 @@
     <Image Include="Assets\Textures\DepthTesting\marble.jpg" />
     <Image Include="Assets\Textures\DepthTesting\metal.png" />
     <Image Include="Assets\Textures\matrix.jpg" />
+    <Image Include="Assets\Textures\Skybox\back.jpg" />
+    <Image Include="Assets\Textures\Skybox\bottom.jpg" />
+    <Image Include="Assets\Textures\Skybox\front.jpg" />
+    <Image Include="Assets\Textures\Skybox\left.jpg" />
+    <Image Include="Assets\Textures\Skybox\right.jpg" />
+    <Image Include="Assets\Textures\Skybox\top.jpg" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\Model\backpack\backpack.obj">

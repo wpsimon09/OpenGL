@@ -22,11 +22,8 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 
-//screen coordinates
-int SCR_WIDTH = 800;
-int SCR_HEIGHT = 600;
-glm::vec3 mirrorPosition(0.0f, 0.2f, 2.5f);
-
+int SCR_WIDTH = 1000;
+int SCR_HEIGHT = 800;
 // camera
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 Camera mirrorCamera(mirrorPosition);
@@ -67,7 +64,7 @@ int main() {
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	GLFWwindow* window = glfwCreateWindow(800, 600, "OpenGL", NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "OpenGL", NULL, NULL);
 	if (window == NULL)
 	{
 		std::cout << "Failed to create GLFW window" << std::endl;
@@ -90,25 +87,41 @@ int main() {
 		return -1;
 	}
 
-	stbi_set_flip_vertically_on_load(true);
+	//stbi_set_flip_vertically_on_load(true);
 
 	Shader shader("VertexShader/DepthTestingVertex.glsl", "FragmentShader/DepthTestingFragment.glsl");
-	Shader screenShader("VertexShader/FrameBufferVertex.glsl", "FragmentShader/FrameBufferFragment.glsl");
+	Shader skyboxShader("VertexShader/SkyboxVertex.glsl", "FragmentShader/SkyBoxFragment.glsl");
+	Model backpack("Assets/Model/backpack/backpack.obj");
 
-	// plane VAO
-	unsigned int planeVAO, planeVBO;
-	glGenVertexArrays(1, &planeVAO);
-	glGenBuffers(1, &planeVBO);
-	glBindVertexArray(planeVAO);
-	glBindBuffer(GL_ARRAY_BUFFER, planeVBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(planeVertices), &planeVertices, GL_STATIC_DRAW);
+
+	// cube VAO
+	unsigned int cubeVAO, cubeVBO;
+	glGenVertexArrays(1, &cubeVAO);
+	glGenBuffers(1, &cubeVBO);
+	glBindVertexArray(cubeVAO);
+	glBindBuffer(GL_ARRAY_BUFFER, cubeVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices), &cubeVertices, GL_STATIC_DRAW);
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
 	glBindVertexArray(0);
 
-	//quad VAO
+	// skybox VAO
+	unsigned int skyBoxVAO, skyBoxVBO;
+	glGenVertexArrays(1, &skyBoxVAO);
+	glGenBuffers(1, &skyBoxVBO);
+	glBindVertexArray(skyBoxVAO);
+	glBindBuffer(GL_ARRAY_BUFFER, skyBoxVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(skyBoxVertecies), &skyBoxVertecies, GL_STATIC_DRAW);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	glBindVertexArray(0);
+
+
+	unsigned int cubeTexture = loadCubeMaps(skyboxTextures);
+
+  //quad VAO
 	unsigned int quadVAO, quadVBO;
 	glGenVertexArrays(1, &quadVAO);
 	glGenBuffers(1, &quadVBO);
@@ -123,9 +136,14 @@ int main() {
 
 	unsigned int cubeTexture = loadTexture("Assets/Textures/DepthTesting/metal.png");
 	unsigned int floorTexture = loadTexture("Assets/Textures/DepthTesting/marble.jpg");
+	unsigned int skyBox = loadCubeMaps(skyboxTextures);
+
 
 	shader.use();
-	shader.setInt("texture1", 0);
+	shader.setInt("skybox", 0);
+
+	skyboxShader.use();
+	skyboxShader.setInt("skybox", 0);
 
 	screenShader.use();
 	screenShader.setInt("screenTexture", 0);
@@ -171,132 +189,50 @@ int main() {
 		float currentFrame = static_cast<float>(glfwGetTime());
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
+		glClearColor(0.701f, 0.501f, 0.501f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
 		// input
 		// -----
 		processInput(window);
-
-		glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-		glEnable(GL_DEPTH_TEST);
-		
-		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-
-		//---------------------------------
-		// RENDER SCENE IN OUR FRAME BUFFER
-		//---------------------------------
 		shader.use();
 
 		glm::mat4 model = glm::mat4(1.0f);
+		glm::mat4 view = camera.GetViewMatrix();
+		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
 
-		camera.ProcessMouseMovement(0, 0, false);
-		glm::mat4 view = mirrorCamera.GetViewMatrix();
-		glm::mat4 projection = glm::perspective(glm::radians(80.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
-		shader.setMat4("view", view);
+    shader.setMat4("view", view);
 		shader.setMat4("projection", projection);
+		shader.setMat4("model", model);
 
-		//----------------------
-		// DRAW CUBE 1
-		//----------------------
-		glBindVertexArray(cubeVAO);
-		glActiveTexture(GL_TEXTURE0);
+
+		shader.setVec3("cameraPos", camera.Position);
+
+		glBindTexture(GL_TEXTURE_CUBE_MAP, cubeTexture);
+
+		backpack.Draw(shader);
+
+		//----------------
+		// DRAW THE SKYBOX
+		//----------------
+		glDepthFunc(GL_LEQUAL);
+
+		skyboxShader.use();
+		view = glm::mat4(glm::mat3(camera.GetViewMatrix()));
+		
+		skyboxShader.setMat4("projection", projection);
+		skyboxShader.setMat4("view", view);
+
+		glBindVertexArray(skyBoxVAO);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, skyBox);
 		glBindTexture(GL_TEXTURE_2D, cubeTexture);
 		model = glm::translate(model, glm::vec3(-1.0f, 0.0f, -1.0f));
 		shader.setMat4("model", model);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 
-		//----------------------
-		// DRAW CUBE 2
-		//----------------------
-		model = glm::mat4(1.0f);
-		model = glm::translate(model, glm::vec3(2.0f, 0.0f, 0.0f));
-		shader.setMat4("model", model);
-		glDrawArrays(GL_TRIANGLES, 0, 36);
-
-		//----------------------
-		// DRAW CUBE THAT REPRESENTS PLAYER
-		//----------------------
-		model = glm::mat4(1.0f);
-		model = glm::translate(model, glm::vec3(camera.Position));
-		model = glm::scale(model, glm::vec3(0.1f));
-		shader.setMat4("model", model);
-		glDrawArrays(GL_TRIANGLES, 0, 36);
-
-		//----------------------
-		// DRAW PLANE AS A FLOOR
-		//----------------------
-		glBindVertexArray(planeVAO);
-		glBindTexture(GL_TEXTURE_2D, floorTexture);
-		shader.setMat4("model", glm::mat4(1.0f));
-		glDrawArrays(GL_TRIANGLES, 0, 6);
-
-		glBindVertexArray(0);
-
-		//---------------------------------------------
-		// RENDER THE FRAME BUFFER CONTAINING OUR SCENE 
-		//---------------------------------------------
 	
-		glBindFramebuffer(GL_FRAMEBUFFER, 0); // back to default
-		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		//--------------------------------------
-		// DRAW NORMAL SCENE default frame buffer
-		//--------------------------------------
-		shader.use();
-		model = glm::mat4(1.0f);
-		view = camera.GetViewMatrix();
-		projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
-		shader.setMat4("view", view);
-		shader.setMat4("projection", projection);
-
-		//----------------------
-		// DRAW CUBE 1
-		//----------------------
-		glBindVertexArray(cubeVAO);
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, cubeTexture);
-		model = glm::translate(model, glm::vec3(-1.0f, 0.0f, -1.0f));
-		shader.setMat4("model", model);
-		glDrawArrays(GL_TRIANGLES, 0, 36);
-
-		//----------------------
-		// DRAW CUBE 2
-		//----------------------
-		model = glm::mat4(1.0f);
-		model = glm::translate(model, glm::vec3(2.0f, 0.0f, 0.0f));
-		shader.setMat4("model", model);
-		glDrawArrays(GL_TRIANGLES, 0, 36);
-
-		
-
-		
-		//----------------------
-		// DRAW PLANE AS A FLOOR
-		//----------------------
-		glBindVertexArray(planeVAO);
-		glBindTexture(GL_TEXTURE_2D, floorTexture);
-		shader.setMat4("model", glm::mat4(1.0f));
-		glDrawArrays(GL_TRIANGLES, 0, 6);
-
 		glBindVertexArray(0);
-
-		//---------------------
-		// DRAW THE MIRROR in the frame buffer
-		//---------------------
-		screenShader.use();
-
-		model = glm::translate(model, glm::vec3(0.0f, 0.0f, 2.5));
-		model = glm::scale(model, glm::vec3(5.0f));
-		
-		screenShader.setMat4("model", model);
-		screenShader.setMat4("view", view);
-		screenShader.setMat4("projection", projection);
-		
-		glBindVertexArray(quadVAO);
-		glBindTexture(GL_TEXTURE_2D, fboTexture);
-		glDrawArrays(GL_TRIANGLES, 0, 6);
 
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
 		// -------------------------------------------------------------------------------
