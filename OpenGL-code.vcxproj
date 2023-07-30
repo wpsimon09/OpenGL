@@ -79,8 +79,8 @@
     <LibraryPath>C:\Users\simon\OneDrive\Počítač\OpenGL\3rdPartyLibraries\Includes;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>C:\Users\simon\OneDrive\Počítač\OpenGL\3rdPartyLibraries\Includes;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\simon\OneDrive\Počítač\OpenGL\3rdPartyLibraries\Libraries;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)\3rdPartyLibraries\Includes;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)\3rdPartyLibraries\Libraries;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>C:\Users\simon\OneDrive\Počítač\OpenGL\3rdPartyLibraries\Includes;$(IncludePath)</IncludePath>
@@ -174,6 +174,7 @@
     <None Include="FragmentShader\FragmentShader.glsl" />
     <None Include="FragmentShader\FrameBufferFragment.glsl" />
     <None Include="FragmentShader\LightFragmentShader.glsl" />
+    <None Include="GeometryShader\GeometryShader.glsl" />
     <None Include="VertexShader\DepthTestingVertex.glsl" />
     <None Include="VertexShader\FrameBufferVertex.glsl" />
     <None Include="VertexShader\LightVertexShader.glsl" />

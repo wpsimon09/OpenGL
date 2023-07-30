@@ -95,19 +95,6 @@ int main() {
 	Shader shader("VertexShader/DepthTestingVertex.glsl", "FragmentShader/DepthTestingFragment.glsl");
 	Shader screenShader("VertexShader/FrameBufferVertex.glsl", "FragmentShader/FrameBufferFragment.glsl");
 
-	// cube VAO
-	unsigned int cubeVAO, cubeVBO;
-	glGenVertexArrays(1, &cubeVAO);
-	glGenBuffers(1, &cubeVBO);
-	glBindVertexArray(cubeVAO);
-	glBindBuffer(GL_ARRAY_BUFFER, cubeVBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices), &cubeVertices, GL_STATIC_DRAW);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-	glBindVertexArray(0);
-
 	// plane VAO
 	unsigned int planeVAO, planeVBO;
 	glGenVertexArrays(1, &planeVAO);
@@ -200,6 +187,7 @@ int main() {
 		// RENDER SCENE IN OUR FRAME BUFFER
 		//---------------------------------
 		shader.use();
+
 		glm::mat4 model = glm::mat4(1.0f);
 
 		camera.ProcessMouseMovement(0, 0, false);
