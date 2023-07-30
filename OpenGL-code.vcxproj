@@ -79,8 +79,8 @@
     <LibraryPath>C:\Users\simon\OneDrive\Počítač\OpenGL\3rdPartyLibraries\Includes;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>C:\Users\simon\OneDrive\Počítač\OpenGL\3rdPartyLibraries\Includes;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\simon\OneDrive\Počítač\OpenGL\3rdPartyLibraries\Libraries;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)\3rdPartyLibraries\Includes;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)\3rdPartyLibraries\Libraries;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>C:\Users\simon\OneDrive\Počítač\OpenGL\3rdPartyLibraries\Includes;$(IncludePath)</IncludePath>
@@ -148,13 +148,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\3rdPartyLibraries\Includes\glad\glad.h" />
+    <ClInclude Include="3rdPartyLibraries\Includes\glad\glad.h" />
     <ClInclude Include="Includes\camera.h" />
     <ClInclude Include="Includes\Shader.h" />
     <ClInclude Include="Includes\stb_image.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\3rdPartyLibraries\Includes\glad\glad.c" />
+    <ClCompile Include="3rdPartyLibraries\Includes\glad\glad.c" />
     <ClCompile Include="source\main.cpp" />
     <ClCompile Include="source\stb_image.cpp" />
   </ItemGroup>
