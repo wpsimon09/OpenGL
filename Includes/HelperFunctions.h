@@ -115,9 +115,17 @@ float planeVertices[] = {
 	 5.0f, -0.5f, -5.0f,  2.0f, 2.0f
 };
 
-float points[] = {
-	-0.5f, 0.5f, // top-left
-	0.5f, 0.5f, // top-right
-	0.5f, -0.5f, // bottom-right
-	-0.5f, -0.5f // bottom-left
+
+float quadVertices[] = { // vertex attributes for a quad that fills the entire screen in Normalized Device Coordinates.
+	// positions		 // texCoords
+	// positions    // texCoords
+	-0.5f,  0.5f,   0.0f, 1.0f,
+	-0.5f, -0.5f,   0.0f, 0.0f,
+	 0.5f, -0.5f,   1.0f, 0.0f,
+
+	// Triangle 2
+	// positions    // texCoords
+	-0.5f,  0.5f,   0.0f, 1.0f,
+	 0.5f, -0.5f,   1.0f, 0.0f,
+	 0.5f,  0.5f,   1.0f, 1.0f
 };
