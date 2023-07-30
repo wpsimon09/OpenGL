@@ -22,11 +22,11 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 
-//screen coordinates
 int SCR_WIDTH = 1000;
 int SCR_HEIGHT = 800;
 // camera
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
+Camera mirrorCamera(mirrorPosition);
 float lastX = 800.0f / 2.0f;
 float lastY = 600.0f / 2.0f;
 bool firstMouse = true;
@@ -75,7 +75,7 @@ int main() {
 	//this code is to make context on the window current and to initialize glad
 	glfwMakeContextCurrent(window);
 	gladLoadGL();
-	glEnable(GL_DEPTH_TEST);
+	//glEnable(GL_DEPTH_TEST);
 	glfwSetCursorPosCallback(window, mouse_callback);
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	glfwSetScrollCallback(window, scroll_callback);
@@ -120,6 +120,21 @@ int main() {
 
 
 	unsigned int cubeTexture = loadCubeMaps(skyboxTextures);
+
+  //quad VAO
+	unsigned int quadVAO, quadVBO;
+	glGenVertexArrays(1, &quadVAO);
+	glGenBuffers(1, &quadVBO);
+	glBindVertexArray(quadVAO);
+	glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
+	glBindVertexArray(0);
+
+	unsigned int cubeTexture = loadTexture("Assets/Textures/DepthTesting/metal.png");
 	unsigned int floorTexture = loadTexture("Assets/Textures/DepthTesting/marble.jpg");
 	unsigned int skyBox = loadCubeMaps(skyboxTextures);
 
@@ -130,6 +145,43 @@ int main() {
 	skyboxShader.use();
 	skyboxShader.setInt("skybox", 0);
 
+	screenShader.use();
+	screenShader.setInt("screenTexture", 0);
+
+	// frame buffer
+	unsigned int fbo;
+	glGenFramebuffers(1, &fbo);
+	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+	
+	unsigned int fboTexture;
+	glGenTextures(1, &fboTexture);
+	glBindTexture(GL_TEXTURE_2D, fboTexture);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, fboTexture, 0);
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	//render buffer object for depth and stencil values
+	unsigned int rbo;
+	glGenRenderbuffers(1, &rbo);
+	glBindRenderbuffer(GL_RENDERBUFFER, rbo);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, SCR_WIDTH, SCR_HEIGHT);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
+	glBindRenderbuffer(GL_RENDERBUFFER, 0);
+
+
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE)
+	{
+		std::cout << "-------------FRAME BUFFER BOUND SUCCESSFULLY-----------------\n";
+	}
+	else
+		std::cout << "ERROR:BUFFER:FRAME\n Frame buffer not bound successfully \n";
+			
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
 	while (!glfwWindowShouldClose(window))
 	{
 		// per-frame time logic
@@ -137,7 +189,6 @@ int main() {
 		float currentFrame = static_cast<float>(glfwGetTime());
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
-
 		glClearColor(0.701f, 0.501f, 0.501f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -151,16 +202,13 @@ int main() {
 		glm::mat4 view = camera.GetViewMatrix();
 		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
 
-		shader.setMat4("view", view);
+    shader.setMat4("view", view);
 		shader.setMat4("projection", projection);
 		shader.setMat4("model", model);
 
+
 		shader.setVec3("cameraPos", camera.Position);
 
-		//----------------------
-		// DRAW CUBE 1
-		//----------------------
-		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_CUBE_MAP, cubeTexture);
 
 		backpack.Draw(shader);
@@ -178,11 +226,14 @@ int main() {
 
 		glBindVertexArray(skyBoxVAO);
 		glBindTexture(GL_TEXTURE_CUBE_MAP, skyBox);
+		glBindTexture(GL_TEXTURE_2D, cubeTexture);
+		model = glm::translate(model, glm::vec3(-1.0f, 0.0f, -1.0f));
+		shader.setMat4("model", model);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 
-		glDepthFunc(GL_LESS);
-
+	
 		glBindVertexArray(0);
+
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
 		// -------------------------------------------------------------------------------
 		glfwSwapBuffers(window);
