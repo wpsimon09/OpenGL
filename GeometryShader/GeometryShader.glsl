@@ -1,8 +1,18 @@
 #version 330 core
 layout (points) in;
 layout (triangle_strip, max_vertices = 5) out;
+
+out vec3 fColor;
+
+in VS_OUT {
+	vec3 color;
+} gs_in[];
+
+
 void build_house(vec4 position)
 {
+	fColor = gs_in[0].color; // index 0 since there is only one input vertex
+
 	gl_Position = position + vec4(-0.2, -0.2, 0.0, 0.0); // 1:bottom-left
 	EmitVertex();
 	
