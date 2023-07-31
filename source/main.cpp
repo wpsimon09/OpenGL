@@ -89,24 +89,11 @@ int main() {
 
 	stbi_set_flip_vertically_on_load(true);
 
-	Shader shader("VertexShader/GeometryVertex.glsl", "FragmentShader/GeometryFragment.glsl", "GeometryShader/GeometryShader.glsl");
+	Shader shader("VertexShader/DepthTestingVertex.glsl", "FragmentShader/DepthTestingFragment.glsl", "GeometryShader/GeometryShader.glsl");
+
+	Model backpack("Assets/Model/backpack/backpack.obj");
 
 	glEnable(GL_PROGRAM_POINT_SIZE);
-	
-	// points VAO
-	unsigned int pointsVAO, pointsVBO;
-	glGenVertexArrays(1, &pointsVAO);
-	glGenBuffers(1, &pointsVBO);
-	glBindVertexArray(pointsVAO);
-	glBindBuffer(GL_ARRAY_BUFFER, pointsVBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(points), &points, GL_STATIC_DRAW);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(2 * sizeof(float)));
-	glBindVertexArray(0);
-
-	
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -120,15 +107,22 @@ int main() {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		shader.use();
+
+		glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 1.0f, 100.0f);
+		glm::mat4 view = camera.GetViewMatrix();;
+		glm::mat4 model = glm::mat4(1.0f);
+		shader.use();
+		shader.setMat4("projection", projection);
+		shader.setMat4("view", view);
+		shader.setMat4("model", model);
 		
 		// input
 		// -----
 		processInput(window);
 
 		shader.use();
-		glBindVertexArray(pointsVAO);
-		glDrawArrays(GL_POINTS, 0, 4);
-		glBindVertexArray(0);
+		shader.setFloat("time",(float)glfwGetTime());
+		backpack.Draw(shader);
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
 		// -------------------------------------------------------------------------------
 		glfwSwapBuffers(window);
