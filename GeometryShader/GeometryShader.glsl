@@ -14,11 +14,11 @@ uniform mat4 projection;
 // draws a normal vector for the given vertex
 void GenerateLine(int index) 
 {
-	// create starting point for normal vector
+	// create starting point for a normal vector
 	gl_Position = projection * gl_in[index].gl_Position;
 	EmitVertex();
 	
-	//craete ending point for noraml vector
+	//craete ending point for a normal vector
 	gl_Position = projection * (gl_in[index].gl_Position +
 	vec4(gs_in[index].normal, 0.0) * MAGNITUDE);
 	EmitVertex();
