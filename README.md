@@ -12,7 +12,7 @@ Basics of the OpenGL can be found in the main branch where each commits represen
 
 ### Branches 
 
-When delving into advanced OpenGL each chapter is quite unique therefore I have chosen to use different branches.<br>
+When delving into advanced OpenGL each chapter is quite unique but is using the same codebase therefore I have chosen to use different branches.<br>
 
 Each branch is covering one chapter in the book and I used the following naming
 
