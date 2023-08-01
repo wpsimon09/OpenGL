@@ -89,7 +89,9 @@ int main() {
 
 	stbi_set_flip_vertically_on_load(true);
 
-	Shader shader("VertexShader/DepthTestingVertex.glsl", "FragmentShader/DepthTestingFragment.glsl", "GeometryShader/GeometryShader.glsl");
+	Shader shader("VertexShader/DepthTestingVertex.glsl", "FragmentShader/DepthTestingFragment.glsl");
+
+	Shader normalVizualization("VertexShader/GeometryVertex.glsl", "FragmentShader/GeometryFragment.glsl", "GeometryShader/GeometryShader.glsl");
 
 	Model backpack("Assets/Model/backpack/backpack.obj");
 
@@ -106,6 +108,10 @@ int main() {
 		glClearColor(0.501f, 0.501f, 0.501f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+		// input
+		// -----
+		processInput(window);
+		
 		shader.use();
 
 		glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 1.0f, 100.0f);
@@ -116,13 +122,16 @@ int main() {
 		shader.setMat4("view", view);
 		shader.setMat4("model", model);
 		
-		// input
-		// -----
-		processInput(window);
-
-		shader.use();
 		shader.setFloat("time",(float)glfwGetTime());
+
 		backpack.Draw(shader);
+		
+		normalVizualization.use();
+		normalVizualization.setMat4("projection", projection);
+		normalVizualization.setMat4("view", view);
+		normalVizualization.setMat4("model", model);
+
+		backpack.Draw(normalVizualization);
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
 		// -------------------------------------------------------------------------------
 		glfwSwapBuffers(window);
