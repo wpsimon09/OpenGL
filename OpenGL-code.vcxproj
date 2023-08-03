@@ -170,13 +170,15 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </None>
     <None Include="Assets\Model\spaceship\model\texture\spaceShip.fbx" />
+    <None Include="FragmentShader\AsteroidFragment.glsl" />
     <None Include="FragmentShader\DepthTestingFragment.glsl" />
     <None Include="FragmentShader\FragmentShader.glsl" />
-    <None Include="FragmentShader\InstancingFragment.glsl" />
+    <None Include="FragmentShader\PlanetFragment.glsl" />
     <None Include="FragmentShader\LightFragmentShader.glsl" />
     <None Include="FragmentShader\SkyBoxFragment.glsl" />
+    <None Include="VertexShader\AsteroidVertex.glsl" />
     <None Include="VertexShader\DepthTestingVertex.glsl" />
-    <None Include="VertexShader\InstancingVertex.glsl" />
+    <None Include="VertexShader\PlanetVertex.glsl" />
     <None Include="VertexShader\LightVertexShader.glsl" />
     <None Include="VertexShader\SkyBoxVertex.glsl" />
     <None Include="VertexShader\VertexShader.glsl" />

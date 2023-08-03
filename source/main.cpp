@@ -88,51 +88,50 @@ int main() {
 	}
 
 
-	Shader shader("VertexShader/InstancingVertex.glsl", "FragmentShader/InstancingFragment.glsl");
+	Shader shader("VertexShader/PlanetVertex.glsl", "FragmentShader/PlanetFragment.glsl");
 
 	Shader skyboxShader("VertexShader/SkyBoxVertex.glsl", "FragmentShader/SkyBoxFragment.glsl");
 
+	Shader asteroidShader("VertexShader/AsteroidVertex.glsl", "FragmentShader/AsteroidFragment.glsl");
 
-	
 
-	//----------------------------------
-	// CALCULATE OFFSET VALUES TO BE IN 
-	// GRID-LIKE FASION
-	//----------------------------------
-	/*glm::vec2 translations[100];
-	int index = 0;
-	float offset = 0.1f;
-	for (int y = -10; y < 10; y += 2)
+	//----------------------------------------------------
+	// PLACE ASTEROIDS IN RANDOM ORDER AROUND THE PLANNET
+	// WITH THIS CALCULATIONS WE CAN MODIFY MODEL MATRIX
+	// TO MADE THE ILUSION OF A CIRCLE
+	//----------------------------------------------------
+	unsigned int amount = 7000;
+	glm::mat4* modelMatrices;
+	modelMatrices = new glm::mat4[amount];
+	srand(glfwGetTime()); // initialize random seed
+	float radius = 27.0;
+	float offset = 12.5f;
+	for (unsigned int i = 0; i < amount; i++)
 	{
-		for (int x = -10; x < 10; x += 2)
-		{
-			glm::vec2 translation;
-			translation.x = (float)x / 10.0f + offset;
-			translation.y = (float)y / 10.0f + offset;
-			translations[index++] = translation;
-		}
-	}*/
+		glm::mat4 model = glm::mat4(1.0f);
+		// 1. translation: displace along circle with radius [-offset, offset]
+		float angle = (float)i / (float)amount * 360.0f;
+		float displacement = (rand() % (int)(2 * offset * 100)) / 100.0f -offset;
 
+		float x = sin(angle) * radius + displacement;
+		displacement = (rand() % (int)(2 * offset * 100)) / 100.0f - offset;
 
-	shader.use();
-	// suply values of grid to vertex shader 
-	/*for (unsigned int i = 0; i < 100; i++)
-	{
-		shader.setVec2(("offsets[" + std::to_string(i) + "]"), translations[i]);
-	}*/
+		float y = displacement * 0.4f; // keep height of field smaller than x/z
+		displacement = (rand() % (int)(2 * offset * 100)) / 100.0f - offset;
 
-	// quad VAO
-	unsigned int quadVAO, guadVBO;
-	glGenVertexArrays(1, &quadVAO);
-	glGenBuffers(1, &guadVBO);
-	glBindVertexArray(quadVAO);
-	glBindBuffer(GL_ARRAY_BUFFER, guadVBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertecies), &quadVertecies, GL_STATIC_DRAW);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(2 * sizeof(float)));
+		float z = cos(angle) * radius + displacement;
+		model = glm::translate(model, glm::vec3(x, y, z));
 
+		// 2. scale: scale between 0.05 and 0.25f
+		float scale = (rand() % 20) / 100.0f + 0.05;
+		model = glm::scale(model, glm::vec3(scale));
+
+		// 3. rotation: add random rotation around a (semi)random rotation axis
+		float rotAngle = (rand() % 360);
+		model = glm::rotate(model, rotAngle, glm::vec3(0.4f, 0.6f, 0.8f));
+		// 4. now add to list of matrices
+		modelMatrices[i] = model;
+	}
 
 	// skybox VAO
 	unsigned int skyBoxVAO, skyBoxVBO;
@@ -151,41 +150,64 @@ int main() {
 	Model asteroid("Assets/Model/asteroid/rock.obj");
 	Model planet("Assets/Model/planet/planet.obj");
 
+
+	//create buffer
+	unsigned int buffer;
+	glGenBuffers(1, &buffer);
+	glBindBuffer(GL_ARRAY_BUFFER, buffer);
+	glBufferData(GL_ARRAY_BUFFER, amount * sizeof(glm::mat4),&modelMatrices[0], GL_STATIC_DRAW);
+
+	// loop throught the meshes of the asteroid
+	for (unsigned int i = 0; i < asteroid.meshes.size(); i++)
+	{
+		// retrieve vertex array from loaded model
+		unsigned int VAO = asteroid.meshes[i].VAO;
+
+		glBindVertexArray(VAO);
+
+		//glm::vec4 directly translets to vec4 in gls
+		std::size_t v4s = sizeof(glm::vec4);
+
+		/// since mat 4 in GLSL is created like so
+		/// ----------------------------------
+		/// |   vec4 (val, val, val, val)	 |
+		/// |   vec4 (val, val, val, val)	 |
+		/// |   vec4 (val, val, val, val)	 |
+		/// |   vec4 (val, val, val, val)	 |
+		/// ----------------------------------
+		/// 
+		/// we have to go throught each vector and set its value equal to the coresponding 
+		/// collum in the model matrix that we will use for the transformations
+		/// 
+		
+		// 1st colum of the matrix
+		glEnableVertexAttribArray(3);
+		glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, 4 * v4s, (void*)0);
+
+
+		//2 nd colum of the matrix
+		glEnableVertexAttribArray(4);
+		glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, 4 * v4s, (void*)(1 * v4s));
+		
+		//3 rd colum of the matrix
+		glEnableVertexAttribArray(5);
+		glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, 4 * v4s, (void*)(2 * v4s));
+		
+		//4 th colum of the matrix
+		glEnableVertexAttribArray(6);
+		glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, 4 * v4s, (void*)(3 * v4s));
+		
+		//update atribute arrays, 3, 4, 5, 6 each instace 
+		glVertexAttribDivisor(3, 1);
+		glVertexAttribDivisor(4, 1);
+		glVertexAttribDivisor(5, 1);
+		glVertexAttribDivisor(6, 1);
+		glBindVertexArray(0);
+	}
+
 	skyboxShader.use();
 	skyboxShader.setInt("skybox", 0);
 
-	unsigned int amount = 1000;
-	glm::mat4* modelMatrices;
-	modelMatrices = new glm::mat4[amount];
-	srand(glfwGetTime()); // initialize random seed
-	float radius = 27.0;
-	float offset = 2.5f;
-	for (unsigned int i = 0; i < amount; i++)
-	{
-		glm::mat4 model = glm::mat4(1.0f);
-		// 1. translation: displace along circle with radius [-offset, offset]
-		float angle = (float)i / (float)amount * 360.0f;
-		float displacement = (rand() % (int)(2 * offset * 100)) / 100.0f -
-			offset;
-		float x = sin(angle) * radius + displacement;
-		displacement = (rand() % (int)(2 * offset * 100)) / 100.0f - offset;
-		
-		float y = displacement * 0.4f; // keep height of field smaller than x/z
-		displacement = (rand() % (int)(2 * offset * 100)) / 100.0f - offset;
-		
-		float z = cos(angle) * radius + displacement;
-		model = glm::translate(model, glm::vec3(x, y, z));
-		
-		// 2. scale: scale between 0.05 and 0.25f
-		float scale = (rand() % 20) / 100.0f + 0.05;
-		model = glm::scale(model, glm::vec3(scale));
-		
-		// 3. rotation: add random rotation around a (semi)random rotation axis
-		float rotAngle = (rand() % 360);
-		model = glm::rotate(model, rotAngle, glm::vec3(0.4f, 0.6f, 0.8f));
-		// 4. now add to list of matrices
-		modelMatrices[i] = model;
-	}
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -197,8 +219,6 @@ int main() {
 
 		glClearColor(0.501f, 0.501f, 0.501f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		shader.use();
 		
 		// input
 		// -----
@@ -214,10 +234,18 @@ int main() {
 
 		planet.Draw(shader);
 
-		for (int i = 0; i < amount; i++)
+		glBindVertexArray(0);
+
+		// this for loop is basicly an draw function in model class
+		// but this time is using instaced rendering
+		asteroidShader.use();
+		asteroidShader.setMat4("view", view);
+		asteroidShader.setMat4("projection", projection);
+
+		for (int i = 0; i < asteroid.meshes.size(); i++)
 		{
-			shader.setMat4("model", modelMatrices[i]);
-			asteroid.Draw(shader);
+			glBindVertexArray(asteroid.meshes[i].VAO);
+			glDrawElementsInstanced(GL_TRIANGLES, asteroid.meshes[i].indecies.size(), GL_UNSIGNED_INT, 0, amount);
 		}
 
 		//----------------
