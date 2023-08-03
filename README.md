@@ -1,3 +1,5 @@
-In this chapter we tweaked around depth testing and how does OpenGL calculate the w value in order to determine the right order of the drawn objects so that they are not on top of each other
+This chapter is focused on drawing a lot of objects without having to constantly communicate with the CPU using technique called instancing 
 
-![Alt text](Assets/ReadmeImages/DepthTesting.png)
+The first part of this chapter showed us how to use instancing and how to access certain elements (their vertex) in order to place them/scale them or preform different operations on them 
+
+![Alt text](Assets/ReadmeImages/instancing.png)

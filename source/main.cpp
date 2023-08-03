@@ -89,36 +89,62 @@ int main() {
 
 	stbi_set_flip_vertically_on_load(true);
 
-	Shader shader("VertexShader/DepthTestingVertex.glsl", "FragmentShader/DepthTestingFragment.glsl");
-	
+	Shader shader("VertexShader/InstancingVertex.glsl", "FragmentShader/InstancingFragment.glsl");
 	
 
-	// cube VAO
-	unsigned int cubeVAO, cubeVBO;
-	glGenVertexArrays(1, &cubeVAO);
-	glGenBuffers(1, &cubeVBO);
-	glBindVertexArray(cubeVAO);
-	glBindBuffer(GL_ARRAY_BUFFER, cubeVBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices), &cubeVertices, GL_STATIC_DRAW);
+	//----------------------------------
+	// CALCULATE OFFSET VALUES TO BE IN 
+	// GRID-LIKE FASION
+	//----------------------------------
+	glm::vec2 translations[100];
+	int index = 0;
+	float offset = 0.1f;
+	for (int y = -10; y < 10; y += 2)
+	{
+		for (int x = -10; x < 10; x += 2)
+		{
+			glm::vec2 translation;
+			translation.x = (float)x / 10.0f + offset;
+			translation.y = (float)y / 10.0f + offset;
+			translations[index++] = translation;
+		}
+	}
+
+
+	shader.use();
+	for (unsigned int i = 0; i < 100; i++)
+	{
+		shader.setVec2(("offsets[" + std::to_string(i) + "]"), translations[i]);
+	}
+
+	// quad VAO
+	unsigned int quadVAO, guadVBO;
+	glGenVertexArrays(1, &quadVAO);
+	glGenBuffers(1, &guadVBO);
+	glBindVertexArray(quadVAO);
+	glBindBuffer(GL_ARRAY_BUFFER, guadVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertecies), &quadVertecies, GL_STATIC_DRAW);
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(2 * sizeof(float)));
+
+	// translations
+	unsigned int offsetVBO;
+	glGenBuffers(1, &offsetVBO);
+	glBindBuffer(GL_ARRAY_BUFFER, offsetVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec2) * 100, &translations[0],GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	glEnableVertexAttribArray(2);
+	glBindBuffer(GL_ARRAY_BUFFER, offsetVBO);
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	// this tells openGL that we want to update atribute content each instance (each vertex)
+	// without having to access it as an array it is automaticly indexed for each vertex
+	glVertexAttribDivisor(2, 1);
 	glBindVertexArray(0);
 
-	// plane VAO
-	unsigned int planeVAO, planeVBO;
-	glGenVertexArrays(1, &planeVAO);
-	glGenBuffers(1, &planeVBO);
-	glBindVertexArray(planeVAO);
-	glBindBuffer(GL_ARRAY_BUFFER, planeVBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(planeVertices), &planeVertices, GL_STATIC_DRAW);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-	glBindVertexArray(0);
-	
 	unsigned int cubeTexture = loadTexture("Assets/Textures/DepthTesting/metal.png");
 	unsigned int floorTexture = loadTexture("Assets/Textures/DepthTesting/marble.jpg");
 
@@ -150,34 +176,8 @@ int main() {
 		shader.setMat4("projection", projection);
 
 
-		//----------------------
-		// DRAW CUBE 1
-		//----------------------
-		glBindVertexArray(cubeVAO);
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, cubeTexture);
-		model = glm::translate(model, glm::vec3(-1.0f, 0.0f, -1.0f));
-		shader.setMat4("model", model);
-
-		glDrawArrays(GL_TRIANGLES, 0, 36);
-
-		//----------------------
-		// DRAW CUBE 2
-		//----------------------
-		model = glm::mat4(1.0f);
-		model = glm::translate(model, glm::vec3(2.0f, 0.0f, 0.0f));
-		shader.setMat4("model", model);
-		
-		glDrawArrays(GL_TRIANGLES, 0, 36);
-
-
-		//----------------------
-		// DRAW PLANE AS A FLOOR
-		//----------------------
-		glBindVertexArray(planeVAO);
-		glBindTexture(GL_TEXTURE_2D, floorTexture);
-		shader.setMat4("model", glm::mat4(1.0f));
-		glDrawArrays(GL_TRIANGLES, 0, 6);
+		glBindVertexArray(quadVAO);
+		glDrawArraysInstanced(GL_TRIANGLES, 0, 6, 100);
 
 		
 		glBindVertexArray(0);
