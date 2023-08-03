@@ -182,6 +182,7 @@
     <None Include="VertexShader\VertexShader.glsl" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="Assets\Model\asteroid\rock.png" />
     <Image Include="Assets\Model\backpack\ao.jpg">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </Image>
@@ -197,6 +198,7 @@
     <Image Include="Assets\Model\backpack\specular.jpg">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </Image>
+    <Image Include="Assets\Model\planet\mars.png" />
     <Image Include="Assets\Model\spaceship\model\texture\auxielieryMat_alpha.png" />
     <Image Include="Assets\Model\spaceship\model\texture\auxielieryMat_diffuse.png" />
     <Image Include="Assets\Model\spaceship\model\texture\auxielieryMat_metal.png" />
