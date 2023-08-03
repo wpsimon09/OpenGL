@@ -112,6 +112,7 @@ int main() {
 
 
 	shader.use();
+	// suply values of grid to vertex shader 
 	for (unsigned int i = 0; i < 100; i++)
 	{
 		shader.setVec2(("offsets[" + std::to_string(i) + "]"), translations[i]);

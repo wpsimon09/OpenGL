@@ -14,7 +14,7 @@ uniform mat4 model;
 
 void main() {
 
-	// calculate how small should each element be 
+	// calculate how much smaller should each element be 
 	vec2 pos = aPos * (gl_InstanceID / 100.0);
 	
 	// move the vertex to the desired postion
