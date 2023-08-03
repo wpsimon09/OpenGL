@@ -87,11 +87,11 @@ int main() {
 		return -1;
 	}
 
-	stbi_set_flip_vertically_on_load(true);
 
 	Shader shader("VertexShader/InstancingVertex.glsl", "FragmentShader/InstancingFragment.glsl");
 
-	Model planet("Assets/Model/planet/planet.obj");
+	Shader skyboxShader("VertexShader/SkyBoxVertex.glsl", "FragmentShader/SkyBoxFragment.glsl");
+
 
 	//Model asteroid("Assets/Model/asteroid/rock.obj");
 	
@@ -134,21 +134,25 @@ int main() {
 	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(2 * sizeof(float)));
 
-	// translations
-	unsigned int offsetVBO;
-	glGenBuffers(1, &offsetVBO);
-	glBindBuffer(GL_ARRAY_BUFFER, offsetVBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec2) * 100, &translations[0],GL_STATIC_DRAW);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	glEnableVertexAttribArray(2);
-	glBindBuffer(GL_ARRAY_BUFFER, offsetVBO);
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	// this tells openGL that we want to update atribute content each instance (each vertex)
-	// without having to access it as an array it is automaticly indexed for each vertex
-	glVertexAttribDivisor(2, 1);
+	// skybox VAO
+	unsigned int skyBoxVAO, skyBoxVBO;
+	glGenVertexArrays(1, &skyBoxVAO);
+	glGenBuffers(1, &skyBoxVBO);
+	glBindVertexArray(skyBoxVAO);
+	glBindBuffer(GL_ARRAY_BUFFER, skyBoxVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(skyBoxVertecies), &skyBoxVertecies, GL_STATIC_DRAW);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 	glBindVertexArray(0);
+
+	unsigned int skyBox = loadCubeMaps(skyboxTextures);
+	stbi_set_flip_vertically_on_load(true);
+
+	Model planet("Assets/Model/planet/planet.obj");
+
+	skyboxShader.use();
+	skyboxShader.setInt("skybox", 0);
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -176,6 +180,24 @@ int main() {
 		shader.setMat4("model", model);
 
 		planet.Draw(shader);
+
+		//----------------
+		// DRAW THE SKYBOX
+		//----------------
+		glDepthFunc(GL_LEQUAL);
+		
+		skyboxShader.use();
+		view = glm::mat4(glm::mat3(camera.GetViewMatrix()));
+
+		skyboxShader.setMat4("projection", projection);
+		skyboxShader.setMat4("view", view);
+
+		glBindVertexArray(skyBoxVAO);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, skyBox);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+
+		glDepthFunc(GL_LESS);
+
 		
 		glBindVertexArray(0);
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
