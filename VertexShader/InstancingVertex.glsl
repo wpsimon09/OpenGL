@@ -1,8 +1,7 @@
 #version 330 
 
-layout (location = 0) in vec2 aPos;
-layout (location = 1) in vec3 aColor;
-layout (location = 2) in vec2 aOffSet;
+layout (location = 0) in vec3 aPos;
+layout (location = 2) in vec2 aTexCoords;
 
 out vec3 fColor;
 
@@ -14,12 +13,7 @@ uniform mat4 model;
 
 void main() {
 
-	// calculate how much smaller should each element be 
-	vec2 pos = aPos * (gl_InstanceID / 100.0);
-	
-	// move the vertex to the desired postion
-	// without indexing larga array
-	gl_Position = vec4(pos + aOffSet, 0.0, 1.0);
-	
-	fColor = aColor;
+	gl_Position = projection * view * model * vec4(aPos, 1.0);
+
+	TexCoords = aTexCoords;
 }

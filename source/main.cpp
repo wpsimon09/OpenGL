@@ -90,6 +90,10 @@ int main() {
 	stbi_set_flip_vertically_on_load(true);
 
 	Shader shader("VertexShader/InstancingVertex.glsl", "FragmentShader/InstancingFragment.glsl");
+
+	Model planet("Assets/Model/planet/planet.obj");
+
+	//Model asteroid("Assets/Model/asteroid/rock.obj");
 	
 
 	//----------------------------------
@@ -146,12 +150,6 @@ int main() {
 	glVertexAttribDivisor(2, 1);
 	glBindVertexArray(0);
 
-	unsigned int cubeTexture = loadTexture("Assets/Textures/DepthTesting/metal.png");
-	unsigned int floorTexture = loadTexture("Assets/Textures/DepthTesting/marble.jpg");
-
-	shader.use();
-	shader.setInt("texture1", 0);
-
 	while (!glfwWindowShouldClose(window))
 	{
 		// per-frame time logic
@@ -175,11 +173,9 @@ int main() {
 		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
 		shader.setMat4("view", view);
 		shader.setMat4("projection", projection);
+		shader.setMat4("model", model);
 
-
-		glBindVertexArray(quadVAO);
-		glDrawArraysInstanced(GL_TRIANGLES, 0, 6, 100);
-
+		planet.Draw(shader);
 		
 		glBindVertexArray(0);
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
