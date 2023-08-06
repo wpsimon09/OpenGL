@@ -7,3 +7,8 @@ The first part of this chapter showed us how to use instancing and how to access
 Second part was about rendering over 7000 models that with normal draw calls would be very slow we used instacing rendering technique to crate Jupiter and ring of asteroids around it I also added a space skybox and ambient lightning so that the scene looks more realistic 
 
 ![Alt text](Assets/ReadmeImages/jupiter-and-asteroids.png)
+
+For even more realism I added direction light that is in the same location as the light source in the skybox
+
+![Alt text](Assets/ReadmeImages/DirectionLight.png)
+
