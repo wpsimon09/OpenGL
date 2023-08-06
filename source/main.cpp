@@ -156,28 +156,9 @@ int main() {
 		glBindVertexArray(cubeVAO);
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, cubeTexture);
-		model = glm::translate(model, glm::vec3(-1.0f, 0.0f, -1.0f));
 		shader.setMat4("model", model);
 
 		glDrawArrays(GL_TRIANGLES, 0, 36);
-
-		//----------------------
-		// DRAW CUBE 2
-		//----------------------
-		model = glm::mat4(1.0f);
-		model = glm::translate(model, glm::vec3(2.0f, 0.0f, 0.0f));
-		shader.setMat4("model", model);
-		
-		glDrawArrays(GL_TRIANGLES, 0, 36);
-
-
-		//----------------------
-		// DRAW PLANE AS A FLOOR
-		//----------------------
-		glBindVertexArray(planeVAO);
-		glBindTexture(GL_TEXTURE_2D, floorTexture);
-		shader.setMat4("model", glm::mat4(1.0f));
-		glDrawArrays(GL_TRIANGLES, 0, 6);
 
 		
 		glBindVertexArray(0);
