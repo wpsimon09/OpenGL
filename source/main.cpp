@@ -100,7 +100,7 @@ int main() {
 	// WITH THIS CALCULATIONS WE CAN MODIFY MODEL MATRIX
 	// TO MADE THE ILUSION OF A CIRCLE
 	//----------------------------------------------------
-	unsigned int amount = 7000;
+	unsigned int amount = 5000;
 	glm::mat4* modelMatrices;
 	modelMatrices = new glm::mat4[amount];
 	srand(glfwGetTime()); // initialize random seed
@@ -150,6 +150,7 @@ int main() {
 	Model asteroid("Assets/Model/asteroid/rock.obj");
 	Model planet("Assets/Model/planet/planet.obj");
 
+	unsigned int asteoroidTexture = loadTexture("Assets/Model/asteroid/rock.png");
 
 	//create buffer
 	unsigned int buffer;
@@ -232,6 +233,9 @@ int main() {
 		shader.setMat4("projection", projection);
 		shader.setMat4("model", model);
 
+		shader.setVec3("lightDir", glm::vec3(4.32022f, 4.71866, 7.83745f));
+		shader.setVec3("lightColor", glm::vec3(1.0f));
+
 		planet.Draw(shader);
 
 		glBindVertexArray(0);
@@ -239,12 +243,15 @@ int main() {
 		// this for loop is basicly an draw function in model class
 		// but this time is using instaced rendering
 		asteroidShader.use();
+		shader.setFloat("texture_diffuse1", 0);
 		asteroidShader.setMat4("view", view);
 		asteroidShader.setMat4("projection", projection);
 
 		for (int i = 0; i < asteroid.meshes.size(); i++)
 		{
 			glBindVertexArray(asteroid.meshes[i].VAO);
+			glBindTexture(GL_TEXTURE_2D, asteoroidTexture);
+			glActiveTexture(GL_TEXTURE0);
 			glDrawElementsInstanced(GL_TRIANGLES, asteroid.meshes[i].indecies.size(), GL_UNSIGNED_INT, 0, amount);
 		}
 
@@ -272,6 +279,11 @@ int main() {
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 
+
+		std::cout << "Last positions were";
+		std::cout << "X:" <<-1 * camera.Position.x << "\n";
+		std::cout << "Y:" <<-1 * camera.Position.y << "\n";
+		std::cout << "Z:" <<-1 * camera.Position.z << "\n";
 	}
 
 	glfwTerminate();
