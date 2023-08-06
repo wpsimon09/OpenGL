@@ -8,6 +8,6 @@ uniform sampler2D texture_diffuse1;
 
 void main()
 {
-	float ambient = 0.6;
+	float ambient = 0.3;
 	FragColor = texture(texture_diffuse1, TexCoordsAsteroids) * ambient;
 }
