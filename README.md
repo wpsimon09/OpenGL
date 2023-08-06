@@ -1,3 +1,9 @@
-In this chapter we tweaked around depth testing and how does OpenGL calculate the w value in order to determine the right order of the drawn objects so that they are not on top of each other
+In this chapter we explored anti-aliasing and multiple sample buffer we eliminated the effect of pixelated edges of the cube by enabling multiple samples per pixel
 
-![Alt text](Assets/ReadmeImages/DepthTesting.png)
+> Before anti-aliasing
+
+![Alt text](Assets/ReadmeImages/AAbefore.png)
+
+> After anti-aliasing
+
+![Alt text](Assets/ReadmeImages/AAafter.png)
