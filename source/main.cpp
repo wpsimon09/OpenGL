@@ -90,7 +90,6 @@ int main() {
 	stbi_set_flip_vertically_on_load(true);
 
 	Shader shader("VertexShader/AdvancedLightning/AdvancedLightningVertex.glsl", "FragmentShader/AdvancedLightning/AdvancedLightningFragmnet.glsl");
-	
 
 	// plane VAO
 	unsigned int planeVAO, planeVBO;
@@ -98,7 +97,7 @@ int main() {
 	glGenBuffers(1, &planeVBO);
 	glBindVertexArray(planeVAO);
 	glBindBuffer(GL_ARRAY_BUFFER, planeVBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(planeVertices), &planeVertices, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(planeVertices), planeVertices, GL_STATIC_DRAW);
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(1);
@@ -106,6 +105,8 @@ int main() {
 	glEnableVertexAttribArray(2);
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
 	glBindVertexArray(0);
+
+
 	
 	unsigned int floorTexture = loadTexture("Assets/Textures/AdvancedLightning/wood.png");
 
@@ -128,12 +129,10 @@ int main() {
 		processInput(window);
 
 		shader.use();
-		glm::mat4 model = glm::mat4(1.0f);
 		glm::mat4 view = camera.GetViewMatrix();
 		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
 		shader.setMat4("view", view);
 		shader.setMat4("projection", projection);
-		glBindVertexArray(0);
 
 		//----------------------
 		// DRAW PLANE AS A FLOOR
