@@ -141,12 +141,8 @@ int main() {
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, floorTexture);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
-
 		
 		glBindVertexArray(0);
-
-
-
 
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
 		// -------------------------------------------------------------------------------

@@ -20,5 +20,4 @@ void main()
     vs_out.FragPos = aPos;
     vs_out.TexCoords = aTexCoords;
     vs_out.Normal = aNormal;
-
 }
