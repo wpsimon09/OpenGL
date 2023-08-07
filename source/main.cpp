@@ -121,7 +121,7 @@ int main() {
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
 
-		glClearColor(0.501f, 0.501f, 0.501f, 1.0f);
+		glClearColor(0.101f, 0.101f, 0.101f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		// input

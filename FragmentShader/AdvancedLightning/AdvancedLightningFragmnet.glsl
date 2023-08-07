@@ -12,5 +12,5 @@ uniform sampler2D floorTexture;
 
 void main() 
 {
-    FragColor = vec4(0.0, 1.0, 0.0, 1.0);
+    FragColor = texture(floorTexture, fs_in.TexCoords);
 }
