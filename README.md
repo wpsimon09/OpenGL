@@ -1,3 +1,12 @@
-In this chapter we tweaked around depth testing and how does OpenGL calculate the w value in order to determine the right order of the drawn objects so that they are not on top of each other
+In the chapter we introduced Phong-Binn lightning model that adds more realism to the specular highlights that the traditional Phong lighting modelWe can switch between them in real-time
 
-![Alt text](Assets/ReadmeImages/DepthTesting.png)
+- Arrow UP - enable Blinn calculations
+- Awwor DOWN - disable Blinn calculation and do only Phong calculations
+
+>PHONG
+
+![Alt text](Assets/ReadmeImages/phong.png)
+
+>BLINN
+
+![Alt text](Assets/ReadmeImages/blinn.png)

@@ -34,13 +34,13 @@ void main()
     //---------
     //SPECULAR
     //---------
-    vec3 specularColor = vec3(0.42);
+    vec3 specularColor = vec3(0.5);
     vec3 viewDir = normalize(viewPos - fs_in.FragPos);
     float specStrength = 0.0;
     if (blinnModel) 
     {
         vec3 halfwayDir = normalize(lightDir + viewDir);
-        specStrength = pow(max(dot(normal, halfwayDir), 0.0),32.0);
+        specStrength = pow(max(dot(normal, halfwayDir), 0.0),16.0);
     }
     else 
     {
