@@ -47,6 +47,8 @@ float constant = 1.0f;
 float linear = 0.22f;
 float quadratic = 0.20f;
 
+bool isLightBlinn = true;
+
 
 //light possition
 glm::vec3 lightPos(0.0f, 0.0f, 2.0f);
@@ -137,6 +139,7 @@ int main() {
 		shader.setVec3("lightPos", glm::vec3(0.0, 2.5, 0.0));
 		shader.setVec3("lightColor", colorOf(253.0f, 251.0f, 211.0f));
 		shader.setVec3("viewPos", camera.Position);
+		shader.setBool("blinnModel", isLightBlinn);
 		//----------------------
 		// DRAW PLANE AS A FLOOR
 		//----------------------
@@ -180,6 +183,11 @@ void processInput(GLFWwindow *window)
 		camera.ProcessKeyboard(LEFT, deltaTime);
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 		camera.ProcessKeyboard(RIGHT, deltaTime);
+	if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+		isLightBlinn = true;
+	if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
+		isLightBlinn = false;
+
 }
 
 float opacityOfTexture(GLFWwindow* window, Shader shader) {
