@@ -15,6 +15,7 @@ uniform vec3 lightColor;
 uniform vec3 viewPos;
 
 uniform bool blinnModel;
+uniform vec3 specularColor;
 
 void main() 
 {
@@ -34,12 +35,12 @@ void main()
     //---------
     //SPECULAR
     //---------
-    vec3 specularColor = vec3(0.5);
+    vec3 specularColor = lightColor;
     vec3 viewDir = normalize(viewPos - fs_in.FragPos);
     float specStrength = 0.0;
     if (blinnModel) 
     {
-        vec3 halfwayDir = normalize(lightDir + viewDir);
+        vec3 halfwayDir = normalize(lightDir + normal);
         specStrength = pow(max(dot(normal, halfwayDir), 0.0),16.0);
     }
     else 

@@ -139,7 +139,10 @@ int main() {
 		shader.setVec3("lightPos", glm::vec3(0.0, 2.5, 0.0));
 		shader.setVec3("lightColor", colorOf(241.0f, 180.0f, 87.0f));
 		shader.setVec3("viewPos", camera.Position);
+		shader.setVec3("specularColor", colorOf(241.0f, 180.0f, 87.0f));
+
 		shader.setBool("blinnModel", isLightBlinn);
+		
 		//----------------------
 		// DRAW PLANE AS A FLOOR
 		//----------------------
