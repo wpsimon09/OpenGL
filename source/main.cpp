@@ -134,6 +134,9 @@ int main() {
 		shader.setMat4("view", view);
 		shader.setMat4("projection", projection);
 
+		shader.setVec3("lightPos", glm::vec3(0.0, 2.5, 0.0));
+		shader.setVec3("lightColor", colorOf(253.0f, 251.0f, 211.0f));
+		shader.setVec3("viewPos", camera.Position);
 		//----------------------
 		// DRAW PLANE AS A FLOOR
 		//----------------------
