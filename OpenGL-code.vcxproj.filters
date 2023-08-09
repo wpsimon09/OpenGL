@@ -84,6 +84,8 @@
     <None Include="VertexShader\DepthTestingVertex.glsl" />
     <None Include="FragmentShader\AdvancedLightning\AdvancedLightningFragmnet.glsl" />
     <None Include="VertexShader\AdvancedLightning\AdvancedLightningVertex.glsl" />
+    <None Include="FragmentShader\AdvancedLightning\LightSourceFragment.glsl" />
+    <None Include="VertexShader\AdvancedLightning\LightSourceVertex.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\Textures\container.jpg">
@@ -151,6 +153,9 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="Assets\Textures\AdvancedLightning\wood.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Assets\Textures\AdvancedLightning\light.png">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

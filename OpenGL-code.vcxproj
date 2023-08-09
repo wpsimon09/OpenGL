@@ -171,10 +171,12 @@
     </None>
     <None Include="Assets\Model\spaceship\model\texture\spaceShip.fbx" />
     <None Include="FragmentShader\AdvancedLightning\AdvancedLightningFragmnet.glsl" />
+    <None Include="FragmentShader\AdvancedLightning\LightSourceFragment.glsl" />
     <None Include="FragmentShader\DepthTestingFragment.glsl" />
     <None Include="FragmentShader\FragmentShader.glsl" />
     <None Include="FragmentShader\LightFragmentShader.glsl" />
     <None Include="VertexShader\AdvancedLightning\AdvancedLightningVertex.glsl" />
+    <None Include="VertexShader\AdvancedLightning\LightSourceVertex.glsl" />
     <None Include="VertexShader\DepthTestingVertex.glsl" />
     <None Include="VertexShader\LightVertexShader.glsl" />
     <None Include="VertexShader\VertexShader.glsl" />
@@ -204,6 +206,7 @@
     <Image Include="Assets\Model\spaceship\model\texture\mainMat_metal.png" />
     <Image Include="Assets\Model\spaceship\model\texture\mainMat_nrm.png" />
     <Image Include="Assets\Model\spaceship\model\texture\mainMat_rough.png" />
+    <Image Include="Assets\Textures\AdvancedLightning\light.png" />
     <Image Include="Assets\Textures\AdvancedLightning\wood.png" />
     <Image Include="Assets\Textures\container.jpg" />
     <Image Include="Assets\Textures\container2.png" />

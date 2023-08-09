@@ -35,12 +35,6 @@ bool firstMouse = true;
 float deltaTime = 0.0f;	// time between current frame and last frame
 float lastFrame = 0.0f;
 
-// light properties
-glm::vec3 direction = glm::vec3(0.2f, -1.0f, -0.6f);
-glm::vec3 ambient = glm::vec3(0.4f);
-glm::vec3 diffuse = COLOR_SUN;
-glm::vec3 specular = glm::vec3(1.0F);
-
 glm::vec3 diffusePoint = COLOR_SUN;
 
 float constant = 1.0f;
@@ -51,7 +45,7 @@ bool isLightBlinn = true;
 
 
 //light possition
-glm::vec3 lightPos(0.0f, 0.0f, 2.0f);
+glm::vec3 lightPosition(0.0, 0.4, 0.0);
 
 glm::vec3 pointLightPositions[] = {
 glm::vec3(0.7f, 0.2f, 2.0f),
@@ -96,6 +90,8 @@ int main() {
 
 	Shader shader("VertexShader/AdvancedLightning/AdvancedLightningVertex.glsl", "FragmentShader/AdvancedLightning/AdvancedLightningFragmnet.glsl");
 
+	Shader lightSourceShader("VertexShader/AdvancedLightning/LightSourceVertex.glsl", "FragmentShader/AdvancedLightning/LightSourceFragment.glsl");
+
 	// plane VAO
 	unsigned int planeVAO, planeVBO;
 	glGenVertexArrays(1, &planeVAO);
@@ -112,11 +108,28 @@ int main() {
 	glBindVertexArray(0);
 
 
-	
-	unsigned int floorTexture = loadTexture("Assets/Textures/AdvancedLightning/wood.png");
+	//VBO, EBO and VAO for the square that represents light position
+	unsigned int lightVAO, lightVBO;
+	glGenVertexArrays(1, &lightVAO);
+	glGenBuffers(1, &lightVBO);
+	glBindVertexArray(lightVAO);
+	glBindBuffer(GL_ARRAY_BUFFER, lightVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(lightVertices), lightVertices, GL_STATIC_DRAW);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)3);
+	glBindVertexArray(0);
+
+	unsigned int floorTexture = loadTexture("Assets/Textures/AdvancedLightning/wood.png", true);
+	unsigned int lightTexture = loadTexture("Assets/Textures/AdvancedLightning/light.png", true);
+
 
 	shader.use();
 	shader.setInt("floorTexture", 0);
+
+	lightSourceShader.use();
+	shader.setInt("lightTexture", 0);
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -139,7 +152,7 @@ int main() {
 		shader.setMat4("view", view);
 		shader.setMat4("projection", projection);
 
-		shader.setVec3("lightPos", glm::vec3(0.0, 0.4, 0.0));
+		shader.setVec3("lightPos",lightPosition);
 		shader.setVec3("lightColor", colorOf(241.0f, 180.0f, 87.0f));
 		shader.setVec3("viewPos", camera.Position);
 		shader.setVec3("specularColor", colorOf(241.0f, 130.0f, 80.0f));
@@ -153,7 +166,23 @@ int main() {
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, floorTexture);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
-		
+	
+		glBindVertexArray(0);
+
+		//----------------------
+		// DRAW THE LIGHT SOURCE
+		//----------------------
+		glm::mat4 model = glm::mat4(1.0f);
+		model = glm::translate(model, lightPosition);
+		lightSourceShader.use();
+		lightSourceShader.setMat4("view", view);
+		lightSourceShader.setMat4("projection", projection);
+		lightSourceShader.setMat4("model", model);
+
+		glBindVertexArray(lightVAO);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, lightTexture);
+		glDrawArrays(GL_TRIANGLES, 0, 6);
 		glBindVertexArray(0);
 
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)

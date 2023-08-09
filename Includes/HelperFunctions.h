@@ -22,7 +22,7 @@ glm::vec3 colorOf(float r, float g, float b) {
 }
 
 
-unsigned int loadTexture(char const* path)
+unsigned int loadTexture(char const* path, bool gammaCorrection)
 {
 	unsigned int textureID;
 	glGenTextures(1, &textureID);
@@ -31,21 +31,29 @@ unsigned int loadTexture(char const* path)
 	unsigned char* data = stbi_load(path, &width, &height, &nrComponents, 0);
 	if (data)
 	{
-		GLenum format;
+		GLenum internalFormat;
+		GLenum dataFormat;
 		if (nrComponents == 1)
-			format = GL_RED;
+		{
+			internalFormat = dataFormat = GL_RED;
+		}
 		else if (nrComponents == 3)
-			format = GL_SRGB;
+		{
+			internalFormat = gammaCorrection ? GL_SRGB : GL_RGB;
+			dataFormat = GL_RGB;
+		}
 		else if (nrComponents == 4)
-			format = GL_SRGB_ALPHA;
-		std::cout << "Numer of componets in texture is:" << nrComponents << std::endl;
-		std::cout << "Fromat of the texutre is " << format << std::endl;
+		{
+			internalFormat = gammaCorrection ? GL_SRGB_ALPHA : GL_RGBA;
+			dataFormat = GL_RGBA;
+		}
+
 		glBindTexture(GL_TEXTURE_2D, textureID);
-		glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+		glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, dataFormat, GL_UNSIGNED_BYTE, data);
 		glGenerateMipmap(GL_TEXTURE_2D);
 
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, format == GL_SRGB_ALPHA ? GL_CLAMP_TO_EDGE : GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, format == GL_SRGB_ALPHA ? GL_CLAMP_TO_EDGE : GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
@@ -115,4 +123,19 @@ float planeVertices[] = {
 	 10.0f, -0.5f,  10.0f,  0.0f, 1.0f, 0.0f,  10.0f,  0.0f,
 	-10.0f, -0.5f, -10.0f,  0.0f, 1.0f, 0.0f,   0.0f, 10.0f,
 	 10.0f, -0.5f, -10.0f,  0.0f, 1.0f, 0.0f,  10.0f, 10.0f
+};
+
+float lightVertices[] = {
+	// positions        // texture coords
+	0.0f, 0.0f, 0.0f,	  0.0f, 0.0f,
+	1.0f, 0.0f, 0.0f,	  1.0f, 0.0f,
+	0.0f, 1.0f, 0.0f,	  0.0f, 1.0f,
+
+	1.0f, 0.0f, 0.0f,	  1.0f, 0.0f,
+	1.0f, 1.0f, 0.0f,	  1.0f, 1.0f,
+	0.0f, 1.0f, 0.0f,	  0.0f, 1.0f
+};
+unsigned int indices[] = {
+	0, 1, 3, // first triangle
+	1, 2, 3  // second triangle
 };
