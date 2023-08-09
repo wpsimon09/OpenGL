@@ -40,7 +40,7 @@ void main()
     float specStrength = 0.0;
     if (blinnModel) 
     {
-        vec3 halfwayDir = normalize(lightDir + normal);
+        vec3 halfwayDir = normalize(lightDir + viewDir);
         specStrength = pow(max(dot(normal, halfwayDir), 0.0),16.0);
     }
     else 
