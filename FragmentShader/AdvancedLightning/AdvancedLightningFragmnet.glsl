@@ -22,8 +22,8 @@ void main()
     //----------
     // AMBIENT
     //----------
-    vec3 ambient = vec3(texture(floorTexture, fs_in.TexCoords)* 0.1);
-
+    vec3 ambient = vec3(texture(floorTexture, fs_in.TexCoords)* 0.12);
+    
     //-----------
     // DIFFUSE
     //-----------
@@ -31,7 +31,7 @@ void main()
     vec3 lightDir = normalize(lightPos - fs_in.FragPos);
     float diffStrength = max(dot(normal, lightDir), 0.0);
     vec3 diffuse = lightColor * diffStrength * vec3(texture(floorTexture, fs_in.TexCoords));
-
+    
     //---------
     //SPECULAR
     //---------
@@ -40,22 +40,21 @@ void main()
     float specStrength = 0.0;
     if (blinnModel) 
     {
-        vec3 halfwayDir = normalize(lightDir + normal);
-        specStrength = pow(max(dot(normal, halfwayDir), 0.0),16.0);
+        vec3 halfwayDir = normalize(lightDir + viewDir);
+        specStrength = pow(max(dot(normal, halfwayDir), 0.0),64.0);
     }
     else 
     {
         vec3 reflectionVector = reflect(-lightDir, normal);
         specStrength = pow(max(dot(viewDir, reflectionVector), 0.0),32.0);
-
+    
     }
     vec3 specular = specularColor * specStrength;
-
+    
+    vec3 result = specular + diffuse + ambient;
 
     //-------------
     // FINAL RESULT
-    //-------------
-    vec3 result = ambient + diffuse + specular;
-
+    //-------------    
     FragColor = vec4(result,1.0);
 }

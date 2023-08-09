@@ -78,6 +78,9 @@ int main() {
 	glfwMakeContextCurrent(window);
 	gladLoadGL();
 	glEnable(GL_DEPTH_TEST);
+
+	//enables gama correction that is build in opengl
+	glEnable(GL_FRAMEBUFFER_SRGB);
 	glfwSetCursorPosCallback(window, mouse_callback);
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	glfwSetScrollCallback(window, scroll_callback);
@@ -136,10 +139,10 @@ int main() {
 		shader.setMat4("view", view);
 		shader.setMat4("projection", projection);
 
-		shader.setVec3("lightPos", glm::vec3(0.0, 2.5, 0.0));
+		shader.setVec3("lightPos", glm::vec3(0.0, 0.4, 0.0));
 		shader.setVec3("lightColor", colorOf(241.0f, 180.0f, 87.0f));
 		shader.setVec3("viewPos", camera.Position);
-		shader.setVec3("specularColor", colorOf(241.0f, 180.0f, 87.0f));
+		shader.setVec3("specularColor", colorOf(241.0f, 130.0f, 80.0f));
 
 		shader.setBool("blinnModel", isLightBlinn);
 		

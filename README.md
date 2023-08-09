@@ -1,12 +1,11 @@
-In the chapter we introduced Phong-Binn lightning model that adds more realism to the specular highlights that the traditional Phong lighting modelWe can switch between them in real-time
+In this chapter, we discussed what is gamma correction and why does not color appear on the monitor in the way we define it 
 
-- Arrow UP - enable Blinn calculations
-- Arrow DOWN - disable Blinn calculation and do only Phong calculations
+We also introduced  multiple ways on how to fix this problem
 
->PHONG
+>Gamma corection off
 
-![Alt text](Assets/ReadmeImages/phong.png)
+![Alt text](Assets/ReadmeImages/GammaCorection/gammaoff.png)
 
->BLINN
+>Gamma corection on
 
-![Alt text](Assets/ReadmeImages/blinn.png)
+![Alt text](Assets/ReadmeImages/GammaCorection/gammaon.png)
