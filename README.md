@@ -9,3 +9,5 @@ We also introduced  multiple ways on how to fix this problem
 >Gamma corection on
 
 ![Alt text](Assets/ReadmeImages/GammaCorection/gammaon.png)
+
+![Alt text](Assets/ReadmeImages/GammaCorection/gammaCorectionWithLIght.png)

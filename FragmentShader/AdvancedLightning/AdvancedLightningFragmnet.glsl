@@ -22,7 +22,7 @@ void main()
     //----------
     // AMBIENT
     //----------
-    vec3 ambient = vec3(texture(floorTexture, fs_in.TexCoords)* 0.12);
+    vec3 ambient = vec3(texture(floorTexture, fs_in.TexCoords)* 0.02);
     
     //-----------
     // DIFFUSE

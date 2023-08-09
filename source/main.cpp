@@ -114,11 +114,11 @@ int main() {
 	glGenBuffers(1, &lightVBO);
 	glBindVertexArray(lightVAO);
 	glBindBuffer(GL_ARRAY_BUFFER, lightVBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(lightVertices), lightVertices, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(lightVertices), &lightVertices, GL_STATIC_DRAW);
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)3);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
 	glBindVertexArray(0);
 
 	unsigned int floorTexture = loadTexture("Assets/Textures/AdvancedLightning/wood.png", true);
@@ -174,6 +174,7 @@ int main() {
 		//----------------------
 		glm::mat4 model = glm::mat4(1.0f);
 		model = glm::translate(model, lightPosition);
+		model = glm::scale(model, glm::vec3(0.6f));
 		lightSourceShader.use();
 		lightSourceShader.setMat4("view", view);
 		lightSourceShader.setMat4("projection", projection);
