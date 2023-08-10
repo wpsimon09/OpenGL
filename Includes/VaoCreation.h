@@ -6,6 +6,10 @@
 
 /// <summary>
 /// Creates vertex array obect
+/// VAOs are created under assumption that vertex atribute positions are like follows:
+/// 0 - positions
+/// 1 - normal vectors
+/// 2 - texture coordinates
 /// </summary>
 /// <param name="vertecies">array of vertecies (positions, normals, texture coordinates</param>
 /// <param name="numberOfComponents">number of components we are passing to the vertex shader</param>
@@ -52,8 +56,8 @@ unsigned int createVAO(float vertecies[], float numberOfComponents, bool hasNorm
 	{
 		glEnableVertexAttribArray(0);
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+		glEnableVertexAttribArray(2);
+		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
 		
 		std::cout << "Created object has 2 vertex atributes" << std::endl;
 		std::cout << "0 - positions (vec3)" << std::endl;
