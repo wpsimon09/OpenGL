@@ -21,7 +21,7 @@ unsigned int createVAO(float vertecies[], float numberOfComponents, bool hasNorm
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * numberOfComponents , vertecies, GL_STATIC_DRAW);
 	
-	std::cout << "SIzeof vertecies:" << sizeof(float) * numberOfComponents << "bytes" << std::endl;
+	std::cout << "Sizeof vertecies:" << sizeof(float) * numberOfComponents << "bytes" << std::endl;
 
 	if (hasNormals && hasTexCoords)
 	{
@@ -67,6 +67,8 @@ unsigned int createVAO(float vertecies[], float numberOfComponents, bool hasNorm
 		std::cout << "Created object has 1 vertex atribute" << std::endl;
 		std::cout << "0 - positions (vec3)" << std::endl;
 	}
+
+	std::cout << std::endl;
 	glBindVertexArray(0);
 
 	return VAO;
