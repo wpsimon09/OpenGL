@@ -112,6 +112,41 @@ int main() {
 	//cube VAO
 	unsigned int cubeVAO = createVAO(cubeVertices, sizeof(cubeVertices) / sizeof(float));;
 
+
+	//------------------
+	// DEPTH MAP TEXTURE
+	//------------------
+	//resolution of the depth map
+	const unsigned int SHADOW_HEIGHT = 1024, SHADOW_WIDTH = 1024;
+	unsigned int depthMap;
+	glGenTextures(1, &depthMap);
+	glBindTexture(GL_TEXTURE_2D, depthMap);
+	//NOTE how we set a texture type to be GL_DEPTH_COMPONENT instead GL_RGB or GL_RGBA
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+	//set the textures prameters
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+	//-------------------
+	// SHADOW MAPPING FBO
+	//-------------------
+	unsigned int depthMapFBO;
+	glGenFramebuffers(1, &depthMapFBO);
+	glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
+
+	//attatch texture to the frame buffer depth value
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap, 0);
+	//we are not going to need the color buffer
+	//we tell this to openGl like so
+	glDrawBuffer(GL_NONE);
+	glReadBuffer(GL_NONE);
+	glBindBuffer(GL_FRAMEBUFFER, 0);
+
+	//-----------------
+	// TEXTURES LOADING
+	//-----------------
 	unsigned int floorTexture = loadTexture("Assets/Textures/AdvancedLightning/wood.png", true);
 	unsigned int lightTexture = loadTexture("Assets/Textures/AdvancedLightning/light.png", true);
 	unsigned int cubeTexture = loadTexture("Assets/Textures/AdvancedLightning/cube-wood.jpg", false);
