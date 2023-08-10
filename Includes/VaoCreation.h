@@ -61,7 +61,7 @@ unsigned int createVAO(float vertecies[], float numberOfComponents, bool hasNorm
 		
 		std::cout << "Created object has 2 vertex atributes" << std::endl;
 		std::cout << "0 - positions (vec3)" << std::endl;
-		std::cout << "1 - texture coordinates (vec2)" << std::endl;
+		std::cout << "2 - texture coordinates (vec2)" << std::endl;
 	}
 	if (!hasNormals && !hasTexCoords)
 	{
