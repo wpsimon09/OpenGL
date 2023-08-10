@@ -11,6 +11,8 @@
 #include "Model.h"
 #include "HelperFunctions.h";
 #include "Light.h";
+#include "DrawingFunctions.h"
+#include "VaoCreation.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
@@ -93,40 +95,19 @@ int main() {
 	Shader lightSourceShader("VertexShader/AdvancedLightning/LightSourceVertex.glsl", "FragmentShader/AdvancedLightning/LightSourceFragment.glsl");
 
 	// plane VAO
-	unsigned int planeVAO, planeVBO;
-	glGenVertexArrays(1, &planeVAO);
-	glGenBuffers(1, &planeVBO);
-	glBindVertexArray(planeVAO);
-	glBindBuffer(GL_ARRAY_BUFFER, planeVBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(planeVertices), planeVertices, GL_STATIC_DRAW);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-	glEnableVertexAttribArray(2);
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-	glBindVertexArray(0);
+	unsigned int planeVAO = createVAO(planeVertices, sizeof(planeVertices)/sizeof(float));
 
 
 	//VBO, EBO and VAO for the square that represents light position
-	unsigned int lightVAO, lightVBO;
-	glGenVertexArrays(1, &lightVAO);
-	glGenBuffers(1, &lightVBO);
-	glBindVertexArray(lightVAO);
-	glBindBuffer(GL_ARRAY_BUFFER, lightVBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(lightVertices), &lightVertices, GL_STATIC_DRAW);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-	glBindVertexArray(0);
+	unsigned int lightVAO = createVAO(lightVertices,sizeof(lightVertices)/sizeof(float), false);
 
 	unsigned int floorTexture = loadTexture("Assets/Textures/AdvancedLightning/wood.png", true);
 	unsigned int lightTexture = loadTexture("Assets/Textures/AdvancedLightning/light.png", true);
-
+	unsigned int cubeTexture = loadTexture("Assets/Textures/AdvancedLightning/cube-wood.jpg", true);
 
 	shader.use();
-	shader.setInt("floorTexture", 0);
+	shader.setInt("wood", 0);
+	
 
 	lightSourceShader.use();
 	shader.setInt("lightTexture", 0);
@@ -146,46 +127,36 @@ int main() {
 		// -----
 		processInput(window);
 
-		shader.use();
 		glm::mat4 view = camera.GetViewMatrix();
 		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
-		shader.setMat4("view", view);
-		shader.setMat4("projection", projection);
+		glm::mat4 model = glm::mat4(1.0f);
 
+		//---------------------
+		// SET LIGHT PROPERTIES
+		//---------------------
+		shader.use();
 		shader.setVec3("lightPos",lightPosition);
 		shader.setVec3("lightColor", lightColor);
 		shader.setVec3("viewPos", camera.Position);
 		shader.setVec3("specularColor", lightColor);
-
 		shader.setBool("blinnModel", isLightBlinn);
 		
 		//----------------------
 		// DRAW PLANE AS A FLOOR
 		//----------------------
-		glBindVertexArray(planeVAO);
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, floorTexture);
-		glDrawArrays(GL_TRIANGLES, 0, 6);
-	
+		DrawPlane(shader, model, view, projection, planeVAO, floorTexture, 0);
+
 		glBindVertexArray(0);
 
 		//----------------------
 		// DRAW THE LIGHT SOURCE
 		//----------------------
-		glm::mat4 model = glm::mat4(1.0f);
 		model = glm::translate(model, lightPosition);
 		model = glm::scale(model, glm::vec3(0.6f));
 		lightSourceShader.use();
-		lightSourceShader.setMat4("view", view);
-		lightSourceShader.setMat4("projection", projection);
-		lightSourceShader.setMat4("model", model);
 		lightSourceShader.setVec3("lightColor", lightColor);
-
-		glBindVertexArray(lightVAO);
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, lightTexture);
-		glDrawArrays(GL_TRIANGLES, 0, 6);
-		glBindVertexArray(0);
+		DrawPlane(lightSourceShader, model, view, projection, lightVAO, lightTexture, 0);
+	
 
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
 		// -------------------------------------------------------------------------------

@@ -8,7 +8,7 @@ in VS_OUT {
 
 out vec4 FragColor;
 
-uniform sampler2D floorTexture;
+uniform sampler2D wood;
 
 uniform vec3 lightPos;
 uniform vec3 lightColor;
@@ -22,7 +22,7 @@ void main()
     //----------
     // AMBIENT
     //----------
-    vec3 ambient = vec3(texture(floorTexture, fs_in.TexCoords)* 0.02);
+    vec3 ambient = vec3(texture(wood, fs_in.TexCoords)* 0.02);
     
     //-----------
     // DIFFUSE
@@ -30,7 +30,7 @@ void main()
     vec3 normal = normalize(fs_in.Normal);
     vec3 lightDir = normalize(lightPos - fs_in.FragPos);
     float diffStrength = max(dot(normal, lightDir), 0.0);
-    vec3 diffuse = lightColor * diffStrength * vec3(texture(floorTexture, fs_in.TexCoords));
+    vec3 diffuse = lightColor * diffStrength * vec3(texture(wood, fs_in.TexCoords));
     
     //---------
     //SPECULAR

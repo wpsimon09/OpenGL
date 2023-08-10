@@ -152,6 +152,7 @@
     <ClInclude Include="Includes\camera.h" />
     <ClInclude Include="Includes\config.h" />
     <ClInclude Include="Includes\Cube.h" />
+    <ClInclude Include="Includes\DrawingFunctions.h" />
     <ClInclude Include="Includes\Grid.h" />
     <ClInclude Include="Includes\HelperFunctions.h" />
     <ClInclude Include="Includes\Light.h" />
@@ -159,6 +160,7 @@
     <ClInclude Include="Includes\Model.h" />
     <ClInclude Include="Includes\Shader.h" />
     <ClInclude Include="Includes\stb_image.h" />
+    <ClInclude Include="Includes\VaoCreation.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="3rdPartyLibraries\Includes\glad\glad.c" />
@@ -206,6 +208,7 @@
     <Image Include="Assets\Model\spaceship\model\texture\mainMat_metal.png" />
     <Image Include="Assets\Model\spaceship\model\texture\mainMat_nrm.png" />
     <Image Include="Assets\Model\spaceship\model\texture\mainMat_rough.png" />
+    <Image Include="Assets\Textures\AdvancedLightning\cube-wood.jpg" />
     <Image Include="Assets\Textures\AdvancedLightning\light.png" />
     <Image Include="Assets\Textures\AdvancedLightning\wood.png" />
     <Image Include="Assets\Textures\container.jpg" />

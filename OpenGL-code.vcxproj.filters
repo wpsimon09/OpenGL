@@ -57,6 +57,12 @@
     <ClInclude Include="Includes\Light.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Includes\DrawingFunctions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Includes\VaoCreation.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\main.cpp">
@@ -156,6 +162,9 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="Assets\Textures\AdvancedLightning\light.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Assets\Textures\AdvancedLightning\cube-wood.jpg">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>
