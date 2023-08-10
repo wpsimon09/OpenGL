@@ -45,7 +45,7 @@ bool isLightBlinn = true;
 
 
 //light possition
-glm::vec3 lightPosition(0.0, 0.4, 0.0);
+glm::vec3 lightPosition(2.0, 0.4, 0.0);
 
 glm::vec3 pointLightPositions[] = {
 glm::vec3(0.7f, 0.2f, 2.0f),
@@ -179,6 +179,7 @@ int main() {
 		lightSourceShader.setMat4("view", view);
 		lightSourceShader.setMat4("projection", projection);
 		lightSourceShader.setMat4("model", model);
+		lightSourceShader.setVec3("lightColor", colorOf(241.0f, 180.0f, 87.0f));
 
 		glBindVertexArray(lightVAO);
 		glActiveTexture(GL_TEXTURE0);

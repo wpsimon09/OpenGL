@@ -2,6 +2,8 @@
 
 uniform sampler2D lightTexture;
 
+uniform vec3 lightColor;
+
 in vec2 TextureCoords;
 
 out vec4 FragmentColor;
@@ -12,5 +14,5 @@ void main() {
 	if(texColor.a < 0.1)
 		discard;
 
-	FragmentColor = texColor;
+	FragmentColor = vec4(lightColor, 1.0f);
 }
