@@ -47,13 +47,19 @@ bool isLightBlinn = true;
 
 
 //light possition
-glm::vec3 lightPosition(2.0, 0.4, 0.0);
+glm::vec3 lightPosition(-2.0f, 4.0f, -1.0f);
 
 glm::vec3 pointLightPositions[] = {
 glm::vec3(0.7f, 0.2f, 2.0f),
 glm::vec3(2.3f, -3.3f, -4.0f),
 glm::vec3(-4.0f, 2.0f, -12.0f),
 glm::vec3(0.0f, 0.0f, -3.0f)
+};
+
+glm::vec3 cubePostions[] = {
+	glm::vec3(0.0f, 1.5f, 0.0),
+	glm::vec3(2.0f, 0.0f, 1.0),
+	glm::vec3(-1.0f, 0.0f, 2.0)
 };
 
 int main() {
@@ -93,6 +99,9 @@ int main() {
 
 	Shader lightSourceShader("VertexShader/AdvancedLightning/LightSourceVertex.glsl", "FragmentShader/AdvancedLightning/LightSourceFragment.glsl");
 
+	Shader woodenCubeShader("VertexShader/AdvancedLightning/WoodenCubeVertex.glsl", "FragmentShader/AdvancedLightning/WoodenCubeFragment.glsl");
+
+
 	// plane VAO
 	unsigned int planeVAO = createVAO(planeVertices, sizeof(planeVertices)/sizeof(float));
 
@@ -100,9 +109,12 @@ int main() {
 	//VBO, EBO and VAO for the square that represents light position
 	unsigned int lightVAO = createVAO(lightVertices,sizeof(lightVertices)/sizeof(float), false);
 
+	//cube VAO
+	unsigned int cubeVAO = createVAO(cubeVertices, sizeof(cubeVertices) / sizeof(float));;
+
 	unsigned int floorTexture = loadTexture("Assets/Textures/AdvancedLightning/wood.png", true);
 	unsigned int lightTexture = loadTexture("Assets/Textures/AdvancedLightning/light.png", true);
-	unsigned int cubeTexture = loadTexture("Assets/Textures/AdvancedLightning/cube-wood.jpg", true);
+	unsigned int cubeTexture = loadTexture("Assets/Textures/AdvancedLightning/cube-wood.jpg", false);
 
 	shader.use();
 	shader.setInt("wood", 0);
@@ -145,11 +157,30 @@ int main() {
 		//----------------------
 		DrawPlane(shader, model, view, projection, planeVAO, floorTexture, 0);
 
-		glBindVertexArray(0);
+		//-----------
+		// DRAW CUBES
+		//-----------
+		woodenCubeShader.use();
+		woodenCubeShader.setVec3("lightPos", lightPosition);
+		woodenCubeShader.setVec3("lightColor", lightColor);
+		for (int i = 0; i < 3; i++)
+		{
+			model = glm::mat4(1.0f);
+			model = glm::scale(model, glm::vec3(0.4f));
+			model = glm::translate(model, cubePostions[i]);
+			if (i == 2)
+			{
+				model = glm::rotate(model, (float)glm::radians(60.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+				model = glm::scale(model, glm::vec3(0.25));
+			}
+			DrawCube(woodenCubeShader, model, view, projection, cubeVAO, cubeTexture, 0);
+		}
+
 
 		//----------------------
 		// DRAW THE LIGHT SOURCE
 		//----------------------
+		model = glm::mat4(1.0f);
 		model = glm::translate(model, lightPosition);
 		model = glm::scale(model, glm::vec3(0.6f));
 		lightSourceShader.use();
