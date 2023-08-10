@@ -35,7 +35,7 @@ bool firstMouse = true;
 float deltaTime = 0.0f;	// time between current frame and last frame
 float lastFrame = 0.0f;
 
-glm::vec3 diffusePoint = COLOR_SUN;
+glm::vec3 lightColor = colorOf(241.0f, 180.0f, 87.0f);
 
 float constant = 1.0f;
 float linear = 0.22f;
@@ -153,9 +153,9 @@ int main() {
 		shader.setMat4("projection", projection);
 
 		shader.setVec3("lightPos",lightPosition);
-		shader.setVec3("lightColor", colorOf(241.0f, 180.0f, 87.0f));
+		shader.setVec3("lightColor", lightColor);
 		shader.setVec3("viewPos", camera.Position);
-		shader.setVec3("specularColor", colorOf(241.0f, 130.0f, 80.0f));
+		shader.setVec3("specularColor", lightColor);
 
 		shader.setBool("blinnModel", isLightBlinn);
 		
@@ -179,7 +179,7 @@ int main() {
 		lightSourceShader.setMat4("view", view);
 		lightSourceShader.setMat4("projection", projection);
 		lightSourceShader.setMat4("model", model);
-		lightSourceShader.setVec3("lightColor", colorOf(241.0f, 180.0f, 87.0f));
+		lightSourceShader.setVec3("lightColor", lightColor);
 
 		glBindVertexArray(lightVAO);
 		glActiveTexture(GL_TEXTURE0);
