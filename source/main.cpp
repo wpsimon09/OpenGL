@@ -101,6 +101,7 @@ int main() {
 
 	Shader woodenCubeShader("VertexShader/AdvancedLightning/WoodenCubeVertex.glsl", "FragmentShader/AdvancedLightning/WoodenCubeFragment.glsl");
 
+	Shader shadowMapShader("VertexShader/AdvancedLightning/ShadowMapVertex.glsl", "FragmentShader/AdvancedLightning/ShadowMapFragement.glsl");
 
 	// plane VAO
 	unsigned int planeVAO = createVAO(planeVertices, sizeof(planeVertices)/sizeof(float));
@@ -166,12 +167,63 @@ int main() {
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
 
-		glClearColor(0.101f, 0.101f, 0.101f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
 		// input
 		// -----
 		processInput(window);
+		
+		//--------------------------------------//
+		//------------- DEPTH MAP -------------//
+		//------------------------------------//
+
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glClear(GL_DEPTH_BUFFER_BIT);
+		glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
+		
+		glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
+		
+		// configure projection matrix
+		float nearPlane, farPlane;
+		nearPlane = 1.0f;
+		farPlane = 7.5f;
+		glm::mat4 lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, nearPlane, farPlane);
+
+		//configure view matrix
+		glm::mat4 lightView = glm::lookAt(
+			glm::vec3(-2.0f, 4.0f, -1.0f),
+			glm::vec3(0.0f, 0.0f, 0.0f),
+			glm::vec3(0.0f, 1.0f, 0.0f)
+		);
+
+		//combine them together to get the matrix that transfoms cooridnates from view space to light space
+		// in the notes as T 
+		glm::mat4 lightSpaceMatrix = lightProjection * lightView;
+
+		//draw the scene 
+		shadowMapShader.use();
+		shadowMapShader.setMat4("lightSpaceMatrix", lightSpaceMatrix);
+
+		glm::mat4 ligthModel = glm::mat4(1.0f);
+		DrawShadowMapPlane(shadowMapShader, ligthModel, lightSpaceMatrix, planeVAO);
+		for (int i = 0; i < 3; i++)
+		{
+			ligthModel = glm::mat4(1.0f);
+			ligthModel = glm::scale(ligthModel, glm::vec3(0.4f));
+			ligthModel = glm::translate(ligthModel, cubePostions[i]);
+			if (i == 2)
+			{
+				ligthModel = glm::rotate(ligthModel, (float)glm::radians(60.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+				ligthModel = glm::scale(ligthModel, glm::vec3(0.25));
+			}
+			DrawShadowMapCube(shadowMapShader, ligthModel, lightSpaceMatrix, cubeVAO);
+		}
+
+		//--------------------------------------//
+		//---------- NORMAL SCENE -------------//
+		//------------------------------------//
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glClearColor(0.101f, 0.101f, 0.101f, 1.0f);
+		glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
 
 		glm::mat4 view = camera.GetViewMatrix();
 		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
