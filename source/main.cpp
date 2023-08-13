@@ -154,10 +154,15 @@ int main() {
 
 	shader.use();
 	shader.setInt("wood", 0);
-	
+	shader.setInt("shadowMap", 1);
 
 	lightSourceShader.use();
-	shader.setInt("lightTexture", 0);
+	lightSourceShader.setInt("lightTexture", 0);
+
+	woodenCubeShader.use();
+	woodenCubeShader.setInt("woodCube", 0);
+
+	//===================================== RENDER LOOP ================================================//
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -170,17 +175,16 @@ int main() {
 		// input
 		// -----
 		processInput(window);
-		
+
 		//--------------------------------------//
 		//------------- DEPTH MAP -------------//
 		//------------------------------------//
 
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		glClear(GL_DEPTH_BUFFER_BIT);
-		glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
-		
 		glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
-		
+		glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
+		glClear(GL_DEPTH_BUFFER_BIT| GL_COLOR_BUFFER_BIT);
+
+
 		// configure projection matrix
 		float nearPlane, farPlane;
 		nearPlane = 1.0f;
@@ -188,13 +192,9 @@ int main() {
 		glm::mat4 lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, nearPlane, farPlane);
 
 		//configure view matrix
-		glm::mat4 lightView = glm::lookAt(
-			glm::vec3(-2.0f, 4.0f, -1.0f),
-			glm::vec3(0.0f, 0.0f, 0.0f),
-			glm::vec3(0.0f, 1.0f, 0.0f)
-		);
+		glm::mat4 lightView = glm::lookAt(lightPosition, glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
 
-		//combine them together to get the matrix that transfoms cooridnates from view space to light space
+		//combine them together to get the matrix that transfoms coordinates from view space to light space
 		// in the notes as T 
 		glm::mat4 lightSpaceMatrix = lightProjection * lightView;
 
@@ -203,7 +203,7 @@ int main() {
 		shadowMapShader.setMat4("lightSpaceMatrix", lightSpaceMatrix);
 
 		glm::mat4 ligthModel = glm::mat4(1.0f);
-		DrawShadowMapPlane(shadowMapShader, ligthModel, lightSpaceMatrix, planeVAO);
+		DrawShadowMapPlane(shadowMapShader, ligthModel, planeVAO);
 		for (int i = 0; i < 3; i++)
 		{
 			ligthModel = glm::mat4(1.0f);
@@ -214,16 +214,17 @@ int main() {
 				ligthModel = glm::rotate(ligthModel, (float)glm::radians(60.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 				ligthModel = glm::scale(ligthModel, glm::vec3(0.25));
 			}
-			DrawShadowMapCube(shadowMapShader, ligthModel, lightSpaceMatrix, cubeVAO);
+			DrawShadowMapCube(shadowMapShader, ligthModel, cubeVAO);
 		}
 
 		//--------------------------------------//
 		//---------- NORMAL SCENE -------------//
 		//------------------------------------//
+
+		glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glClearColor(0.101f, 0.101f, 0.101f, 1.0f);
-		glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
 
 		glm::mat4 view = camera.GetViewMatrix();
 		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
@@ -233,16 +234,23 @@ int main() {
 		// SET LIGHT PROPERTIES
 		//---------------------
 		shader.use();
+		
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, floorTexture);
+
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, depthMap);
+
 		shader.setVec3("lightPos",lightPosition);
 		shader.setVec3("lightColor", lightColor);
 		shader.setVec3("viewPos", camera.Position);
 		shader.setVec3("specularColor", lightColor);
-		shader.setBool("blinnModel", isLightBlinn);
-		
+		shader.setMat4("lightMatrix", lightSpaceMatrix);
+
 		//----------------------
 		// DRAW PLANE AS A FLOOR
 		//----------------------
-		DrawPlane(shader, model, view, projection, planeVAO, floorTexture, 0);
+		DrawPlane(shader, model, view, projection, planeVAO);
 
 		//-----------
 		// DRAW CUBES
@@ -250,6 +258,9 @@ int main() {
 		woodenCubeShader.use();
 		woodenCubeShader.setVec3("lightPos", lightPosition);
 		woodenCubeShader.setVec3("lightColor", lightColor);
+
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, cubeTexture);
 		for (int i = 0; i < 3; i++)
 		{
 			model = glm::mat4(1.0f);
@@ -260,7 +271,7 @@ int main() {
 				model = glm::rotate(model, (float)glm::radians(60.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 				model = glm::scale(model, glm::vec3(0.25));
 			}
-			DrawCube(woodenCubeShader, model, view, projection, cubeVAO, cubeTexture, 0);
+			DrawCube(woodenCubeShader, model, view, projection, cubeVAO);
 		}
 
 
@@ -272,7 +283,9 @@ int main() {
 		model = glm::scale(model, glm::vec3(0.6f));
 		lightSourceShader.use();
 		lightSourceShader.setVec3("lightColor", lightColor);
-		DrawPlane(lightSourceShader, model, view, projection, lightVAO, lightTexture, 0);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, lightTexture);
+		DrawPlane(lightSourceShader, model, view, projection, lightVAO);
 	
 
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)

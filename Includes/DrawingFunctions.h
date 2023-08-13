@@ -15,7 +15,7 @@
 /// <param name="texture">actual texture image to use</param>
 /// <param name="textureSamplerNumber">texture image sampler number</param>
 /// <param name=""></param>
-void DrawCube(Shader shader, glm::mat4 model, glm::mat4 view, glm::mat4 projection, unsigned int VAO, unsigned int texture, unsigned int textureSamplerNumber)
+void DrawCube(Shader shader, glm::mat4 model, glm::mat4 view, glm::mat4 projection, unsigned int VAO)
 {
 	shader.use();
 	glBindVertexArray(VAO);
@@ -23,9 +23,6 @@ void DrawCube(Shader shader, glm::mat4 model, glm::mat4 view, glm::mat4 projecti
 	shader.setMat4("model", model);
 	shader.setMat4("view", view);
 	shader.setMat4("projection", projection);
-
-	glActiveTexture(GL_TEXTURE+textureSamplerNumber);
-	glBindTexture(GL_TEXTURE_2D, texture);
 
 	glDrawArrays(GL_TRIANGLES, 0, 36);
 
@@ -39,13 +36,12 @@ void DrawCube(Shader shader, glm::mat4 model, glm::mat4 view, glm::mat4 projecti
 /// <param name="model">Where is object in the world space located</param>
 /// <param name="lightSpaceMatrix">Matrix that transforms coordinates to the perspective of light (projections * view)</param>
 /// <param name="VAO">Vertex array object to be used</param>
-void DrawShadowMapCube(Shader shader, glm::mat4 model, glm::mat4 lightSpaceMatrix, unsigned int VAO) 
+void DrawShadowMapCube(Shader shader, glm::mat4 model, unsigned int VAO) 
 {
 	shader.use();
 	glBindVertexArray(VAO);
 
 	shader.setMat4("model", model);
-	shader.setMat4("lightSpaceMatrix", lightSpaceMatrix);
 
 	glDrawArrays(GL_TRIANGLES, 0, 36);
 
@@ -63,7 +59,7 @@ void DrawShadowMapCube(Shader shader, glm::mat4 model, glm::mat4 lightSpaceMatri
 /// <param name="texture">actual texture image to use</param>
 /// <param name="textureSamplerNumber">texture image sampler number</param>
 /// <param name=""></param>
-void DrawPlane(Shader shader, glm::mat4 model, glm::mat4 view, glm::mat4 projection, unsigned int VAO, unsigned int texture, unsigned int textureSamplerNumber)
+void DrawPlane(Shader shader, glm::mat4 model, glm::mat4 view, glm::mat4 projection, unsigned int VAO)
 {
 	shader.use();
 	glBindVertexArray(VAO);
@@ -71,9 +67,6 @@ void DrawPlane(Shader shader, glm::mat4 model, glm::mat4 view, glm::mat4 project
 	shader.setMat4("model", model);
 	shader.setMat4("view", view);
 	shader.setMat4("projection", projection);
-
-	glActiveTexture(GL_TEXTURE + textureSamplerNumber);
-	glBindTexture(GL_TEXTURE_2D, texture);
 
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 
@@ -87,15 +80,15 @@ void DrawPlane(Shader shader, glm::mat4 model, glm::mat4 view, glm::mat4 project
 /// <param name="model">Model matrix where to locate it in world space</param>
 /// <param name="lightSpaceMatrix">Transfrom points in the light's POV</param>
 /// <param name="VAO">Vertex array object to use</param>
-void DrawShadowMapPlane(Shader shader, glm::mat4 model, glm::mat4 lightSpaceMatrix, unsigned int VAO)
+void DrawShadowMapPlane(Shader shader, glm::mat4 model, unsigned int VAO)
 {
 	shader.use();
 	glBindVertexArray(VAO);
 
-	shader.setMat4("lightSpaceMatrix", lightSpaceMatrix);
 	shader.setMat4("model", model);
 
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 
 	glBindVertexArray(0);
 }
+
