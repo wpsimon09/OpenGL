@@ -185,7 +185,7 @@ int main() {
 		glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
 		glClear(GL_DEPTH_BUFFER_BIT| GL_COLOR_BUFFER_BIT);
 
-
+		glCullFace(GL_FRONT);
 		// configure projection matrix
 		float nearPlane, farPlane;
 		nearPlane = 1.0f;
@@ -217,7 +217,7 @@ int main() {
 			}
 			DrawShadowMapCube(shadowMapShader, ligthModel, cubeVAO);
 		}
-
+		glCullFace(GL_BACK);
 		//--------------------------------------//
 		//---------- NORMAL SCENE -------------//
 		//------------------------------------//
