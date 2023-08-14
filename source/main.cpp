@@ -148,8 +148,8 @@ int main() {
 	//-----------------
 	// TEXTURES LOADING
 	//-----------------
-	unsigned int floorTexture = loadTexture("Assets/Textures/AdvancedLightning/wood.png", true);
-	unsigned int lightTexture = loadTexture("Assets/Textures/AdvancedLightning/light.png", true);
+	unsigned int floorTexture = loadTexture("Assets/Textures/AdvancedLightning/wood.png", false);
+	unsigned int lightTexture = loadTexture("Assets/Textures/AdvancedLightning/light.png", false);
 	unsigned int cubeTexture = loadTexture("Assets/Textures/AdvancedLightning/cube-wood.jpg", false);
 
 	shader.use();
@@ -235,11 +235,8 @@ int main() {
 		//---------------------
 		shader.use();
 		
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, floorTexture);
-
-		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, depthMap);
+		useTexture(0, floorTexture);
+		useTexture(1, depthMap);
 
 		shader.setVec3("lightPos",lightPosition);
 		shader.setVec3("lightColor", lightColor);

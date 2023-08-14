@@ -20,7 +20,7 @@ uniform bool blinnModel;
 
 uniform vec3 specularColor;
 
-float caclualteShadow(vec4 FragPosLight)
+float caclualteShadow(vec4 FragPosLight, float bias)
 {
     //tranfsforms fragment position in ragne from [0, 1]
     vec3 projCoords = FragPosLight.xyz / FragPosLight.w;
@@ -36,7 +36,8 @@ float caclualteShadow(vec4 FragPosLight)
     //compare if current depth value is bigger than the closest depth value
     // is true object is not in the shadow (1.0)
     // if false object is in the shadow (0.0)
-    float shadow = currentDepth > closestDepth ? 1.0 : 0.0;
+
+    float shadow = currentDepth - bias > closestDepth ? 1.0 : 0.0;
 
     return shadow;
 
@@ -70,7 +71,8 @@ void main()
     //---------
     // SHADOWS
     //---------
-    float shadow = caclualteShadow(fs_in.FragPosLight);
+    float bias = max(0.05 * (1.0 - dot(normal, lightDir)), 0.005);
+    float shadow = caclualteShadow(fs_in.FragPosLight, bias);
     vec3 result = (ambient + (1.0 - shadow) * (diffuse + specular)) * texture(wood, fs_in.TexCoords).rgb;
 
     //-------------

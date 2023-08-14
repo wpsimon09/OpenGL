@@ -69,6 +69,13 @@ unsigned int loadTexture(char const* path, bool gammaCorrection)
 }
 
 
+void useTexture(unsigned int samplerNumber, unsigned int texture)
+{
+	glActiveTexture(GL_TEXTURE0 + samplerNumber);
+	glBindTexture(GL_TEXTURE_2D, texture);
+}
+
+
 float cubeVertices[] = {
 	 // back face
             -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 0.0f, // bottom-left
