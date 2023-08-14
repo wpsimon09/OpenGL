@@ -57,8 +57,8 @@ glm::vec3(0.0f, 0.0f, -3.0f)
 };
 
 glm::vec3 cubePostions[] = {
-	glm::vec3(0.0f, 1.5f, 0.0),
-	glm::vec3(2.0f, 0.0f, 1.0),
+	glm::vec3(-0.2f, 1.0f, 0.0),
+	glm::vec3(3.0f, 0.0f, 0.0),
 	glm::vec3(-1.0f, 0.0f, 2.0)
 };
 
@@ -161,6 +161,7 @@ int main() {
 
 	woodenCubeShader.use();
 	woodenCubeShader.setInt("woodCube", 0);
+	woodenCubeShader.setInt("shadowMap", 1);
 
 	//===================================== RENDER LOOP ================================================//
 
@@ -255,9 +256,10 @@ int main() {
 		woodenCubeShader.use();
 		woodenCubeShader.setVec3("lightPos", lightPosition);
 		woodenCubeShader.setVec3("lightColor", lightColor);
+		woodenCubeShader.setMat4("lightMatrix", lightSpaceMatrix);
 
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, cubeTexture);
+		useTexture(0, cubeTexture);
+		useTexture(1, depthMap);
 		for (int i = 0; i < 3; i++)
 		{
 			model = glm::mat4(1.0f);
@@ -280,8 +282,7 @@ int main() {
 		model = glm::scale(model, glm::vec3(0.6f));
 		lightSourceShader.use();
 		lightSourceShader.setVec3("lightColor", lightColor);
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, lightTexture);
+		useTexture(0, lightTexture);
 		DrawPlane(lightSourceShader, model, view, projection, lightVAO);
 	
 

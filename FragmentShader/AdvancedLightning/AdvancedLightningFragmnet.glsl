@@ -36,7 +36,6 @@ float caclualteShadow(vec4 FragPosLight, float bias)
     //compare if current depth value is bigger than the closest depth value
     // is true object is not in the shadow (1.0)
     // if false object is in the shadow (0.0)
-
     float shadow = currentDepth - bias > closestDepth ? 1.0 : 0.0;
 
     return shadow;
@@ -48,7 +47,7 @@ void main()
     //----------
     // AMBIENT
     //----------
-    vec3 ambient = vec3(texture(wood, fs_in.TexCoords)* 0.02);
+    vec3 ambient = vec3(texture(wood, fs_in.TexCoords)* 0.2);
     
     //-----------
     // DIFFUSE
@@ -71,7 +70,8 @@ void main()
     //---------
     // SHADOWS
     //---------
-    float bias = max(0.05 * (1.0 - dot(normal, lightDir)), 0.005);
+    float bias = max(0.09 * (1.0 - dot(normal, lightDir)), 0.05);
+
     float shadow = caclualteShadow(fs_in.FragPosLight, bias);
     vec3 result = (ambient + (1.0 - shadow) * (diffuse + specular)) * texture(wood, fs_in.TexCoords).rgb;
 
