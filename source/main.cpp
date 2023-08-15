@@ -47,7 +47,7 @@ bool isLightBlinn = true;
 
 
 //light possition
-glm::vec3 lightPosition(-2.0f, 4.0f, -1.0f);
+glm::vec3 lightPosition(-2.0f, 2.0f, -1.0f);
 
 glm::vec3 pointLightPositions[] = {
 glm::vec3(0.7f, 0.2f, 2.0f),
@@ -58,7 +58,7 @@ glm::vec3(0.0f, 0.0f, -3.0f)
 
 glm::vec3 cubePostions[] = {
 	glm::vec3(-0.2f, 1.0f, 0.0),
-	glm::vec3(3.0f, 0.0f, 0.0),
+	glm::vec3(3.0f, 0.0f, 3.0),
 	glm::vec3(-1.0f, 0.0f, 2.0)
 };
 
@@ -124,11 +124,13 @@ int main() {
 	glBindTexture(GL_TEXTURE_2D, depthMap);
 	//NOTE how we set a texture type to be GL_DEPTH_COMPONENT instead GL_RGB or GL_RGBA
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+	float borderColor[] = {1.0f, 1.0f, 1.0f, 1.0f};
+	glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
 	//set the textures prameters
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
 
 	//-------------------
 	// SHADOW MAPPING FBO
