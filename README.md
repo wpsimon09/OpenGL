@@ -1,13 +1,16 @@
-In this chapter, we discussed what is gamma correction and why does not color appear on the monitor in the way we define it 
+In this chapter, we discussed how to render shadows and how to make them look as believable as possible We rendered the scene from the light perspective and then mapped depth values to the texture that was attached to the frame buffer where the scene was rendered to, then we rendered the scene as normal on the default frame buffer
 
-We also introduced  multiple ways on how to fix this problem
+To calculate shadows we had to transform the positions of the objects to the light's POV and check whether their depth value is smaller or greater than the depth value of the shadow map
 
->Gamma corection off
+Then we had to fix the following issues raised by shadow generation
 
-![Alt text](Assets/ReadmeImages/GammaCorection/gammaoff.png)
+- shadow acne
+- petter panning
+- oversampling
+- PCF
 
->Gamma corection on
+After everything was corrected the scene look like this
 
-![Alt text](Assets/ReadmeImages/GammaCorection/gammaon.png)
+We used the directional light (like sun) and orthographical projection instead of the perspective projection for the rendering the scene from the light's POV
 
-![Alt text](Assets/ReadmeImages/GammaCorection/gammaCorectionWithLIght.png)
+![Alt text](Assets/ReadmeImages/ShadowMapping/shadows.png)

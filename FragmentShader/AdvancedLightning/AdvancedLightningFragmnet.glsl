@@ -28,7 +28,7 @@ float caclualteShadow(vec4 FragPosLight, float bias)
 
     //get the closest depth value from the shadow map
     //closest object to the light
-    float closestDepth = texture(shadowMap, projCoords.xy).r;
+    float closestDepth = texture(shadowMap, projCoords.xy).w;
     
     //get the depth value of the current fragment 
     float currentDepth = projCoords.z;
