@@ -322,10 +322,13 @@ void processInput(GLFWwindow *window)
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 		camera.ProcessKeyboard(RIGHT, deltaTime);
 	if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
-		isLightBlinn = true;
+		lightPosition.z += 0.002;
 	if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
-		isLightBlinn = false;
-
+		lightPosition.z -= 0.002;
+	if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
+		lightPosition.x += 0.002;
+	if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
+		lightPosition.x -= 0.002;
 }
 
 float opacityOfTexture(GLFWwindow* window, Shader shader) {
