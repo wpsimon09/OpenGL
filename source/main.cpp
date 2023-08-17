@@ -201,7 +201,7 @@ int main() {
 		// in the notes as T 
 		glm::mat4 lightSpaceMatrix = lightProjection * lightView;
 
-		//draw the scene 
+		//draw the scene to the depth map
 		shadowMapShader.use();
 		shadowMapShader.setMat4("lightSpaceMatrix", lightSpaceMatrix);
 
