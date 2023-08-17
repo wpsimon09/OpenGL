@@ -119,28 +119,31 @@ int main() {
 	//------------------
 	//resolution of the depth map
 	const unsigned int SHADOW_HEIGHT = 1024, SHADOW_WIDTH = 1024;
-	unsigned int depthMap;
-	glGenTextures(1, &depthMap);
-	glBindTexture(GL_TEXTURE_2D, depthMap);
-	//NOTE how we set a texture type to be GL_DEPTH_COMPONENT instead GL_RGB or GL_RGBA
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-	float borderColor[] = {1.0f, 1.0f, 1.0f, 1.0f};
-	glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
-	//set the textures prameters
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+	unsigned int depthCubeMap;
+	glGenTextures(1, &depthCubeMap);
+	
+	//loop through each face of the cube
+	for (unsigned int i = 0; i < 6; i++)
+	{
+		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_DEPTH_COMPONENT, SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
+		float borderColor[] = { 1.0, 1.0, 1.0, 1.0 };
+		glTexParameterfv(GL_TEXTURE_CUBE_MAP_POSITIVE_X+i, GL_TEXTURE_BORDER_COLOR, borderColor);
+	}
 
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_BORDER);
 	//-------------------
 	// SHADOW MAPPING FBO
 	//-------------------
-	unsigned int depthMapFBO;
+	unsigned int depthMapFBO;	
 	glGenFramebuffers(1, &depthMapFBO);
 	glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
 
 	//attatch texture to the frame buffer depth value
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap, 0);
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthCubeMap);
 	//we are not going to need the color buffer
 	//we tell this to openGl like so
 	glDrawBuffer(GL_NONE);
@@ -189,22 +192,24 @@ int main() {
 
 		glCullFace(GL_FRONT);
 		// configure projection matrix
+		float aspect = (float)SHADOW_WIDTH / (float)SHADOW_HEIGHT;
 		float nearPlane, farPlane;
 		nearPlane = 1.0f;
 		farPlane = 7.5f;
-		glm::mat4 lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, nearPlane, farPlane);
+		glm::mat4 lightProjection = glm::perspective(glm::radians(90.0f), aspect, nearPlane, farPlane);
 
-		//configure view matrix
-		glm::mat4 lightView = glm::lookAt(lightPosition, glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
+		//calculate transform matrix (T = projection * view) and store it for each face of the cube
+		std::vector<glm::mat4>shadowTransform;
+		
+		//do this for each face of the cube map
+		shadowTransform.push_back(lightProjection * glm::lookAt(lightPosition, lightPosition + glm::vec3(1.0, 0.0, 0.0), glm::vec3(0.0, -1.0, 0.0)));
+		shadowTransform.push_back(lightProjection * glm::lookAt(lightPosition, lightPosition + glm::vec3(-1.0, 0.0, 0.0), glm::vec3(0.0, -1.0, 0.0)));
+		shadowTransform.push_back(lightProjection * glm::lookAt(lightPosition, lightPosition + glm::vec3(0.0, 1.0, 0.0), glm::vec3(0.0, 0.0, 1.0)));
 
-		//combine them together to get the matrix that transfoms coordinates from view space to light space
-		// in the notes as T 
-		glm::mat4 lightSpaceMatrix = lightProjection * lightView;
-
-		//draw the scene to the depth map
-		shadowMapShader.use();
-		shadowMapShader.setMat4("lightSpaceMatrix", lightSpaceMatrix);
-
+		shadowTransform.push_back(lightProjection * glm::lookAt(lightPosition, lightPosition + glm::vec3(0.0, -1.0, 0.0), glm::vec3(0.0, 0.0, -1.0)));
+		shadowTransform.push_back(lightProjection * glm::lookAt(lightPosition, lightPosition + glm::vec3(0.0, 0.0, 1.0), glm::vec3(0.0, -1.0, 0.0)));
+		shadowTransform.push_back(lightProjection * glm::lookAt(lightPosition, lightPosition + glm::vec3(0.0, 0.0, -1.0), glm::vec3(0.0, -1.0, -1.0)));
+		
 		glm::mat4 ligthModel = glm::mat4(1.0f);
 		DrawShadowMapPlane(shadowMapShader, ligthModel, planeVAO);
 		for (int i = 0; i < 3; i++)
@@ -239,13 +244,12 @@ int main() {
 		shader.use();
 		
 		useTexture(0, floorTexture);
-		useTexture(1, depthMap);
+		useTexture(1, depthCubeMap);
 
 		shader.setVec3("lightPos",lightPosition);
 		shader.setVec3("lightColor", lightColor);
 		shader.setVec3("viewPos", camera.Position);
 		shader.setVec3("specularColor", lightColor);
-		shader.setMat4("lightMatrix", lightSpaceMatrix);
 
 		//----------------------
 		// DRAW PLANE AS A FLOOR
@@ -258,10 +262,9 @@ int main() {
 		woodenCubeShader.use();
 		woodenCubeShader.setVec3("lightPos", lightPosition);
 		woodenCubeShader.setVec3("lightColor", lightColor);
-		woodenCubeShader.setMat4("lightMatrix", lightSpaceMatrix);
 
 		useTexture(0, cubeTexture);
-		useTexture(1, depthMap);
+		useTexture(1, depthCubeMap);
 		for (int i = 0; i < 3; i++)
 		{
 			model = glm::mat4(1.0f);
