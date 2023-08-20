@@ -32,7 +32,7 @@ You are also able to move light
 
 - left and right arrows move light along x-axis
 
--shift move light up
+- left shift move light up
 
 - left control move light down
 
