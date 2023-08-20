@@ -26,6 +26,16 @@ With this approach, I can see different results of the chapter simply just by ch
 
 In the scene, you are able to move around with your mouse and with W, A, S, D
 
+
+You are also able to move light
+- up and down arrows move light along z-axis
+
+- left and right arrows move light along x-axis
+
+-shift move light up
+
+- left control move light down
+
 # Building
 
 **YOU THEORETICALLY NEED TO ONLY CLONE THE REPO IN ORDER FOR IT TO WORK**
