@@ -18,6 +18,10 @@ Each branch is covering one chapter in the book and I used the following naming
 
 `advance-opengl-name-of-the-chapter`
 
+or
+
+`advanced-lightning-shadow-mapping`
+
 With this approach, I can see different results of the chapter simply just by checking out to the different branch
 
 **README** of each branch will contain screenshots of the scene that will be showing different outcomes of different rendering techniques 
