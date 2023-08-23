@@ -47,7 +47,7 @@ bool isLightBlinn = true;
 
 
 //light possition
-glm::vec3 lightPosition(-2.0f, 2.0f, -1.0f);
+glm::vec3 lightPosition(-2.0f, 0.0f, -1.0f);
 
 glm::vec3 pointLightPositions[] = {
 glm::vec3(0.7f, 0.2f, 2.0f),
@@ -57,9 +57,9 @@ glm::vec3(0.0f, 0.0f, -3.0f)
 };
 
 glm::vec3 cubePostions[] = {
-	glm::vec3(-0.2f, 1.0f, 0.0),
-	glm::vec3(3.0f, 0.0f, 3.0),
-	glm::vec3(-1.0f, 0.0f, 2.0)
+	glm::vec3(-4.0f, 4.0f, 3.0),
+	glm::vec3(3.0f, -4.0f, 3.0),
+	glm::vec3(-1.0f, -3.0f, -2.0)
 };
 
 int main() {
@@ -101,7 +101,7 @@ int main() {
 
 	Shader woodenCubeShader("VertexShader/AdvancedLightning/WoodenCubeVertex.glsl", "FragmentShader/AdvancedLightning/WoodenCubeFragment.glsl");
 
-	Shader shadowMapShader("VertexShader/AdvancedLightning/ShadowMapVertex.glsl", "FragmentShader/AdvancedLightning/ShadowMapFragement.glsl");
+	Shader shadowMapShader("VertexShader/AdvancedLightning/ShadowMapVertex.glsl", "FragmentShader/AdvancedLightning/ShadowMapFragement.glsl", "GeometryShader/ShadowMapGeometry.glsl");
 
 	// plane VAO
 	unsigned int planeVAO = createVAO(planeVertices, sizeof(planeVertices)/sizeof(float));
@@ -252,10 +252,11 @@ int main() {
 		shader.setVec3("specularColor", lightColor);
 
 		//----------------------
-		// DRAW PLANE AS A FLOOR
+		// DRAW CUBE ROOM
 		//----------------------
-		DrawPlane(shader, model, view, projection, planeVAO);
-
+		model = glm::mat4(1.0f);
+		model = glm::scale(model, glm::vec3(6.0f));
+		DrawCube(shader, model, view, projection, cubeVAO);
 		//-----------
 		// DRAW CUBES
 		//-----------
@@ -268,12 +269,11 @@ int main() {
 		for (int i = 0; i < 3; i++)
 		{
 			model = glm::mat4(1.0f);
-			model = glm::scale(model, glm::vec3(0.4f));
 			model = glm::translate(model, cubePostions[i]);
 			if (i == 2)
 			{
 				model = glm::rotate(model, (float)glm::radians(60.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-				model = glm::scale(model, glm::vec3(0.25));
+				model = glm::scale(model, glm::vec3(0.5));
 			}
 			DrawCube(woodenCubeShader, model, view, projection, cubeVAO);
 		}
@@ -332,6 +332,10 @@ void processInput(GLFWwindow *window)
 		lightPosition.x += 0.002;
 	if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
 		lightPosition.x -= 0.002;
+	if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
+		lightPosition.y -= 0.002;
+	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+		lightPosition.y += 0.002;
 }
 
 float opacityOfTexture(GLFWwindow* window, Shader shader) {

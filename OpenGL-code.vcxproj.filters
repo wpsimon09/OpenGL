@@ -96,6 +96,7 @@
     <None Include="VertexShader\AdvancedLightning\WoodenCubeVertex.glsl" />
     <None Include="VertexShader\AdvancedLightning\ShadowMapVertex.glsl" />
     <None Include="FragmentShader\AdvancedLightning\ShadowMapFragement.glsl" />
+    <None Include="GeometryShader\ShadowMapGeometry.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\Textures\container.jpg">

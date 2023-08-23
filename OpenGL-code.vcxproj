@@ -179,6 +179,7 @@
     <None Include="FragmentShader\DepthTestingFragment.glsl" />
     <None Include="FragmentShader\FragmentShader.glsl" />
     <None Include="FragmentShader\LightFragmentShader.glsl" />
+    <None Include="GeometryShader\ShadowMapGeometry.glsl" />
     <None Include="VertexShader\AdvancedLightning\AdvancedLightningVertex.glsl" />
     <None Include="VertexShader\AdvancedLightning\LightSourceVertex.glsl" />
     <None Include="VertexShader\AdvancedLightning\ShadowMapVertex.glsl" />

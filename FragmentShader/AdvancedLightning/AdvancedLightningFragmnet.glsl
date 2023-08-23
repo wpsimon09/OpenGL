@@ -72,7 +72,7 @@ void main()
     //-----------
     // DIFFUSE
     //-----------
-    vec3 normal = normalize(fs_in.Normal);
+    vec3 normal = normalize(-fs_in.Normal);
     vec3 lightDir = normalize(lightPos - fs_in.FragPos);
     float diffStrength = max(dot(normal, lightDir), 0.0);
     vec3 diffuse = lightColor * diffStrength * vec3(texture(wood, fs_in.TexCoords));
