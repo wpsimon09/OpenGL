@@ -69,11 +69,12 @@ unsigned int loadTexture(char const* path, bool gammaCorrection)
 }
 
 
-void useTexture(unsigned int samplerNumber, unsigned int texture)
+void useTexture(unsigned int samplerNumber, unsigned int texture, GLenum textureType = GL_TEXTURE_2D)
 {
 	glActiveTexture(GL_TEXTURE0 + samplerNumber);
-	glBindTexture(GL_TEXTURE_2D, texture);
+	glBindTexture(textureType, texture);
 }
+
 
 
 float cubeVertices[] = {

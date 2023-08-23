@@ -4,13 +4,12 @@ in VS_OUT {
     vec3 FragPos;
     vec3 Normal;
     vec2 TexCoords;
-    vec4 FragPosLight;
 }fs_in;
 
 out vec4 FragColor;
 
 uniform sampler2D wood;
-uniform sampler2D shadowMap;
+uniform samplerCube shadowMap;
 
 uniform vec3 lightPos;
 uniform vec3 lightColor;
@@ -18,45 +17,28 @@ uniform vec3 viewPos;
 
 uniform bool blinnModel;
 
+uniform float far_plane;
+
 uniform vec3 specularColor;
 
-float caclualteShadow(vec4 FragPosLight, float bias)
+float closestDepthDebug;
+
+float caclualteShadow(vec3 FragPos, float bias)
 {
-    //tranfsforms fragment position in ragne from [0, 1]
-    vec3 projCoords = FragPosLight.xyz / FragPosLight.w;
-    projCoords = projCoords * 0.5 + 0.5;
+    //get the directional vector between light and fragment that is beeing rendered
+    vec3 fragToLight = FragPos - lightPos;
 
-    //get the closest depth value from the shadow map
-    //closest object to the light
-    float closestDepth = texture(shadowMap, projCoords.xy).w;
-    
-    //get the depth value of the current fragment 
-    float currentDepth = projCoords.z;
+    //use the directional vector to sample from the cube map and retrieve the depth value
+    float closestDepth = texture(shadowMap, fragToLight).r;
+    //right now it is in the range [0, 1] we want it to be in the rangle of [0, far_plane]
+    // so that we can compare it later on
+    closestDepth *= far_plane;
+    closestDepthDebug = closestDepth;
 
-    //compare if current depth value is bigger than the closest depth value
-    // is true object is not in the shadow (1.0)
-    // if false object is in the shadow (0.0)
-    float shadow = 0;
+    //retrieve the length between light and the current fragment 
+    float curentDepth = length(fragToLight);
 
-    //this will be used for sampling neiborough texels in mipmap level 0
-    vec2 texelSize = 1.0 / textureSize(shadowMap, 0);
-
-    // creates 3x3 grid around the sampled texel
-    for(int x = -1; x <= 1; ++x)
-    {
-        for(int y = -1; y <= 1; ++y)
-        {
-            //sample the surounding texel
-            //the multiplication by texelSize is necesary since the shadow map is in different resolution
-            float pcfDepth = texture(shadowMap, projCoords.xy + vec2(x, y) * texelSize).r;
-            shadow += currentDepth - bias > pcfDepth ? 1.0 : 0.0;
-        }
-    }
-    //calculate the average 
-    shadow /= 9.0;
-
-    if(projCoords.z > 1.0)
-        shadow = 0.0;   
+    float shadow = curentDepth - bias > closestDepth ? 1.0 : 0.0;
 
     return shadow;
 
@@ -90,13 +72,21 @@ void main()
     //---------
     // SHADOWS
     //---------
-    float bias = max(0.09 * (1.0 - dot(normal, lightDir)), 0.05);
+    float bias = 0.05;
 
-    float shadow = caclualteShadow(fs_in.FragPosLight, bias);
-    vec3 result = (ambient + (1.0 - shadow) * (diffuse + specular)) * texture(wood, fs_in.TexCoords).rgb;
-
+    float shadow = caclualteShadow(fs_in.FragPos, bias);
+    //
+    
+    vec3 result = ambient + diffuse + specular;
+    
+    vec3 shadowResult = (ambient + (1.0 - shadow) * (diffuse + specular)) * texture(wood, fs_in.TexCoords).rgb;
     //-------------
     // FINAL RESULT
     //-------------    
-    FragColor = vec4(result,1.0);
+
+    //vec4(vec3(closestDepthDebug / far_plane), 1.0);
+    if(gl_FragCoord.y < 300)
+        FragColor = vec4(shadowResult, 1.0);
+    else 
+        FragColor = vec4(result, 1.0);
 }

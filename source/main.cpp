@@ -80,6 +80,7 @@ int main() {
 	glfwMakeContextCurrent(window);
 	gladLoadGL();
 	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_CULL_FACE);
 
 	//enables gama correction that is build in opengl
 	glEnable(GL_FRAMEBUFFER_SRGB);
@@ -121,20 +122,18 @@ int main() {
 	const unsigned int SHADOW_HEIGHT = 1024, SHADOW_WIDTH = 1024;
 	unsigned int depthCubeMap;
 	glGenTextures(1, &depthCubeMap);
-	
+	glBindTexture(1, depthCubeMap);
 	//loop through each face of the cube
 	for (unsigned int i = 0; i < 6; i++)
 	{
 		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_DEPTH_COMPONENT, SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
-		float borderColor[] = { 1.0, 1.0, 1.0, 1.0 };
-		glTexParameterfv(GL_TEXTURE_CUBE_MAP_POSITIVE_X+i, GL_TEXTURE_BORDER_COLOR, borderColor);
 	}
 
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_BORDER);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 	//-------------------
 	// SHADOW MAPPING FBO
 	//-------------------
@@ -143,7 +142,7 @@ int main() {
 	glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
 
 	//attatch texture to the frame buffer depth value
-	glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthCubeMap);
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, depthCubeMap, 0);
 	//we are not going to need the color buffer
 	//we tell this to openGl like so
 	glDrawBuffer(GL_NONE);
@@ -190,28 +189,38 @@ int main() {
 		glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
 		glClear(GL_DEPTH_BUFFER_BIT| GL_COLOR_BUFFER_BIT);
 
-		glCullFace(GL_FRONT);
 		// configure projection matrix
 		float aspect = (float)SHADOW_WIDTH / (float)SHADOW_HEIGHT;
 		float nearPlane, farPlane;
 		nearPlane = 1.0f;
-		farPlane = 7.5f;
+		farPlane = 25.5f;
 		glm::mat4 lightProjection = glm::perspective(glm::radians(90.0f), aspect, nearPlane, farPlane);
 
 		//calculate transform matrix (T = projection * view) and store it for each face of the cube
-		std::vector<glm::mat4>shadowTransform;
+		std::vector<glm::mat4>shadowTransforms;
 		
 		//do this for each face of the cube map
-		shadowTransform.push_back(lightProjection * glm::lookAt(lightPosition, lightPosition + glm::vec3(1.0, 0.0, 0.0), glm::vec3(0.0, -1.0, 0.0)));
-		shadowTransform.push_back(lightProjection * glm::lookAt(lightPosition, lightPosition + glm::vec3(-1.0, 0.0, 0.0), glm::vec3(0.0, -1.0, 0.0)));
-		shadowTransform.push_back(lightProjection * glm::lookAt(lightPosition, lightPosition + glm::vec3(0.0, 1.0, 0.0), glm::vec3(0.0, 0.0, 1.0)));
-
-		shadowTransform.push_back(lightProjection * glm::lookAt(lightPosition, lightPosition + glm::vec3(0.0, -1.0, 0.0), glm::vec3(0.0, 0.0, -1.0)));
-		shadowTransform.push_back(lightProjection * glm::lookAt(lightPosition, lightPosition + glm::vec3(0.0, 0.0, 1.0), glm::vec3(0.0, -1.0, 0.0)));
-		shadowTransform.push_back(lightProjection * glm::lookAt(lightPosition, lightPosition + glm::vec3(0.0, 0.0, -1.0), glm::vec3(0.0, -1.0, -1.0)));
+		shadowTransforms.push_back(lightProjection * glm::lookAt(lightPosition, lightPosition + glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
+		shadowTransforms.push_back(lightProjection * glm::lookAt(lightPosition, lightPosition + glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
+		shadowTransforms.push_back(lightProjection * glm::lookAt(lightPosition, lightPosition + glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)));
 		
+		shadowTransforms.push_back(lightProjection * glm::lookAt(lightPosition, lightPosition + glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f)));
+		shadowTransforms.push_back(lightProjection * glm::lookAt(lightPosition, lightPosition + glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
+		shadowTransforms.push_back(lightProjection * glm::lookAt(lightPosition, lightPosition + glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
+
+		shadowMapShader.use();
+
+		for (unsigned int i = 0; i < 6; ++i)
+			shadowMapShader.setMat4("shadowMatrices[" + std::to_string(i) + "]", shadowTransforms[i]);
+		shadowMapShader.setVec3("lightPos", lightPosition);
+		shadowMapShader.setFloat("far_Plane", farPlane);
+
 		glm::mat4 ligthModel = glm::mat4(1.0f);
-		DrawShadowMapPlane(shadowMapShader, ligthModel, planeVAO);
+		ligthModel = glm::scale(ligthModel, glm::vec3(6.0f));
+		
+		glDisable(GL_CULL_FACE); // note that we disable culling here since we render 'inside' the cube instead of the usual 'outside' which throws off the normal culling methods.
+		DrawShadowMapCube(shadowMapShader, ligthModel, cubeVAO);
+		glEnable(GL_CULL_FACE);
 		for (int i = 0; i < 3; i++)
 		{
 			ligthModel = glm::mat4(1.0f);
@@ -224,7 +233,6 @@ int main() {
 			}
 			DrawShadowMapCube(shadowMapShader, ligthModel, cubeVAO);
 		}
-		glCullFace(GL_BACK);
 		//--------------------------------------//
 		//---------- NORMAL SCENE -------------//
 		//------------------------------------//
@@ -244,19 +252,22 @@ int main() {
 		shader.use();
 		
 		useTexture(0, floorTexture);
-		useTexture(1, depthCubeMap);
+		useTexture(1, depthCubeMap, GL_TEXTURE_CUBE_MAP);
 
 		shader.setVec3("lightPos",lightPosition);
 		shader.setVec3("lightColor", lightColor);
 		shader.setVec3("viewPos", camera.Position);
 		shader.setVec3("specularColor", lightColor);
+		shader.setFloat("far_plane", farPlane);
 
 		//----------------------
 		// DRAW CUBE ROOM
 		//----------------------
 		model = glm::mat4(1.0f);
 		model = glm::scale(model, glm::vec3(6.0f));
+		glDisable(GL_CULL_FACE);
 		DrawCube(shader, model, view, projection, cubeVAO);
+		glEnable(GL_CULL_FACE);
 		//-----------
 		// DRAW CUBES
 		//-----------
@@ -265,7 +276,7 @@ int main() {
 		woodenCubeShader.setVec3("lightColor", lightColor);
 
 		useTexture(0, cubeTexture);
-		useTexture(1, depthCubeMap);
+		useTexture(1, depthCubeMap, GL_TEXTURE_CUBE_MAP);
 		for (int i = 0; i < 3; i++)
 		{
 			model = glm::mat4(1.0f);
