@@ -122,7 +122,7 @@ int main() {
 	const unsigned int SHADOW_HEIGHT = 1024, SHADOW_WIDTH = 1024;
 	unsigned int depthCubeMap;
 	glGenTextures(1, &depthCubeMap);
-	glBindTexture(1, depthCubeMap);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, depthCubeMap);
 	//loop through each face of the cube
 	for (unsigned int i = 0; i < 6; ++i)
 	{
