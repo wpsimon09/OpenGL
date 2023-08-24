@@ -25,8 +25,9 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 
 //screen coordinates
-int SCR_WIDTH = 800;
-int SCR_HEIGHT = 600;
+int SCR_WIDTH = 1020;
+int SCR_HEIGHT = 720;
+
 // camera
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 float lastX = 800.0f / 2.0f;
@@ -38,13 +39,6 @@ float deltaTime = 0.0f;	// time between current frame and last frame
 float lastFrame = 0.0f;
 
 glm::vec3 lightColor = colorOf(241.0f, 180.0f, 87.0f);
-
-float constant = 1.0f;
-float linear = 0.22f;
-float quadratic = 0.20f;
-
-bool isLightBlinn = true;
-
 
 //light possition
 glm::vec3 lightPosition(-2.0f, 0.0f, -1.0f);
@@ -68,7 +62,7 @@ int main() {
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	GLFWwindow* window = glfwCreateWindow(800, 600, "OpenGL", NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "OpenGL", NULL, NULL);
 	if (window == NULL)
 	{
 		std::cout << "Failed to create GLFW window" << std::endl;
@@ -81,9 +75,9 @@ int main() {
 	gladLoadGL();
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
-
 	//enables gama correction that is build in opengl
 	glEnable(GL_FRAMEBUFFER_SRGB);
+	
 	glfwSetCursorPosCallback(window, mouse_callback);
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	glfwSetScrollCallback(window, scroll_callback);
@@ -118,6 +112,7 @@ int main() {
 	//------------------
 	// DEPTH MAP TEXTURE
 	//------------------
+	
 	//resolution of the depth map
 	const unsigned int SHADOW_HEIGHT = 1024, SHADOW_WIDTH = 1024;
 	unsigned int depthCubeMap;
@@ -128,12 +123,12 @@ int main() {
 	{
 		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_DEPTH_COMPONENT, SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
 	}
-
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+	
 	//-------------------
 	// SHADOW MAPPING FBO
 	//-------------------
@@ -141,10 +136,8 @@ int main() {
 	glGenFramebuffers(1, &depthMapFBO);
 	glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
 
-	//attatch texture to the frame buffer depth value
+	//attatch texture to the frame buffer depth value and disable collor buffer
 	glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, depthCubeMap, 0);
-	//we are not going to need the color buffer
-	//we tell this to openGl like so
 	glDrawBuffer(GL_NONE);
 	glReadBuffer(GL_NONE);
 	glBindBuffer(GL_FRAMEBUFFER, 0);
@@ -155,6 +148,10 @@ int main() {
 	unsigned int floorTexture = loadTexture("Assets/Textures/AdvancedLightning/wood.png", false);
 	unsigned int lightTexture = loadTexture("Assets/Textures/AdvancedLightning/light.png", false);
 	unsigned int cubeTexture = loadTexture("Assets/Textures/AdvancedLightning/cube-wood.jpg", false);
+
+	//------------------------
+	// TEXTURE SAMPLERS VALUES
+	//------------------------
 
 	shader.use();
 	shader.setInt("wood", 0);
@@ -212,6 +209,7 @@ int main() {
 
 		for (unsigned int i = 0; i < 6; ++i)
 			shadowMapShader.setMat4("shadowMatrices[" + std::to_string(i) + "]", shadowTransforms[i]);
+
 		shadowMapShader.setVec3("lightPos", lightPosition);
 		shadowMapShader.setFloat("far_Plane", farPlane);
 
@@ -289,6 +287,7 @@ int main() {
 		}
 
 		glDisable(GL_CULL_FACE);
+
 		//----------------------
 		// DRAW THE LIGHT SOURCE
 		//----------------------

@@ -21,8 +21,6 @@ uniform float far_plane;
 
 uniform vec3 specularColor;
 
-float closestDepthDebug;
-
 float caclualteShadow(vec3 FragPos, float bias)
 {
     //get the directional vector between light and fragment that is beeing rendered
@@ -39,9 +37,7 @@ float caclualteShadow(vec3 FragPos, float bias)
 
     float shadow = curentDepth - bias > closestDepth ? 1.0 : 0.0;
 
-    closestDepthDebug = curentDepth;
     return shadow;
-
 }
 
 void main() 
@@ -80,7 +76,5 @@ void main()
     //-------------
     // FINAL RESULT
     //-------------    
-
-    //vec4(vec3(closestDepthDebug / far_plane), 1.0);
     FragColor = vec4(shadowResult, 1.0);
 }
