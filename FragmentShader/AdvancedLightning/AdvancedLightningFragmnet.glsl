@@ -75,18 +75,12 @@ void main()
     float bias = 0.05;
 
     float shadow = caclualteShadow(fs_in.FragPos, bias);
-    //
-    
-    vec3 result = ambient + diffuse + specular;
-    
+       
     vec3 shadowResult = (ambient + (1.0 - shadow) * (diffuse + specular)) * texture(wood, fs_in.TexCoords).rgb;
     //-------------
     // FINAL RESULT
     //-------------    
 
     //vec4(vec3(closestDepthDebug / far_plane), 1.0);
-    if(gl_FragCoord.y < 300)
-        FragColor = vec4(closestDepthDebug, closestDepthDebug/2, 0, 1.0);
-    else 
-        FragColor = vec4(result, 1.0);
+    FragColor = vec4(shadowResult, 1.0);
 }

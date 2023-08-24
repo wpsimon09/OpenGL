@@ -224,12 +224,11 @@ int main() {
 		for (int i = 0; i < 3; i++)
 		{
 			ligthModel = glm::mat4(1.0f);
-			ligthModel = glm::scale(ligthModel, glm::vec3(0.4f));
 			ligthModel = glm::translate(ligthModel, cubePostions[i]);
 			if (i == 2)
 			{
 				ligthModel = glm::rotate(ligthModel, (float)glm::radians(60.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-				ligthModel = glm::scale(ligthModel, glm::vec3(0.25));
+				ligthModel = glm::scale(ligthModel, glm::vec3(0.5));
 			}
 			DrawShadowMapCube(shadowMapShader, ligthModel, cubeVAO);
 		}
@@ -289,7 +288,7 @@ int main() {
 			DrawCube(woodenCubeShader, model, view, projection, cubeVAO);
 		}
 
-
+		glDisable(GL_CULL_FACE);
 		//----------------------
 		// DRAW THE LIGHT SOURCE
 		//----------------------
@@ -300,7 +299,7 @@ int main() {
 		lightSourceShader.setVec3("lightColor", lightColor);
 		useTexture(0, lightTexture);
 		DrawPlane(lightSourceShader, model, view, projection, lightVAO);
-	
+		glEnable(GL_CULL_FACE);
 
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
 		// -------------------------------------------------------------------------------
