@@ -33,13 +33,13 @@ float caclualteShadow(vec3 FragPos, float bias)
     //right now it is in the range [0, 1] we want it to be in the rangle of [0, far_plane]
     // so that we can compare it later on
     closestDepth *= far_plane;
-    closestDepthDebug = closestDepth;
 
     //retrieve the length between light and the current fragment 
     float curentDepth = length(fragToLight);
 
     float shadow = curentDepth - bias > closestDepth ? 1.0 : 0.0;
 
+    closestDepthDebug = curentDepth;
     return shadow;
 
 }
@@ -86,7 +86,7 @@ void main()
 
     //vec4(vec3(closestDepthDebug / far_plane), 1.0);
     if(gl_FragCoord.y < 300)
-        FragColor = vec4(shadowResult, 1.0);
+        FragColor = vec4(closestDepthDebug, closestDepthDebug/2, 0, 1.0);
     else 
         FragColor = vec4(result, 1.0);
 }
