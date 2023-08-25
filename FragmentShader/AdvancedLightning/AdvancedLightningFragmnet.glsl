@@ -48,6 +48,7 @@ float caclualteShadow(vec3 FragPos, float bias)
     //retrieve the length between light and the current fragment 
     float curentDepth = length(fragToLight);
 
+    //grap the pixel around the targeted fragemnt
     for(int i = 0; i <samples; ++i)
     {
         //take the sample that is not direcetly in the direction of the direction vector but slightly moved away
@@ -61,6 +62,8 @@ float caclualteShadow(vec3 FragPos, float bias)
 
     }
 
+    //get the average of the shadow strenth
+    // number of targeted samples that are in shadow devided by number of all samples 
     shadow /= float(samples);
     return shadow;
 }
