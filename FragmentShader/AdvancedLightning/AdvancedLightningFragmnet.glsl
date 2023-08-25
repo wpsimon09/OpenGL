@@ -1,5 +1,17 @@
 #version 330 core
 
+//------------------------------------------------
+// OFFSETS FOR THE PCF (percentage close filtering
+//------------------------------------------------
+vec3 sampleOffsetDirections[20] = vec3[]
+(
+    vec3( 1, 1, 1), vec3( 1, -1, 1), vec3(-1, -1, 1), vec3(-1, 1, 1),
+    vec3( 1, 1, -1), vec3( 1, -1, -1), vec3(-1, -1, -1), vec3(-1, 1, -1),
+    vec3( 1, 1, 0), vec3( 1, -1, 0), vec3(-1, -1, 0), vec3(-1, 1, 0),
+    vec3( 1, 0, 1), vec3(-1, 0, 1), vec3( 1, 0, -1), vec3(-1, 0, -1),
+    vec3( 0, 1, 1), vec3( 0, -1, 1), vec3( 0, -1, -1), vec3( 0, 1, -1)
+);
+
 in VS_OUT {
     vec3 FragPos;
     vec3 Normal;
@@ -23,20 +35,33 @@ uniform vec3 specularColor;
 
 float caclualteShadow(vec3 FragPos, float bias)
 {
+    float shadow = 0.0;
+    int samples = 20;
+    float viewDistance = length( viewPos- FragPos);
+    float diskRadius = (1.0 + (viewDistance / far_plane)) / 25.0;
+
     //get the directional vector between light and fragment that is beeing rendered
     vec3 fragToLight = FragPos - lightPos;
-
+        
     //use the directional vector to sample from the cube map and retrieve the depth value
     float closestDepth = texture(shadowMap, fragToLight).r;
-    //right now it is in the range [0, 1] we want it to be in the rangle of [0, far_plane]
-    // so that we can compare it later on
-    closestDepth *= far_plane;
-
     //retrieve the length between light and the current fragment 
     float curentDepth = length(fragToLight);
 
-    float shadow = curentDepth - bias > closestDepth ? 1.0 : 0.0;
+    for(int i = 0; i <samples; ++i)
+    {
+        //take the sample that is not direcetly in the direction of the direction vector but slightly moved away
+        float closestDepth = texture(shadowMap, fragToLight + sampleOffsetDirections[i] * diskRadius).r;
 
+        //right now it is in the range [0, 1] we want it to be in the rangle of [0, far_plane]
+        // so that we can compare it later on
+        closestDepth *= far_plane;
+        if(curentDepth - bias > closestDepth)
+            shadow += 1.0;
+
+    }
+
+    shadow /= float(samples);
     return shadow;
 }
 
