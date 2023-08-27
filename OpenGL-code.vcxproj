@@ -171,6 +171,8 @@
     <None Include="Assets\Model\backpack\backpack.mtl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </None>
+    <None Include="Assets\Model\fluttershy\fg_funkoFluttershy.mtl" />
+    <None Include="Assets\Model\horse\Scaniverse.mtl" />
     <None Include="Assets\Model\spaceship\model\texture\spaceShip.fbx" />
     <None Include="FragmentShader\AdvancedLightning\AdvancedLightningFragmnet.glsl" />
     <None Include="FragmentShader\AdvancedLightning\LightSourceFragment.glsl" />
@@ -203,6 +205,12 @@
     <Image Include="Assets\Model\backpack\specular.jpg">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </Image>
+    <Image Include="Assets\Model\fluttershy\fg_funkoFluttershy_albedo.jpg" />
+    <Image Include="Assets\Model\fluttershy\fg_funkoFluttershy_ao.jpg" />
+    <Image Include="Assets\Model\fluttershy\fg_funkoFluttershy_metal.jpg" />
+    <Image Include="Assets\Model\fluttershy\fg_funkoFluttershy_nrm.jpg" />
+    <Image Include="Assets\Model\fluttershy\fg_funkoFluttershy_scattering.jpg" />
+    <Image Include="Assets\Model\horse\Scaniverse.jpg" />
     <Image Include="Assets\Model\spaceship\model\texture\auxielieryMat_alpha.png" />
     <Image Include="Assets\Model\spaceship\model\texture\auxielieryMat_diffuse.png" />
     <Image Include="Assets\Model\spaceship\model\texture\auxielieryMat_metal.png" />
@@ -233,6 +241,16 @@
     <Text Include="Assets\Model\backpack\source_attribution.txt">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Assets\Model\fluttershy\fg_funkoFluttershy.obj">
+      <FileType>Document</FileType>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Assets\Model\horse\Scaniverse.obj">
+      <FileType>Document</FileType>
+    </Image>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

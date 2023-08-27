@@ -104,7 +104,7 @@ void Mesh::Draw(Shader& shader) {
 		{
 			number = std::to_string(emisionNr++);
 		}
-		shader.setFloat(("material." + name + number).c_str(), i);
+		shader.setFloat((name + number).c_str(), i);
 		//std::cout << "TEXTURE::LOADED::ASS:\n";
 		//std::cout << ("material." + name + number).c_str();
 		//std::cout << "\n";

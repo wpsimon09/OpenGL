@@ -1,3 +1,4 @@
+
 #include <glad/glad.h>-
 #include <GLFW/glfw3.h>
 #include <iostream>
@@ -13,6 +14,7 @@
 #include "Light.h";
 #include "DrawingFunctions.h"
 #include "VaoCreation.h"
+#include "Model.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
@@ -103,6 +105,9 @@ int main() {
 
 	Shader shadowMapShader("VertexShader/AdvancedLightning/ShadowMapVertex.glsl", "FragmentShader/AdvancedLightning/ShadowMapFragement.glsl");
 
+	Model fluttershy("Assets/Model/horse/Scaniverse.obj");
+	
+
 	// plane VAO
 	unsigned int planeVAO = createVAO(planeVertices, sizeof(planeVertices)/sizeof(float));
 
@@ -162,7 +167,7 @@ int main() {
 	lightSourceShader.setInt("lightTexture", 0);
 
 	woodenCubeShader.use();
-	woodenCubeShader.setInt("woodCube", 0);
+	woodenCubeShader.setInt("texture_diffuse0", 0);
 	woodenCubeShader.setInt("shadowMap", 1);
 
 	//===================================== RENDER LOOP ================================================//
@@ -206,19 +211,9 @@ int main() {
 		shadowMapShader.setMat4("lightSpaceMatrix", lightSpaceMatrix);
 
 		glm::mat4 ligthModel = glm::mat4(1.0f);
-		DrawShadowMapPlane(shadowMapShader, ligthModel, planeVAO);
-		for (int i = 0; i < 3; i++)
-		{
-			ligthModel = glm::mat4(1.0f);
-			ligthModel = glm::scale(ligthModel, glm::vec3(0.4f));
-			ligthModel = glm::translate(ligthModel, cubePostions[i]);
-			if (i == 2)
-			{
-				ligthModel = glm::rotate(ligthModel, (float)glm::radians(60.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-				ligthModel = glm::scale(ligthModel, glm::vec3(0.25));
-			}
-			DrawShadowMapCube(shadowMapShader, ligthModel, cubeVAO);
-		}
+		shadowMapShader.setMat4("model", ligthModel);
+		fluttershy.Draw(shadowMapShader);
+
 		glCullFace(GL_BACK);
 		//--------------------------------------//
 		//---------- NORMAL SCENE -------------//
@@ -251,6 +246,7 @@ int main() {
 		// DRAW PLANE AS A FLOOR
 		//----------------------
 		DrawPlane(shader, model, view, projection, planeVAO);
+		
 
 		//-----------
 		// DRAW CUBES
@@ -258,22 +254,18 @@ int main() {
 		woodenCubeShader.use();
 		woodenCubeShader.setVec3("lightPos", lightPosition);
 		woodenCubeShader.setVec3("lightColor", lightColor);
+		woodenCubeShader.setVec3("viewPos", camera.Position);
 		woodenCubeShader.setMat4("lightMatrix", lightSpaceMatrix);
+		
 
 		useTexture(0, cubeTexture);
 		useTexture(1, depthMap);
-		for (int i = 0; i < 3; i++)
-		{
-			model = glm::mat4(1.0f);
-			model = glm::scale(model, glm::vec3(0.4f));
-			model = glm::translate(model, cubePostions[i]);
-			if (i == 2)
-			{
-				model = glm::rotate(model, (float)glm::radians(60.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-				model = glm::scale(model, glm::vec3(0.25));
-			}
-			DrawCube(woodenCubeShader, model, view, projection, cubeVAO);
-		}
+		model = glm::translate(model, glm::vec3(0.0f, -0.7f, 0.0f));
+		woodenCubeShader.setMat4("model", model);
+		woodenCubeShader.setMat4("projection", projection);
+		woodenCubeShader.setMat4("view", view);
+
+		fluttershy.Draw(woodenCubeShader);
 
 
 		//----------------------
