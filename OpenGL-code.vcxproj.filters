@@ -196,6 +196,12 @@
     <Image Include="Assets\Textures\AdvancedLightning\grid.jpg">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="Assets\Textures\AdvancedLightning\brickwall.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Assets\Textures\AdvancedLightning\brickwall_normal.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Assets\Model\backpack\source_attribution.txt" />

@@ -84,6 +84,10 @@ void main()
     vec3 viewDir = normalize(viewPos - fs_in.FragPos);
     float specStrength = 0.0;
     vec3 halfwayDir = normalize(lightDir + viewDir);
+    if(lightPos.z < 0.0)
+        normal = -normal;
+    else 
+        normal = +normal;
     specStrength = pow(max(dot(normal, halfwayDir), 0.0),64.0);
     vec3 specular = specularColor * specStrength;
     

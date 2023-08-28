@@ -101,11 +101,9 @@ int main() {
 
 	Shader lightSourceShader("VertexShader/AdvancedLightning/LightSourceVertex.glsl", "FragmentShader/AdvancedLightning/LightSourceFragment.glsl");
 
-	Shader woodenCubeShader("VertexShader/AdvancedLightning/WoodenCubeVertex.glsl", "FragmentShader/AdvancedLightning/WoodenCubeFragment.glsl");
+	Shader brickWallShader("VertexShader/AdvancedLightning/WoodenCubeVertex.glsl", "FragmentShader/AdvancedLightning/WoodenCubeFragment.glsl");
 
 	Shader shadowMapShader("VertexShader/AdvancedLightning/ShadowMapVertex.glsl", "FragmentShader/AdvancedLightning/ShadowMapFragement.glsl");
-
-	Model fluttershy("Assets/Model/horse/Scaniverse.obj");
 	
 
 	// plane VAO
@@ -116,7 +114,9 @@ int main() {
 	unsigned int lightVAO = createVAO(lightVertices,sizeof(lightVertices)/sizeof(float), false);
 
 	//cube VAO
-	unsigned int cubeVAO = createVAO(cubeVertices, sizeof(cubeVertices) / sizeof(float));;
+	unsigned int cubeVAO = createVAO(cubeVertices, sizeof(cubeVertices) / sizeof(float));
+
+	unsigned int wallVAO = createVAO(wallVertecies, sizeof(wallVertecies) / sizeof(float));
 
 
 	//------------------
@@ -158,6 +158,8 @@ int main() {
 	unsigned int floorTexture = loadTexture("Assets/Textures/AdvancedLightning/grid.jpg", false);
 	unsigned int lightTexture = loadTexture("Assets/Textures/AdvancedLightning/light.png", false);
 	unsigned int cubeTexture = loadTexture("Assets/Textures/AdvancedLightning/cube-wood.jpg", false);
+	unsigned int brickWall = loadTexture("Assets/Textures/AdvancedLightning/brickwall.jpg", false);
+	unsigned int brickNormal = loadTexture("Assets/Textures/AdvancedLightning/brickwall_normal.jpg", true);
 
 	shader.use();
 	shader.setInt("wood", 0);
@@ -166,9 +168,9 @@ int main() {
 	lightSourceShader.use();
 	lightSourceShader.setInt("lightTexture", 0);
 
-	woodenCubeShader.use();
-	woodenCubeShader.setInt("texture_diffuse0", 0);
-	woodenCubeShader.setInt("shadowMap", 1);
+	brickWallShader.use();
+	brickWallShader.setInt("texture_diffuse0", 0);
+	brickWallShader.setInt("shadowMap", 1);
 
 	//===================================== RENDER LOOP ================================================//
 
@@ -212,8 +214,7 @@ int main() {
 
 		glm::mat4 ligthModel = glm::mat4(1.0f);
 		shadowMapShader.setMat4("model", ligthModel);
-		fluttershy.Draw(shadowMapShader);
-
+		DrawShadowMapPlane(shadowMapShader, ligthModel, wallVAO);
 		glCullFace(GL_BACK);
 		//--------------------------------------//
 		//---------- NORMAL SCENE -------------//
@@ -249,25 +250,25 @@ int main() {
 
 
 		//-----------
-		// DRAW CUBES
+		// BRICK WALL
 		//-----------
-		woodenCubeShader.use();
-		woodenCubeShader.setVec3("lightPos", lightPosition);
-		woodenCubeShader.setVec3("lightColor", lightColor);
-		woodenCubeShader.setVec3("viewPos", camera.Position);
-		woodenCubeShader.setMat4("lightMatrix", lightSpaceMatrix);
-		woodenCubeShader.setVec3("diffuse", colorOf(153.0f, 51.0f, 0.0f));
-		woodenCubeShader.setVec3("specular", colorOf(125.0f, 61.0f, 34.0f));
+		//brickWallShader.use();
+		/*brickWallShader.setVec3("lightPos", lightPosition);
+		brickWallShader.setVec3("lightColor", lightColor);
+		brickWallShader.setVec3("viewPos", camera.Position);
+		brickWallShader.setMat4("lightMatrix", lightSpaceMatrix);
+		brickWallShader.setVec3("diffuse", colorOf(153.0f, 51.0f, 0.0f));
+		brickWallShader.setVec3("specular", colorOf(125.0f, 61.0f, 34.0f));*/
 
-		useTexture(0, cubeTexture);
+		useTexture(0, brickWall);
 		useTexture(1, depthMap);
-		model = glm::translate(model, glm::vec3(0.0f, -0.7f, 0.0f));
-		woodenCubeShader.setMat4("model", model);
-		woodenCubeShader.setMat4("projection", projection);
-		woodenCubeShader.setMat4("view", view);
-
-		fluttershy.Draw(woodenCubeShader);
-
+		model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
+		brickWallShader.setMat4("model", model);
+		brickWallShader.setMat4("projection", projection);
+		brickWallShader.setMat4("view", view);
+		
+		DrawPlane(shader, model, view, projection, wallVAO);
+		
 
 		//----------------------
 		// DRAW THE LIGHT SOURCE
@@ -305,7 +306,7 @@ void processInput(GLFWwindow *window)
 		glfwSetWindowShouldClose(window, true);
 
 
-	const float cameraSpeed = 2.5f * deltaTime; // adjust accordingly
+	const float lightSpeed = 2.5f * deltaTime; // adjust accordingly
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 		camera.ProcessKeyboard(FORWARD, deltaTime);
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
@@ -315,13 +316,18 @@ void processInput(GLFWwindow *window)
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 		camera.ProcessKeyboard(RIGHT, deltaTime);
 	if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
-		lightPosition.z += 0.002;
+		lightPosition.z += lightSpeed;
 	if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
-		lightPosition.z -= 0.002;
+		lightPosition.z -= lightSpeed;
 	if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
-		lightPosition.x += 0.002;
+		lightPosition.x += lightSpeed;
 	if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
-		lightPosition.x -= 0.002;
+		lightPosition.x -= lightSpeed;
+	if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
+		lightPosition.y -= lightSpeed;
+	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+		lightPosition.y += lightSpeed;
+
 }
 
 float opacityOfTexture(GLFWwindow* window, Shader shader) {
