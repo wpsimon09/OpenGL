@@ -221,6 +221,7 @@
     <Image Include="Assets\Model\spaceship\model\texture\mainMat_nrm.png" />
     <Image Include="Assets\Model\spaceship\model\texture\mainMat_rough.png" />
     <Image Include="Assets\Textures\AdvancedLightning\cube-wood.jpg" />
+    <Image Include="Assets\Textures\AdvancedLightning\grid.jpg" />
     <Image Include="Assets\Textures\AdvancedLightning\light.png" />
     <Image Include="Assets\Textures\AdvancedLightning\wood.png" />
     <Image Include="Assets\Textures\container.jpg" />

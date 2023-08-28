@@ -96,6 +96,8 @@
     <None Include="VertexShader\AdvancedLightning\WoodenCubeVertex.glsl" />
     <None Include="VertexShader\AdvancedLightning\ShadowMapVertex.glsl" />
     <None Include="FragmentShader\AdvancedLightning\ShadowMapFragement.glsl" />
+    <None Include="Assets\Model\fluttershy\fg_funkoFluttershy.mtl" />
+    <None Include="Assets\Model\horse\Scaniverse.mtl" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\Textures\container.jpg">
@@ -169,6 +171,29 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="Assets\Textures\AdvancedLightning\cube-wood.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Assets\Model\fluttershy\fg_funkoFluttershy_albedo.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Assets\Model\fluttershy\fg_funkoFluttershy_ao.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Assets\Model\fluttershy\fg_funkoFluttershy_metal.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Assets\Model\fluttershy\fg_funkoFluttershy_nrm.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Assets\Model\fluttershy\fg_funkoFluttershy_scattering.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Assets\Model\horse\Scaniverse.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Assets\Model\fluttershy\fg_funkoFluttershy.obj" />
+    <Image Include="Assets\Model\horse\Scaniverse.obj" />
+    <Image Include="Assets\Textures\AdvancedLightning\grid.jpg">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

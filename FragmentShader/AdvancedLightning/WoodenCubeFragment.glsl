@@ -9,8 +9,8 @@ in VS_OUT {
 
 out vec4 FragColor;
 
-uniform sampler2D texture_diffuse0;
-uniform sampler2D texture_specular0;
+uniform vec3 diffuse;
+uniform vec3 specular;
 
 uniform sampler2D shadowMap;
 
@@ -65,7 +65,7 @@ void main()
     //----------
     // AMBIENT
     //----------
-    vec3 ambient = vec3(texture(texture_diffuse0, fs_in.TexCoords)* 0.02);
+    vec3 ambient = diffuse * 0.02;
     
     //-----------
     // DIFFUSE
@@ -73,7 +73,7 @@ void main()
     vec3 normal = normalize(fs_in.Normal);
     vec3 lightDir = normalize(lightPos - fs_in.FragPos);
     float diffStrength = max(dot(normal, lightDir), 0.0);
-    vec3 diffuse = lightColor * diffStrength * vec3(texture(texture_diffuse0, fs_in.TexCoords));
+    vec3 diffuse = lightColor * diffStrength * diffuse;
     float bias = max(0.09 * (1.0 - dot(normal, lightDir)), 0.05);
 
     float shadow = 0.0;
@@ -83,14 +83,14 @@ void main()
     //---------
     // SPECULAR
     //---------
-    vec3 specularColor = texture(texture_specular0, fs_in.TexCoords).rgb;
+    vec3 specularColor = specular;
     vec3 viewDir = normalize(viewPos - fs_in.FragPos);
     float specStrength = 0.0;
     vec3 halfwayDir = normalize(lightDir + viewDir);
     specStrength = pow(max(dot(normal, halfwayDir), 0.0),64.0);
     vec3 specular = specularColor * specStrength;
 
-    vec3 result = (ambient + (1.0 - shadow) * (diffuse + specular)) * texture(texture_diffuse0, fs_in.TexCoords).rgb;
+    vec3 result = (ambient + (1.0 - shadow) * (diffuse + specular));
  
 
     //-------------

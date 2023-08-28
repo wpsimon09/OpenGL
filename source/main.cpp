@@ -123,7 +123,7 @@ int main() {
 	// DEPTH MAP TEXTURE
 	//------------------
 	//resolution of the depth map
-	const unsigned int SHADOW_HEIGHT = 1024, SHADOW_WIDTH = 1024;
+	const unsigned int SHADOW_HEIGHT = 2024, SHADOW_WIDTH = 2024;
 	unsigned int depthMap;
 	glGenTextures(1, &depthMap);
 	glBindTexture(GL_TEXTURE_2D, depthMap);
@@ -155,7 +155,7 @@ int main() {
 	//-----------------
 	// TEXTURES LOADING
 	//-----------------
-	unsigned int floorTexture = loadTexture("Assets/Textures/AdvancedLightning/wood.png", false);
+	unsigned int floorTexture = loadTexture("Assets/Textures/AdvancedLightning/grid.jpg", false);
 	unsigned int lightTexture = loadTexture("Assets/Textures/AdvancedLightning/light.png", false);
 	unsigned int cubeTexture = loadTexture("Assets/Textures/AdvancedLightning/cube-wood.jpg", false);
 
@@ -190,7 +190,7 @@ int main() {
 
 		glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
 		glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
-		glClear(GL_DEPTH_BUFFER_BIT| GL_COLOR_BUFFER_BIT);
+		glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
 		glCullFace(GL_FRONT);
 		// configure projection matrix
@@ -232,11 +232,11 @@ int main() {
 		// SET LIGHT PROPERTIES
 		//---------------------
 		shader.use();
-		
+
 		useTexture(0, floorTexture);
 		useTexture(1, depthMap);
 
-		shader.setVec3("lightPos",lightPosition);
+		shader.setVec3("lightPos", lightPosition);
 		shader.setVec3("lightColor", lightColor);
 		shader.setVec3("viewPos", camera.Position);
 		shader.setVec3("specularColor", lightColor);
@@ -246,7 +246,7 @@ int main() {
 		// DRAW PLANE AS A FLOOR
 		//----------------------
 		DrawPlane(shader, model, view, projection, planeVAO);
-		
+
 
 		//-----------
 		// DRAW CUBES
@@ -256,7 +256,8 @@ int main() {
 		woodenCubeShader.setVec3("lightColor", lightColor);
 		woodenCubeShader.setVec3("viewPos", camera.Position);
 		woodenCubeShader.setMat4("lightMatrix", lightSpaceMatrix);
-		
+		woodenCubeShader.setVec3("diffuse", colorOf(153.0f, 51.0f, 0.0f));
+		woodenCubeShader.setVec3("specular", colorOf(125.0f, 61.0f, 34.0f));
 
 		useTexture(0, cubeTexture);
 		useTexture(1, depthMap);
