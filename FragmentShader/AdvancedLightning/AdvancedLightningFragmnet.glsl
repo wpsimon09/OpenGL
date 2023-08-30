@@ -11,6 +11,7 @@ out vec4 FragColor;
 
 uniform sampler2D wood;
 uniform sampler2D shadowMap;
+uniform sampler2D normalMap;
 
 uniform vec3 lightPos;
 uniform vec3 lightColor;
@@ -67,12 +68,16 @@ void main()
     //----------
     // AMBIENT
     //----------
-    vec3 ambient = vec3(texture(wood, fs_in.TexCoords)* 0.2);
+    vec3 ambient = vec3(texture(wood, fs_in.TexCoords)* 0.4);
     
     //-----------
     // DIFFUSE
     //-----------
-    vec3 normal = normalize(fs_in.Normal);
+
+    //sample normal vectors from the texture
+    vec3 normal = texture(normalMap, fs_in.TexCoords).rgb;
+    //convert from range [0,1] to the range [-1, 1]
+    normal = normalize(normal * 2.0 - 1.0);    
     vec3 lightDir = normalize(lightPos - fs_in.FragPos);
     float diffStrength = max(dot(normal, lightDir), 0.0);
     vec3 diffuse = lightColor * diffStrength * vec3(texture(wood, fs_in.TexCoords));

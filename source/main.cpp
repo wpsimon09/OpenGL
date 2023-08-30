@@ -39,7 +39,7 @@ bool firstMouse = true;
 float deltaTime = 0.0f;	// time between current frame and last frame
 float lastFrame = 0.0f;
 
-glm::vec3 lightColor = colorOf(241.0f, 180.0f, 87.0f);
+glm::vec3 lightColor = COLOR_SUN;
 
 float constant = 1.0f;
 float linear = 0.22f;
@@ -159,11 +159,13 @@ int main() {
 	unsigned int lightTexture = loadTexture("Assets/Textures/AdvancedLightning/light.png", false);
 	unsigned int cubeTexture = loadTexture("Assets/Textures/AdvancedLightning/cube-wood.jpg", false);
 	unsigned int brickWall = loadTexture("Assets/Textures/AdvancedLightning/brickwall.jpg", false);
-	unsigned int brickNormal = loadTexture("Assets/Textures/AdvancedLightning/brickwall_normal.jpg", true);
+	unsigned int normalMap = loadTexture("Assets/Textures/AdvancedLightning/brickwall_normal.jpg", false);
+
 
 	shader.use();
 	shader.setInt("wood", 0);
 	shader.setInt("shadowMap", 1);
+	shader.setInt("normalMap", 2);
 
 	lightSourceShader.use();
 	lightSourceShader.setInt("lightTexture", 0);
@@ -213,6 +215,7 @@ int main() {
 		shadowMapShader.setMat4("lightSpaceMatrix", lightSpaceMatrix);
 
 		glm::mat4 ligthModel = glm::mat4(1.0f);
+		ligthModel = glm::scale(ligthModel, glm::vec3(2.0f));
 		shadowMapShader.setMat4("model", ligthModel);
 		DrawShadowMapPlane(shadowMapShader, ligthModel, wallVAO);
 		glCullFace(GL_BACK);
@@ -252,17 +255,11 @@ int main() {
 		//-----------
 		// BRICK WALL
 		//-----------
-		//brickWallShader.use();
-		/*brickWallShader.setVec3("lightPos", lightPosition);
-		brickWallShader.setVec3("lightColor", lightColor);
-		brickWallShader.setVec3("viewPos", camera.Position);
-		brickWallShader.setMat4("lightMatrix", lightSpaceMatrix);
-		brickWallShader.setVec3("diffuse", colorOf(153.0f, 51.0f, 0.0f));
-		brickWallShader.setVec3("specular", colorOf(125.0f, 61.0f, 34.0f));*/
-
 		useTexture(0, brickWall);
 		useTexture(1, depthMap);
+		useTexture(2, normalMap);
 		model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(2.0f));
 		brickWallShader.setMat4("model", model);
 		brickWallShader.setMat4("projection", projection);
 		brickWallShader.setMat4("view", view);
