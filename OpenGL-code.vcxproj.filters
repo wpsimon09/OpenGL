@@ -98,6 +98,9 @@
     <None Include="FragmentShader\AdvancedLightning\ShadowMapFragement.glsl" />
     <None Include="Assets\Model\fluttershy\fg_funkoFluttershy.mtl" />
     <None Include="Assets\Model\horse\Scaniverse.mtl" />
+    <None Include="Assets\Model\cyborg\cyborg.mtl" />
+    <None Include="Assets\Model\cyborg\cyborg.blend1" />
+    <None Include="Assets\Model\cyborg\cyborg.blend" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\Textures\container.jpg">
@@ -202,6 +205,22 @@
     <Image Include="Assets\Textures\AdvancedLightning\brickwall_normal.jpg">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="Assets\Textures\AdvancedLightning\floor_normal.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Assets\Textures\AdvancedLightning\grid_w.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Assets\Model\cyborg\cyborg_diffuse.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Assets\Model\cyborg\cyborg_normal.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Assets\Model\cyborg\cyborg_specular.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Assets\Model\cyborg\cyborg.obj" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Assets\Model\backpack\source_attribution.txt" />

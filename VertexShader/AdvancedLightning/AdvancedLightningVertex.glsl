@@ -26,7 +26,7 @@ out VS_OUT {
     vec3 TangentFragPos;
 
     float hasNormalMap;
-} vs_out;
+}vs_out;
 
 void main()
 {

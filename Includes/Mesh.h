@@ -11,6 +11,9 @@ struct Vertex
 	glm::vec3 Postion;
 	glm::vec3 Normal;
 	glm::vec2 TexCoords;
+
+	glm::vec3 Tangents;
+	glm::vec3 Bitangents;
 };
 
 struct Texture
@@ -76,13 +79,21 @@ void Mesh::setupMesh()
 	glEnableVertexAttribArray(2);
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, TexCoords));
 
+	//tangents
+	glEnableVertexAttribArray(3);
+	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Tangents));
+
+	//bytangents
+	glEnableVertexAttribArray(4);
+	glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Bitangents));
+
 	glBindVertexArray(0);
 }
 
 void Mesh::Draw(Shader& shader) {
 	unsigned int diffuseNr = 0;
 	unsigned int specularNr = 0;
-	unsigned int emisionNr = 0;
+	unsigned int normalNr = 0;
 	//looping throught each texture and setting coresponding value
 	//in the shader
 	// TODO: set texture's name in the shader as well
@@ -100,17 +111,17 @@ void Mesh::Draw(Shader& shader) {
 		{
 			number = std::to_string(specularNr++);
 		}
-		else if (name == "texture_emmision")
+		else if (name == "texture_normal")
 		{
-			number = std::to_string(emisionNr++);
+			number = std::to_string(normalNr++);
 		}
-		shader.setFloat((name + number).c_str(), i);
+
+		//shader.setInt((name + number).c_str(), i);
 		//std::cout << "TEXTURE::LOADED::ASS:\n";
-		//std::cout << ("material." + name + number).c_str();
+		//std::cout << (name + number).c_str();
 		//std::cout << "\n";
 		glBindTexture(GL_TEXTURE_2D, textures[i].id);
 	}
-	glActiveTexture(GL_TEXTURE0);
 
 	//draw mesh
 	glBindVertexArray(VAO);

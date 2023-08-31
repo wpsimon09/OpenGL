@@ -171,6 +171,9 @@
     <None Include="Assets\Model\backpack\backpack.mtl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </None>
+    <None Include="Assets\Model\cyborg\cyborg.blend" />
+    <None Include="Assets\Model\cyborg\cyborg.blend1" />
+    <None Include="Assets\Model\cyborg\cyborg.mtl" />
     <None Include="Assets\Model\fluttershy\fg_funkoFluttershy.mtl" />
     <None Include="Assets\Model\horse\Scaniverse.mtl" />
     <None Include="Assets\Model\spaceship\model\texture\spaceShip.fbx" />
@@ -205,6 +208,9 @@
     <Image Include="Assets\Model\backpack\specular.jpg">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </Image>
+    <Image Include="Assets\Model\cyborg\cyborg_diffuse.png" />
+    <Image Include="Assets\Model\cyborg\cyborg_normal.png" />
+    <Image Include="Assets\Model\cyborg\cyborg_specular.png" />
     <Image Include="Assets\Model\fluttershy\fg_funkoFluttershy_albedo.jpg" />
     <Image Include="Assets\Model\fluttershy\fg_funkoFluttershy_ao.jpg" />
     <Image Include="Assets\Model\fluttershy\fg_funkoFluttershy_metal.jpg" />
@@ -254,6 +260,11 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\Model\horse\Scaniverse.obj">
+      <FileType>Document</FileType>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Assets\Model\cyborg\cyborg.obj">
       <FileType>Document</FileType>
     </Image>
   </ItemGroup>

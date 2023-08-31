@@ -69,7 +69,7 @@ void Model::loadModel(std::string path) {
 	* aiProcess_flipUvS - assimp will flip textures accordingly
 	* 
 	*/
-	const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
+	const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
 
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
 		std::cout << "ERROR::ASSIMP::" << importer.GetErrorString() << std::endl;
@@ -77,8 +77,8 @@ void Model::loadModel(std::string path) {
 	}
 	this->directory = path.substr(0, path.find_last_of('/'));
 	processNode(scene->mRootNode, scene);
-	std::cout << "-------------------MODEL PROCESSED------------------------\n\n\n";
-
+	
+	std::cout << "-------------------MODEL PROCESSED--------------------------\n\n\n";
 }
 
 
@@ -113,7 +113,7 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene) {
 		tempVertex.y = mesh->mVertices[i].y;
 		tempVertex.z = mesh->mVertices[i].z;
 		vertex.Postion = tempVertex;
-		
+
 		if (mesh->HasNormals())
 		{
 
@@ -139,6 +139,19 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene) {
 			tempTexCoords.y = mesh->mTextureCoords[0][i].y;
 			vertex.TexCoords = tempTexCoords;
 
+			glm::vec3 tempTangent, tempBitanget;
+
+			tempTangent.x = mesh->mTangents[i].x;
+			tempTangent.y = mesh->mTangents[i].y;
+			tempTangent.z = mesh->mTangents[i].z;
+
+			vertex.Tangents = tempTangent;
+
+			tempBitanget.x = mesh->mBitangents[i].x;
+			tempBitanget.y = mesh->mBitangents[i].y;
+			tempBitanget.z = mesh->mBitangents[i].z;
+
+			vertex.Bitangents = tempBitanget;
 		}
 		else {
 			std::cout << "ERROR::ASSIMP::PROCCESSING::TEXTURE::COORDINATES - There are no texture coordinates to process\n";
@@ -175,17 +188,19 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene) {
 
 		textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
 
-		// load emision textures
-		std::vector<Texture> emisionMaps = loadMaterialTextures(material, aiTextureType_EMISSION_COLOR, "texture_emmision");
+		// load normal	
+		std::vector<Texture> normalMaps = loadMaterialTextures(material, aiTextureType_HEIGHT, "texture_normal");
+
+		textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
 	}
 	else 
 		std::cout << "ERROR::ASSIMP::PROCCESSING::MATERIALS - There are no materials to be proccessed\n";
 
 	std::cout << "--------------------------------------------------------------\n";
-	std::cout << "--------------------MESH LOADING DONE-------------------------\n";
-	std::cout << "-------------------VERTECIES PROCESSED------------------------\n";
-	std::cout << "-------------------INDECIES PROCESSED-------------------------\n";
-	std::cout << "-------------------MATERIALS PROCESSED------------------------\n";
+	std::cout << "-------------------  MESH LOADING DONE  -------------------------\n";
+	std::cout << "------------------- VERTECIES PROCESSED ------------------------\n";
+	std::cout << "-------------------  INDECIES PROCESSED -------------------------\n";
+	std::cout << "------------------- MATERIALS PROCESSED ------------------------\n";
 	std::cout << "--------------------------------------------------------------\n\n\n";
 	return Mesh(vertecies, indecies, textures);
 }
