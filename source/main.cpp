@@ -39,7 +39,7 @@ bool firstMouse = true;
 float deltaTime = 0.0f;	// time between current frame and last frame
 float lastFrame = 0.0f;
 
-glm::vec3 lightColor = COLOR_SUN;
+glm::vec3 lightColor = colorOf(241.0f, 180.0f, 87.0f);
 
 float constant = 1.0f;
 float linear = 0.22f;
@@ -264,7 +264,7 @@ int main() {
 		// configure projection matrix
 		float nearPlane, farPlane;
 		nearPlane = 1.0f;
-		farPlane = 7.5f;
+		farPlane = 10.5f;
 		glm::mat4 lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, nearPlane, farPlane);
 
 		//configure view matrix
@@ -280,8 +280,7 @@ int main() {
 
 		glm::mat4 ligthModel = glm::mat4(1.0f);
 		ligthModel = glm::translate(ligthModel, glm::vec3(0.0f, 1.0f, 0.0f));
-		ligthModel = glm::rotate(ligthModel, (float)glm::radians(100.0f),
-			glm::normalize(glm::vec3(1.0, 0.0, 0.0)));
+		ligthModel = glm::rotate(ligthModel, (float)glm::radians(-100.0f), glm::normalize(glm::vec3(1.0, 0.0, 0.0)));
 		shadowMapShader.setMat4("model", ligthModel);
 		DrawShadowMapPlane(shadowMapShader, ligthModel, wallVAO);
 		glCullFace(GL_BACK);
@@ -306,6 +305,7 @@ int main() {
 		useTexture(0, floorTexture);
 		useTexture(1, depthMap);
 		useTexture(2, floorNormalMap);
+		shader.setFloat("hasNormalMap", 0.0f);
 		shader.setVec3("lightPos", lightPosition);
 		shader.setVec3("lightColor", lightColor);
 		shader.setVec3("viewPos", camera.Position);
@@ -322,18 +322,18 @@ int main() {
 		// BRICK WALL
 		//-----------
 		useTexture(0, brickWall);
-		//useTexture(1, depthMap);
+		useTexture(1, depthMap);
 		useTexture(2, normalMap);
+		shader.setFloat("hasNormalMap", 1.0f);
+
 		model = glm::translate(model, glm::vec3(0.0f, 1.0f, 0.0f));
-		model = glm::rotate(model, (float)glm::radians(-100.0f),
-			glm::normalize(glm::vec3(1.0, 0.0, 0.0)));
+		model = glm::rotate(model, (float)glm::radians(-100.0f), glm::normalize(glm::vec3(1.0, 0.0, 0.0)));
 		brickWallShader.setMat4("model", model);
 		brickWallShader.setMat4("projection", projection);
 		brickWallShader.setMat4("view", view);
 		
 		DrawPlane(shader, model, view, projection, wallVAO);
 		
-
 		//----------------------
 		// DRAW THE LIGHT SOURCE
 		//----------------------

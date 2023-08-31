@@ -14,6 +14,8 @@ uniform vec3 viewPos;
 
 uniform mat4 lightMatrix;
 
+uniform float hasNormalMap;
+
 out VS_OUT {
     vec3 FragPos;
     vec3 Normal;
@@ -22,11 +24,9 @@ out VS_OUT {
     vec3 TangentViewPos;
     vec3 TangentLightPos;
     vec3 TangentFragPos;
-} vs_out;
 
-// TODO: move vectors needed for light calulations from the fragment shader to the vertex shader 
-// multyply the with the TBN matrix
-// send them to the fraggment shader to calculate the light 
+    float hasNormalMap;
+} vs_out;
 
 void main()
 {
@@ -39,11 +39,24 @@ void main()
     // create the TBN matrix
     mat3 TBN = transpose(mat3(T,B,N));
 
+
+    //TODO: check if the object has normal mapping if it has one calculate everything using tangent space and use normal maps for normal vectors
+    //if object does not have normal send data in the wold space and use normal vectors passed in vertex attribute instead 
     vs_out.FragPos =  vec3(model * vec4(aPos, 1.0));
     vs_out.TexCoords = aTexCoords;
     vs_out.Normal = transpose(inverse(mat3(model))) * aNormal;
     vs_out.FragPosLight = lightMatrix * vec4(vs_out.FragPos ,1.0);
-    vs_out.TangentLightPos = TBN * lightPos;
-    vs_out.TangentViewPos = TBN * viewPos;
-    vs_out.TangentFragPos = TBN * vec3(model * vec4(aPos, 0.0));
+    vs_out.hasNormalMap = hasNormalMap;
+    
+    if(hasNormalMap == 1.0f)
+    {
+        vs_out.TangentLightPos = TBN * lightPos;
+        vs_out.TangentViewPos = TBN * viewPos;
+        vs_out.TangentFragPos = TBN * vec3(model * vec4(aPos, 0.0));
+    }
+    else {
+        vs_out.TangentLightPos = lightPos;
+        vs_out.TangentViewPos = viewPos;
+        vs_out.TangentFragPos = vec3(model * vec4(aPos, 0.0));
+    }
 }
