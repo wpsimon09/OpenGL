@@ -76,6 +76,7 @@ void useTexture(unsigned int samplerNumber, unsigned int texture)
 }
 
 
+
 float cubeVertices[] = {
 	 // back face
             -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 0.0f, // bottom-left

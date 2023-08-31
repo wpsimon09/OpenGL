@@ -5,6 +5,9 @@ in VS_OUT {
     vec3 Normal;
     vec2 TexCoords;
     vec4 FragPosLight;
+    vec3 TangentViewPos;
+    vec3 TangentLightPos;
+    vec3 TangentFragPos;
 }fs_in;
 
 out vec4 FragColor;
@@ -13,11 +16,7 @@ uniform sampler2D wood;
 uniform sampler2D shadowMap;
 uniform sampler2D normalMap;
 
-uniform vec3 lightPos;
 uniform vec3 lightColor;
-uniform vec3 viewPos;
-
-uniform bool blinnModel;
 
 uniform vec3 specularColor;
 
@@ -78,7 +77,8 @@ void main()
     vec3 normal = texture(normalMap, fs_in.TexCoords).rgb;
     //convert from range [0,1] to the range [-1, 1]
     normal = normalize(normal * 2.0 - 1.0);    
-    vec3 lightDir = normalize(lightPos - fs_in.FragPos);
+
+    vec3 lightDir = normalize(fs_in.TangentLightPos - fs_in.TangentFragPos);
     float diffStrength = max(dot(normal, lightDir), 0.0);
     vec3 diffuse = lightColor * diffStrength * vec3(texture(wood, fs_in.TexCoords));
     

@@ -77,3 +77,38 @@ unsigned int createVAO(float vertecies[], float numberOfComponents, bool hasNorm
 
 	return VAO;
 }
+
+/// <summary>
+/// Creates VAO that containts position vectors, texture coordinates, normal, bitangent and tangent vectors
+/// </summary>
+/// <param name="data">Array of the data that containts all of the relevant information</param>
+/// <param name="numberOfComponents">number of component in the given array</param>
+/// <returns>vertex array object with all of the relevant information</returns>
+unsigned int createVAOForTangentSpace(float data[], float numberOfComponents)
+{
+	unsigned int VAO, VBO;
+	glGenVertexArrays(1, &VAO);
+	glGenBuffers(1, &VBO);
+	glBindVertexArray(VAO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * numberOfComponents, data, GL_STATIC_DRAW);
+
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 14 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 14 * sizeof(float), (void*)(3 * sizeof(float)));
+	glEnableVertexAttribArray(2);
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 14 * sizeof(float), (void*)(6 * sizeof(float)));
+	glEnableVertexAttribArray(3);
+	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 14 * sizeof(float), (void*)(8 * sizeof(float)));
+	glEnableVertexAttribArray(4);
+	glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, 14 * sizeof(float), (void*)(11 * sizeof(float)));
+
+	std::cout << "Created object has 3 vertex atributes" << std::endl;
+	std::cout << "0 - positions (vec3)" << std::endl;
+	std::cout << "1 - normal vectors (vec3)" << std::endl;
+	std::cout << "2 - texture coordinates (vec2)" << std::endl;
+	std::cout << "3 - tangent vector (vec3)" << std::endl;
+	std::cout << "4 - bitangent vector (vec3)" << std::endl;
+	return VAO;
+}
