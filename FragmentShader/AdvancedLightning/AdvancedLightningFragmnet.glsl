@@ -31,7 +31,7 @@ float caclualteShadow(vec4 FragPosLight, float bias)
     float closestDepth = texture(shadowMap, projCoords.xy).w;
     
     //get the depth value of the current fragment 
-    float currentDepth = projCoords.z;
+    float currentDepth = projCoords.z;  
 
     //compare if current depth value is bigger than the closest depth value
     // is true object is not in the shadow (1.0)
@@ -69,9 +69,9 @@ void main()
     //----------
     vec3 ambient = vec3(texture(wood, fs_in.TexCoords)* 0.4);
     
-    //-----------
+    //--------
     // DIFFUSE
-    //-----------
+    //--------
 
     //sample normal vectors from the texture
     vec3 normal = texture(normalMap, fs_in.TexCoords).rgb;
@@ -82,23 +82,20 @@ void main()
     float diffStrength = max(dot(normal, lightDir), 0.0);
     vec3 diffuse = lightColor * diffStrength * vec3(texture(wood, fs_in.TexCoords));
     
-    //---------
+    //--------
     //SPECULAR
-    //---------
+    //--------
     vec3 specularColor = lightColor;
-    vec3 viewDir = normalize(viewPos - fs_in.FragPos);
+    vec3 viewDir = normalize(fs_in.TangentViewPos - fs_in.TangentFragPos);
     float specStrength = 0.0;
     vec3 halfwayDir = normalize(lightDir + viewDir);
-    if(lightPos.z < 0.0)
-        normal = -normal;
-    else 
-        normal = +normal;
+
     specStrength = pow(max(dot(normal, halfwayDir), 0.0),64.0);
     vec3 specular = specularColor * specStrength;
     
-    //---------
+    //--------
     // SHADOWS
-    //---------
+    //--------
     float bias = max(0.09 * (1.0 - dot(normal, lightDir)), 0.05);
 
     float shadow = caclualteShadow(fs_in.FragPosLight, bias);

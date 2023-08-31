@@ -219,12 +219,12 @@ int main() {
 	//-----------------
 	// TEXTURES LOADING
 	//-----------------
-	unsigned int floorTexture = loadTexture("Assets/Textures/AdvancedLightning/grid.jpg", false);
+	unsigned int floorTexture = loadTexture("Assets/Textures/AdvancedLightning/grid_w.jpg", false);
 	unsigned int lightTexture = loadTexture("Assets/Textures/AdvancedLightning/light.png", false);
 	unsigned int cubeTexture = loadTexture("Assets/Textures/AdvancedLightning/cube-wood.jpg", false);
 	unsigned int brickWall = loadTexture("Assets/Textures/AdvancedLightning/brickwall.jpg", false);
 	unsigned int normalMap = loadTexture("Assets/Textures/AdvancedLightning/brickwall_normal.jpg", false);
-
+	unsigned int floorNormalMap = loadTexture("Assets/Textures/AdvancedLightning/floor_normal.jpg", false);
 
 	shader.use();
 	shader.setInt("wood", 0);
@@ -279,7 +279,9 @@ int main() {
 		shadowMapShader.setMat4("lightSpaceMatrix", lightSpaceMatrix);
 
 		glm::mat4 ligthModel = glm::mat4(1.0f);
-		ligthModel = glm::scale(ligthModel, glm::vec3(2.0f));
+		ligthModel = glm::translate(ligthModel, glm::vec3(0.0f, 1.0f, 0.0f));
+		ligthModel = glm::rotate(ligthModel, (float)glm::radians(100.0f),
+			glm::normalize(glm::vec3(1.0, 0.0, 0.0)));
 		shadowMapShader.setMat4("model", ligthModel);
 		DrawShadowMapPlane(shadowMapShader, ligthModel, wallVAO);
 		glCullFace(GL_BACK);
@@ -303,7 +305,7 @@ int main() {
 
 		useTexture(0, floorTexture);
 		useTexture(1, depthMap);
-
+		useTexture(2, floorNormalMap);
 		shader.setVec3("lightPos", lightPosition);
 		shader.setVec3("lightColor", lightColor);
 		shader.setVec3("viewPos", camera.Position);
@@ -320,10 +322,11 @@ int main() {
 		// BRICK WALL
 		//-----------
 		useTexture(0, brickWall);
-		useTexture(1, depthMap);
+		//useTexture(1, depthMap);
 		useTexture(2, normalMap);
-		model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
-		model = glm::scale(model, glm::vec3(2.0f));
+		model = glm::translate(model, glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::rotate(model, (float)glm::radians(-100.0f),
+			glm::normalize(glm::vec3(1.0, 0.0, 0.0)));
 		brickWallShader.setMat4("model", model);
 		brickWallShader.setMat4("projection", projection);
 		brickWallShader.setMat4("view", view);
