@@ -1,7 +1,3 @@
-This is not a part of the book however I have imported the horse model and rendered it with brown like color
+This chapter describes the technique called normal mapping where we add ilusion of depth to the completly flat texture by creating normal vectors for each fragment of the object instead for each surface / face of the object 
 
-In order to see if, the shadow mapping technique works on more complex object
-
-I also changed the floor texture to the grid-like texture
-
-![Alt text](Assets/ReadmeImages/ShadowMapping/horseOnGrid.png)
+![Alt text](Assets/ReadmeImages/NormalMapping/normal-map.png)
