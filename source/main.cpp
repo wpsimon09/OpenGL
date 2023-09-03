@@ -95,7 +95,6 @@ int main() {
 		return -1;
 	}
 
-	stbi_set_flip_vertically_on_load(true);
 
 	Shader shader("VertexShader/AdvancedLightning/AdvancedLightningVertex.glsl", "FragmentShader/AdvancedLightning/AdvancedLightningFragmnet.glsl");
 
@@ -106,6 +105,8 @@ int main() {
 	Shader shadowMapShader("VertexShader/AdvancedLightning/ShadowMapVertex.glsl", "FragmentShader/AdvancedLightning/ShadowMapFragement.glsl");
 	
 	Model cyborg("Assets/Model/cyborg/cyborg.obj");
+	
+	stbi_set_flip_vertically_on_load(true);
 
 	// plane VAO
 	unsigned int planeVAO = createVAO(planeVertices, sizeof(planeVertices)/sizeof(float));
@@ -213,8 +214,6 @@ int main() {
 		shadowMapShader.setMat4("lightSpaceMatrix", lightSpaceMatrix);
 
 		glm::mat4 ligthModel = glm::mat4(1.0f);
-		ligthModel = glm::translate(ligthModel, glm::vec3(0.0f, 1.0f, 0.0f));
-		ligthModel = glm::rotate(ligthModel, (float)glm::radians(-100.0f), glm::normalize(glm::vec3(1.0, 0.0, 0.0)));
 		shadowMapShader.setMat4("model", ligthModel);
 		cyborg.Draw(shadowMapShader);
 
@@ -255,7 +254,7 @@ int main() {
 		//---------------
 		// DRAW THE MODEL
 		//---------------
-		model = glm::translate(model, glm::vec3(0.0f, 2.0f, 0.0f));
+		shader.setFloat("hasNormalMap", 1.0f);
 		shader.setMat4("model", model);
 		cyborg.Draw(shader);
 

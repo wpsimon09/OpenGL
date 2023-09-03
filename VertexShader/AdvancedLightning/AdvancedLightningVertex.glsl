@@ -48,7 +48,7 @@ void main()
     vs_out.FragPosLight = lightMatrix * vec4(vs_out.FragPos ,1.0);
     vs_out.hasNormalMap = hasNormalMap;
     
-    if(hasNormalMap == 1.0f)
+    if(hasNormalMap == 1.0)
     {
         vs_out.TangentLightPos = TBN * lightPos;
         vs_out.TangentViewPos = TBN * viewPos;
