@@ -221,6 +221,15 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="Assets\Model\cyborg\cyborg.obj" />
+    <Image Include="Assets\Textures\AdvancedLightning\bricks2.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Assets\Textures\AdvancedLightning\bricks2_disp.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Assets\Textures\AdvancedLightning\bricks2_normal.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Assets\Model\backpack\source_attribution.txt" />

@@ -16,10 +16,13 @@ out vec4 FragColor;
 uniform sampler2D texture_diffuse0;
 uniform sampler2D shadowMap;
 uniform sampler2D texture_normal0;
+uniform sampler2D heightMap;
 
 uniform vec3 lightColor;
 
 uniform vec3 texture_specular0;
+
+uniform float heightScale;
 
 float caclualteShadow(vec4 FragPosLight, float bias)
 {
@@ -63,12 +66,34 @@ float caclualteShadow(vec4 FragPosLight, float bias)
 
 }
 
+vec2 ParalaxMapping(vec2 textureCoordinates, vec3 viewDir)
+{
+    // get the height values from the heihgt map
+    float height = texture(heightMap, textureCoordinates).r;
+
+    // calculate the vector p
+    vec2 p = viewDir.xy / viewDir.z * (height * heightScale);
+    
+    // return the new set of texture coordniates
+    return textureCoordinates - p;
+}
+
 void main() 
 {
+    //----------------
+    // PARALAX MAPPING
+    //----------------
+
+    //calculate the vector V vector
+    vec3 viewDir = normalize(fs_in.TangentViewPos - fs_in.TangentFragPos);
+    
+    //offset the texture coordniates based on the heightMap
+    vec2 texCoords = ParalaxMapping(fs_in.TexCoords, viewDir); 
+
     //----------
     // AMBIENT
     //----------
-    vec3 ambient = vec3(texture(texture_diffuse0, fs_in.TexCoords)* 0.4);
+    vec3 ambient = vec3(texture(texture_diffuse0, texCoords)* 0.4);
     
     //--------
     // DIFFUSE
@@ -77,7 +102,7 @@ void main()
     if(fs_in.hasNormalMap == 1.0)
     {
         //sample normal vectors from the texture
-        normal = texture(texture_normal0, fs_in.TexCoords).rgb;
+        normal = texture(texture_normal0, texCoords).rgb;
         
         //convert from range [0,1] to the range [-1, 1]
         normal = normalize(normal * 2.0 - 1.0);    
@@ -87,13 +112,12 @@ void main()
 
     vec3 lightDir = normalize(fs_in.TangentLightPos - fs_in.TangentFragPos);
     float diffStrength = max(dot(normal, lightDir), 0.0);
-    vec3 diffuse = lightColor * diffStrength * vec3(texture(texture_diffuse0, fs_in.TexCoords));
+    vec3 diffuse = lightColor * diffStrength * vec3(texture(texture_diffuse0, texCoords));
     
     //--------
     //SPECULAR
     //--------
     vec3 texture_specular = lightColor;
-    vec3 viewDir = normalize(fs_in.TangentViewPos - fs_in.TangentFragPos);
     float specStrength = 0.0;
     vec3 halfwayDir = normalize(lightDir + viewDir);
 
@@ -106,7 +130,7 @@ void main()
     float bias = max(0.09 * (1.0 - dot(normal, lightDir)), 0.05);
 
     float shadow = caclualteShadow(fs_in.FragPosLight, bias);
-    vec3 result = (ambient + (1.0 - shadow) * (diffuse + specular)) * texture(texture_diffuse0, fs_in.TexCoords).rgb;
+    vec3 result = (ambient + (1.0 - shadow) * (diffuse + specular)) * texture(texture_diffuse0, texCoords).rgb;
 
     //-------------
     // FINAL RESULT
