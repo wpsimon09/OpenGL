@@ -242,6 +242,7 @@ int main() {
 	brickWallShader.setInt("texture_diffuse0", 0);
 	brickWallShader.setInt("shadowMap", 1);
 
+	floorShader.use();
 	floorShader.setInt("texture_diffuse0", 0);
 	floorShader.setInt("shadowMap", 1);
 
@@ -287,7 +288,6 @@ int main() {
 
 		glm::mat4 lightModel = glm::mat4(1.0f);
 		shadowMapShader.setMat4("model", lightModel);
-		DrawShadowMapPlane(shadowMapShader, lightModel, planeVAO);
 		lightModel = glm::translate(lightModel, glm::vec3(0.0f, 0.5f, 0.0f));
 		DrawShadowMapPlane(shadowMapShader, lightModel, wallVAO);
 		glCullFace(GL_BACK);

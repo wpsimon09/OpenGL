@@ -20,7 +20,7 @@ uniform vec3 viewPos;
 
 float caclualteShadow(vec4 FragPosLight, float bias)
 {
-    //tranfsforms fragment position in ragne from [0, 1]
+   //tranfsforms fragment position in ragne from [0, 1]
     vec3 projCoords = FragPosLight.xyz / FragPosLight.w;
     projCoords = projCoords * 0.5 + 0.5;
 
@@ -29,7 +29,7 @@ float caclualteShadow(vec4 FragPosLight, float bias)
     float closestDepth = texture(shadowMap, projCoords.xy).w;
     
     //get the depth value of the current fragment 
-    float currentDepth = projCoords.z;  
+    float currentDepth = projCoords.z;
 
     //compare if current depth value is bigger than the closest depth value
     // is true object is not in the shadow (1.0)
@@ -71,9 +71,6 @@ void main()
     // DIFFUSE
     //--------
     vec3 normal = normalize(fs_in.Normal);
-   
-        
-
     vec3 lightDir = normalize(lightPos - fs_in.FragPos);
     float diffStrength = max(dot(normal, lightDir), 0.0);
     vec3 diffuse = lightColor * diffStrength * vec3(texture(texture_diffuse0, fs_in.TexCoords));
