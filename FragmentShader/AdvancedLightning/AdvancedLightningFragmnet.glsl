@@ -68,14 +68,27 @@ float caclualteShadow(vec4 FragPosLight, float bias)
 
 vec2 ParalaxMapping(vec2 textureCoordinates, vec3 viewDir)
 {
-    // get the height values from the heihgt map
-    float height = texture(heightMap, textureCoordinates).r;
+    float numOfLayers = 10;
 
-    // calculate the vector p
-    vec2 p = viewDir.xy / viewDir.z * (height * heightScale);
+    float layerDepth = 1 / numOfLayers;
+
+    float currentLyerDepth  = 0.0f;
+
+    vec2 P = viewDir.xy * heightScale;
+    vec2 deltaTexCoords = P / numOfLayers;
     
-    // return the new set of texture coordniates
-    return textureCoordinates - p;
+    vec2 currentTexCoords = textureCoordinates;
+
+    float currentDepthMapValue  = texture(heightMap, currentTexCoords).r;
+
+    while(currentLyerDepth < currentDepthMapValue)
+    {
+        currentTexCoords -= deltaTexCoords;
+        currentDepthMapValue = texture(heightMap, currentTexCoords).r;
+        currentLyerDepth += layerDepth;
+    }
+
+    return currentTexCoords;
 }
 
 void main() 
