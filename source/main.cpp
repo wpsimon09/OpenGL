@@ -168,6 +168,8 @@ int main() {
 
 	Shader shadowMapShader("VertexShader/AdvancedLightning/ShadowMapVertex.glsl", "FragmentShader/AdvancedLightning/ShadowMapFragement.glsl");
 		
+	Shader floorShader("VertexShader/FloorVertex.glsl", "FragmentShader/FloorFragment.glsl");
+
 	stbi_set_flip_vertically_on_load(true);
 
 	// plane VAO
@@ -240,6 +242,9 @@ int main() {
 	brickWallShader.setInt("texture_diffuse0", 0);
 	brickWallShader.setInt("shadowMap", 1);
 
+	floorShader.setInt("texture_diffuse0", 0);
+	floorShader.setInt("shadowMap", 1);
+
 	//===================================== RENDER LOOP ================================================//
 
 	while (!glfwWindowShouldClose(window))
@@ -281,8 +286,9 @@ int main() {
 		shadowMapShader.setMat4("lightSpaceMatrix", lightSpaceMatrix);
 
 		glm::mat4 lightModel = glm::mat4(1.0f);
-		lightModel = glm::translate(lightModel, glm::vec3(0.0f, 0.5f, 0.0f));
 		shadowMapShader.setMat4("model", lightModel);
+		DrawShadowMapPlane(shadowMapShader, lightModel, planeVAO);
+		lightModel = glm::translate(lightModel, glm::vec3(0.0f, 0.5f, 0.0f));
 		DrawShadowMapPlane(shadowMapShader, lightModel, wallVAO);
 		glCullFace(GL_BACK);
 		//--------------------------------------//
@@ -301,10 +307,24 @@ int main() {
 		//---------------------
 		// SET LIGHT PROPERTIES
 		//---------------------
-		shader.use();
+		floorShader.use();
+		floorShader.setVec3("lightPos", lightPosition);
+		floorShader.setVec3("lightColor", lightColor);
+		floorShader.setVec3("viewPos", camera.Position);
+		floorShader.setMat4("lightMatrix", lightSpaceMatrix);
 
+
+		//----------------------
+		// DRAW PLANE AS A FLOOR
+		//----------------------
 		useTexture(0, floorTexture);
 		useTexture(1, depthMap);
+		DrawPlane(floorShader, model, view, projection, planeVAO);
+
+		//---------------
+		// DRAW THE PLANE
+		//---------------
+		shader.use();
 		shader.setFloat("hasNormalMap", 0.0f);
 		shader.setVec3("lightPos", lightPosition);
 		shader.setVec3("lightColor", lightColor);
@@ -312,18 +332,11 @@ int main() {
 		shader.setVec3("specularColor", lightColor);
 		shader.setMat4("lightMatrix", lightSpaceMatrix);
 		shader.setFloat("heightScale", 0.2f);
-		//----------------------
-		// DRAW PLANE AS A FLOOR
-		//----------------------
-		DrawPlane(shader, model, view, projection, planeVAO);
-
-		//---------------
-		// DRAW THE PLANE
-		//---------------
+		
 		model = glm::translate(model, glm::vec3(0.0f, 0.5f, 0.0f));
 		shader.setFloat("hasNormalMap", 1.0f);
-		shader.setMat4("model", model);
 		useTexture(0, brickWall);
+		useTexture(1, depthMap);
 		useTexture(2, normalMap);
 		useTexture(3, heightMap);
 		DrawPlane(shader, model, view, projection, wallVAO);
