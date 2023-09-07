@@ -72,7 +72,7 @@ vec2 ParalaxMapping(vec2 textureCoordinates, vec3 viewDir)
 
     float layerDepth = 1 / numOfLayers;
 
-    float currentLyerDepth  = 0.0f;
+    float currentLayerDepth  = 0.0f;
 
     vec2 P = viewDir.xy * heightScale;
     vec2 deltaTexCoords = P / numOfLayers;
@@ -81,14 +81,25 @@ vec2 ParalaxMapping(vec2 textureCoordinates, vec3 viewDir)
 
     float currentDepthMapValue  = texture(heightMap, currentTexCoords).r;
 
-    while(currentLyerDepth < currentDepthMapValue)
+    while(currentLayerDepth < currentDepthMapValue)
     {
         currentTexCoords -= deltaTexCoords;
         currentDepthMapValue = texture(heightMap, currentTexCoords).r;
-        currentLyerDepth += layerDepth;
+        currentLayerDepth += layerDepth;
     }
 
-    return currentTexCoords;
+    //get the textures coordinates before collision
+    vec2 prevTexCoords = currentTexCoords + deltaTexCoords;
+
+    //get the depth values before and afte the collision
+    float afterDepth = currentDepthMapValue - currentLayerDepth;
+    float beforeDepth = texture(heightMap, prevTexCoords).r - currentLayerDepth + layerDepth;
+
+    //lineary interpola
+    float weight = afterDepth / (afterDepth-beforeDepth);
+    vec2 finalTexCoords = prevTexCoords * weight + currentTexCoords * (1.0 - weight);
+
+    return finalTexCoords;
 }
 
 void main() 

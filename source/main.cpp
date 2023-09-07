@@ -224,9 +224,9 @@ int main() {
 	unsigned int floorTexture = loadTexture("Assets/Textures/AdvancedLightning/grid_w.jpg", false);
 	unsigned int lightTexture = loadTexture("Assets/Textures/AdvancedLightning/light.png", false);
 	unsigned int cubeTexture = loadTexture("Assets/Textures/AdvancedLightning/cube-wood.jpg", false);
-	unsigned int brickWall = loadTexture("Assets/Textures/AdvancedLightning/bricks2.jpg", false);
-	unsigned int normalMap = loadTexture("Assets/Textures/AdvancedLightning/bricks2_normal.jpg", false);
-	unsigned int heightMap = loadTexture("Assets/Textures/AdvancedLightning/bricks2_disp.jpg", false);
+	unsigned int brickWall = loadTexture("Assets/Textures/AdvancedLightning/toy_box_diffuse.png", false);
+	unsigned int normalMap = loadTexture("Assets/Textures/AdvancedLightning/toy_box_normal.png", false);
+	unsigned int heightMap = loadTexture("Assets/Textures/AdvancedLightning/toy_box_disp.png", false);
 	unsigned int floorNormalMap = loadTexture("Assets/Textures/AdvancedLightning/floor_normal.jpg", false);
 
 	shader.use();

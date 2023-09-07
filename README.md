@@ -1,5 +1,7 @@
-This chapter describes the technique called normal mapping where we add ilusion of depth to the completly flat texture by creating normal vectors for each fragment of the object instead for each surface / face of the object 
+This chapter was a follow-up on the normal mapping chapter. We will use the height map that will offset the texture coordinates to create an illusion of the depth in the complete flat object/texture combined with the normal map it can give a pretty believable result
 
-![Alt text](Assets/ReadmeImages/NormalMapping/normal-map.png)
+![Alt text](Assets/ReadmeImages/ParallaxMapping/depth-map-toy.png)
 
-![Alt text](Assets/ReadmeImages/NormalMapping/cyborg-normal.png)
+![Alt text](Assets/ReadmeImages/ParallaxMapping/toy-side.png)
+
+![Alt text](Assets/ReadmeImages/ParallaxMapping/depth-map-wall.png)
