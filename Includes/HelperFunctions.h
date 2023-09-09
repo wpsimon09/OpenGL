@@ -154,7 +154,7 @@ float wallVertecies[] = {
 	0.0f, 1.0f, 0.0f,	0.0f, 0.0f, !.0f,	0.0f, 1.0f
 };
 
-glm::vec3 pointLightPositions[] = {
+const glm::vec3 pointLightPositions[] = {
 
 glm::vec3(-0.270816f, 1.00239f, -6.37412f),
 glm::vec3(0.718611f, 0.161259f, -0.158399f),

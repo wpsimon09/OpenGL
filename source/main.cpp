@@ -115,10 +115,10 @@ int main() {
 	unsigned int cubeVAO = createVAO(cubeVertices, sizeof(cubeVertices) / sizeof(float));
 
 	std::vector <glm::vec3> lightColors;
-	lightColors.push_back(glm::vec3(200.0f, 200.0f, 200.0f));
-	lightColors.push_back(glm::vec3(0.1f, 0.0f, 0.0f));
-	lightColors.push_back(glm::vec3(0.0f, 0.0f, 0.2f));
-	lightColors.push_back(glm::vec3(0.0f, 0.1f, 0.0f));
+	lightColors.push_back(colorOf(240.0f, 20.0f, 20.0f));
+	lightColors.push_back(glm::vec3(0.9f, 0.0f, 0.0f));
+	lightColors.push_back(glm::vec3(0.0f, 0.0f, 0.9f));
+	lightColors.push_back(glm::vec3(0.0f, 0.9f, 0.0f));
 
 	//------------------
 	// DEPTH MAP TEXTURE
@@ -158,7 +158,7 @@ int main() {
 	//-----------------
 	unsigned int floorTexture = loadTexture("Assets/Textures/AdvancedLightning/grid_w.jpg", false);
 	unsigned int lightTexture = loadTexture("Assets/Textures/AdvancedLightning/light.png", false);
-	unsigned int cubeTexture = loadTexture("Assets/Textures/AdvancedLightning/cube-wood.jpg", false);
+	unsigned int cubeTexture = loadTexture("Assets/Textures/AdvancedLightning/wood.png", true);
 	unsigned int brickWall = loadTexture("Assets/Textures/AdvancedLightning/toy_box_diffuse.png", false);
 	unsigned int normalMap = loadTexture("Assets/Textures/AdvancedLightning/toy_box_normal.png", false);
 	unsigned int heightMap = loadTexture("Assets/Textures/AdvancedLightning/toy_box_disp.png", false);
@@ -260,13 +260,21 @@ int main() {
 		mainObjectShader.use();
 		mainObjectShader.setVec3("lightPos", lightPosition);
 		mainObjectShader.setVec3("viewPos", camera.Position);
-		mainObjectShader.setVec3("specularColor", lightColor);
-		mainObjectShader.setVec3("lightColor", lightColor);
+
+		for (int i = 0; i < 4; i++)
+		{
+			mainObjectShader.setVec3("pointLights[" + std::to_string(i) + "].position", pointLightPositions[i]);
+			mainObjectShader.setVec3("pointLights[" + std::to_string(i) + "].color", lightColors[i]);
+			
+			mainObjectShader.setFloat("pointLights[" + std::to_string(i) + "].linear", 0.09f);
+			mainObjectShader.setFloat("pointLights[" + std::to_string(i) + "].constant", 1.0f);
+			mainObjectShader.setFloat("pointLights[" + std::to_string(i) + "].quadratic", 0.032f);
+		}
 		
 		model = glm::translate(model, glm::vec3(0.0f,1.0f, 0.0f));
 		model = glm::rotate(model, glm::radians(90.0F), glm::vec3(0.0f, 1.0f, 0.0f));
 		model = glm::scale(model, glm::vec3(7.0f, 1.0f, 1.0f));
-		useTexture(0, brickWall);
+		useTexture(0, cubeTexture);
 		DrawCube(mainObjectShader, model, view, projection, cubeVAO);
 
 		//----------------------
@@ -276,7 +284,7 @@ int main() {
 		model = glm::translate(model, lightPosition);
 		model = glm::scale(model, glm::vec3(0.5f));
 		lightSourceShader.use();
-		for (size_t i = 0; i < 4; i++)
+		for (int i = 0; i < 4; i++)
 		{
 			lightSourceShader.setVec3("lightColor", lightColors[i]);
 
