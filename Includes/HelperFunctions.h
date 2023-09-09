@@ -154,3 +154,12 @@ float wallVertecies[] = {
 	0.0f, 1.0f, 0.0f,	0.0f, 0.0f, !.0f,	0.0f, 1.0f
 };
 
+glm::vec3 pointLightPositions[] = {
+
+glm::vec3(-0.270816f, 1.00239f, -6.37412f),
+glm::vec3(0.718611f, 0.161259f, -0.158399f),
+glm::vec3(-0.881327f, 0.214736f, 3.03096f),
+glm::vec3(0.727711f, 0.181431f, 3.52413f)
+
+};
+

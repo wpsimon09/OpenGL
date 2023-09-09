@@ -47,16 +47,12 @@ float quadratic = 0.20f;
 
 bool isLightBlinn = true;
 
-
-//light possition
+//X:  0.727711f
+//Y : 0.181431f
+//Z : 3.52413f
 glm::vec3 lightPosition(-2.0f, 2.0f, -1.0f);
 
-glm::vec3 pointLightPositions[] = {
-glm::vec3(0.7f, 0.2f, 2.0f),
-glm::vec3(2.3f, -3.3f, -4.0f),
-glm::vec3(-4.0f, 2.0f, -12.0f),
-glm::vec3(0.0f, 0.0f, -3.0f)
-};
+
 
 glm::vec3 cubePostions[] = {
 	glm::vec3(-0.2f, 1.0f, 0.0),
@@ -69,7 +65,7 @@ int main() {
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
+	
 	GLFWwindow* window = glfwCreateWindow(800, 600, "OpenGL", NULL, NULL);
 	if (window == NULL)
 	{
@@ -95,72 +91,8 @@ int main() {
 		return -1;
 	}
 
-	// positions
-	glm::vec3 pos1(-1.0f, 1.0f, 0.0f);
-	glm::vec3 pos2(-1.0f, -1.0f, 0.0f);
-	glm::vec3 pos3(1.0f, -1.0f, 0.0f);
-	glm::vec3 pos4(1.0f, 1.0f, 0.0f);
-	// texture coordinates
-	glm::vec2 uv1(0.0f, 1.0f);
-	glm::vec2 uv2(0.0f, 0.0f);
-	glm::vec2 uv3(1.0f, 0.0f);
-	glm::vec2 uv4(1.0f, 1.0f);
-	// normal vector
-	glm::vec3 nm(0.0f, 0.0f, 1.0f);
 
-	// calculate tangent/bitangent vectors of both triangles
-	glm::vec3 tangent1;
-	glm::vec3 bitangent1;
-	glm::vec3 tangent2;
-	glm::vec3 bitangent2;
-	// triangle 1
-	// ----------
-	glm::vec3 edge1 = pos2 - pos1;
-	glm::vec3 edge2 = pos3 - pos1;
-	glm::vec2 deltaUV1 = uv2 - uv1;
-	glm::vec2 deltaUV2 = uv3 - uv1;
-
-	float f = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV2.x * deltaUV1.y);
-
-	tangent1.x = f * (deltaUV2.y * edge1.x - deltaUV1.y * edge2.x);
-	tangent1.y = f * (deltaUV2.y * edge1.y - deltaUV1.y * edge2.y);
-	tangent1.z = f * (deltaUV2.y * edge1.z - deltaUV1.y * edge2.z);
-
-	bitangent1.x = f * (-deltaUV2.x * edge1.x + deltaUV1.x * edge2.x);
-	bitangent1.y = f * (-deltaUV2.x * edge1.y + deltaUV1.x * edge2.y);
-	bitangent1.z = f * (-deltaUV2.x * edge1.z + deltaUV1.x * edge2.z);
-
-	// triangle 2
-	// ----------
-	edge1 = pos3 - pos1;
-	edge2 = pos4 - pos1;
-	deltaUV1 = uv3 - uv1;
-	deltaUV2 = uv4 - uv1;
-
-	f = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV2.x * deltaUV1.y);
-
-	tangent2.x = f * (deltaUV2.y * edge1.x - deltaUV1.y * edge2.x);
-	tangent2.y = f * (deltaUV2.y * edge1.y - deltaUV1.y * edge2.y);
-	tangent2.z = f * (deltaUV2.y * edge1.z - deltaUV1.y * edge2.z);
-
-
-	bitangent2.x = f * (-deltaUV2.x * edge1.x + deltaUV1.x * edge2.x);
-	bitangent2.y = f * (-deltaUV2.x * edge1.y + deltaUV1.x * edge2.y);
-	bitangent2.z = f * (-deltaUV2.x * edge1.z + deltaUV1.x * edge2.z);
-
-
-	float wallTangent[] = {
-		// positions            // normal         // texcoords  // tangent                          // bitangent
-		pos1.x, pos1.y, pos1.z, nm.x, nm.y, nm.z, uv1.x, uv1.y, tangent1.x, tangent1.y, tangent1.z, bitangent1.x, bitangent1.y, bitangent1.z,
-		pos2.x, pos2.y, pos2.z, nm.x, nm.y, nm.z, uv2.x, uv2.y, tangent1.x, tangent1.y, tangent1.z, bitangent1.x, bitangent1.y, bitangent1.z,
-		pos3.x, pos3.y, pos3.z, nm.x, nm.y, nm.z, uv3.x, uv3.y, tangent1.x, tangent1.y, tangent1.z, bitangent1.x, bitangent1.y, bitangent1.z,
-
-		pos1.x, pos1.y, pos1.z, nm.x, nm.y, nm.z, uv1.x, uv1.y, tangent2.x, tangent2.y, tangent2.z, bitangent2.x, bitangent2.y, bitangent2.z,
-		pos3.x, pos3.y, pos3.z, nm.x, nm.y, nm.z, uv3.x, uv3.y, tangent2.x, tangent2.y, tangent2.z, bitangent2.x, bitangent2.y, bitangent2.z,
-		pos4.x, pos4.y, pos4.z, nm.x, nm.y, nm.z, uv4.x, uv4.y, tangent2.x, tangent2.y, tangent2.z, bitangent2.x, bitangent2.y, bitangent2.z
-	};
-
-	Shader shader("VertexShader/AdvancedLightning/AdvancedLightningVertex.glsl", "FragmentShader/AdvancedLightning/AdvancedLightningFragmnet.glsl");
+	Shader mainObjectShader("VertexShader/AdvancedLightning/HDRvertex.glsl", "FragmentShader/AdvancedLightning/HDRfragment.glsl");
 
 	Shader lightSourceShader("VertexShader/AdvancedLightning/LightSourceVertex.glsl", "FragmentShader/AdvancedLightning/LightSourceFragment.glsl");
 
@@ -182,8 +114,11 @@ int main() {
 	//cube VAO
 	unsigned int cubeVAO = createVAO(cubeVertices, sizeof(cubeVertices) / sizeof(float));
 
-
-	unsigned int wallVAO = createVAOForTangentSpace(wallTangent, sizeof(wallTangent) / sizeof(float));
+	std::vector <glm::vec3> lightColors;
+	lightColors.push_back(glm::vec3(200.0f, 200.0f, 200.0f));
+	lightColors.push_back(glm::vec3(0.1f, 0.0f, 0.0f));
+	lightColors.push_back(glm::vec3(0.0f, 0.0f, 0.2f));
+	lightColors.push_back(glm::vec3(0.0f, 0.1f, 0.0f));
 
 	//------------------
 	// DEPTH MAP TEXTURE
@@ -229,11 +164,11 @@ int main() {
 	unsigned int heightMap = loadTexture("Assets/Textures/AdvancedLightning/toy_box_disp.png", false);
 	unsigned int floorNormalMap = loadTexture("Assets/Textures/AdvancedLightning/floor_normal.jpg", false);
 
-	shader.use();
-	shader.setInt("texture_diffuse0", 0);
-	shader.setInt("shadowMap", 1);
-	shader.setInt("texture_normal0", 2);
-	shader.setInt("heightMap", 3);
+	mainObjectShader.use();
+	mainObjectShader.setInt("texture_diffuse0", 0);
+	mainObjectShader.setInt("shadowMap", 1);
+	mainObjectShader.setInt("texture_normal0", 2);
+	mainObjectShader.setInt("heightMap", 3);
 
 	lightSourceShader.use();
 	lightSourceShader.setInt("lightTexture", 0);
@@ -287,9 +222,11 @@ int main() {
 		shadowMapShader.setMat4("lightSpaceMatrix", lightSpaceMatrix);
 
 		glm::mat4 lightModel = glm::mat4(1.0f);
-		shadowMapShader.setMat4("model", lightModel);
 		lightModel = glm::translate(lightModel, glm::vec3(0.0f, 0.5f, 0.0f));
-		DrawShadowMapPlane(shadowMapShader, lightModel, wallVAO);
+		lightModel = glm::rotate(lightModel, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		lightModel = glm::scale(lightModel, glm::vec3(5.0f, 1.0f, 1.0f));
+		shadowMapShader.setMat4("model", lightModel);
+		DrawShadowMapCube(shadowMapShader, lightModel, cubeVAO);
 		glCullFace(GL_BACK);
 		//--------------------------------------//
 		//---------- NORMAL SCENE -------------//
@@ -304,54 +241,52 @@ int main() {
 		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
 		glm::mat4 model = glm::mat4(1.0f);
 
-		//---------------------
-		// SET LIGHT PROPERTIES
-		//---------------------
-		floorShader.use();
-		floorShader.setVec3("lightPos", lightPosition);
-		floorShader.setVec3("lightColor", lightColor);
-		floorShader.setVec3("viewPos", camera.Position);
-		floorShader.setMat4("lightMatrix", lightSpaceMatrix);
-
-
 		//----------------------
 		// DRAW PLANE AS A FLOOR
 		//----------------------
 		useTexture(0, floorTexture);
+		floorShader.use();
+		floorShader.setVec3("lightPos", lightPosition);
+		floorShader.setVec3("viewPos", camera.Position);
+		floorShader.setMat4("lightMatrix", lightSpaceMatrix);
+		floorShader.setVec3("lightColor", lightColor);
+
 		useTexture(1, depthMap);
 		DrawPlane(floorShader, model, view, projection, planeVAO);
 
 		//---------------
 		// DRAW THE PLANE
 		//---------------
-		shader.use();
-		shader.setFloat("hasNormalMap", 0.0f);
-		shader.setVec3("lightPos", lightPosition);
-		shader.setVec3("lightColor", lightColor);
-		shader.setVec3("viewPos", camera.Position);
-		shader.setVec3("specularColor", lightColor);
-		shader.setMat4("lightMatrix", lightSpaceMatrix);
-		shader.setFloat("heightScale", 0.2f);
+		mainObjectShader.use();
+		mainObjectShader.setVec3("lightPos", lightPosition);
+		mainObjectShader.setVec3("viewPos", camera.Position);
+		mainObjectShader.setVec3("specularColor", lightColor);
+		mainObjectShader.setVec3("lightColor", lightColor);
 		
-		model = glm::translate(model, glm::vec3(0.0f, 0.5f, 0.0f));
-		shader.setFloat("hasNormalMap", 1.0f);
+		model = glm::translate(model, glm::vec3(0.0f,1.0f, 0.0f));
+		model = glm::rotate(model, glm::radians(90.0F), glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(7.0f, 1.0f, 1.0f));
 		useTexture(0, brickWall);
-		useTexture(1, depthMap);
-		useTexture(2, normalMap);
-		useTexture(3, heightMap);
-		DrawPlane(shader, model, view, projection, wallVAO);
+		DrawCube(mainObjectShader, model, view, projection, cubeVAO);
 
 		//----------------------
 		// DRAW THE LIGHT SOURCE
 		//----------------------
 		model = glm::mat4(1.0f);
 		model = glm::translate(model, lightPosition);
-		model = glm::scale(model, glm::vec3(0.6f));
+		model = glm::scale(model, glm::vec3(0.5f));
 		lightSourceShader.use();
-		lightSourceShader.setVec3("lightColor", lightColor);
-		useTexture(0, lightTexture);
-		DrawPlane(lightSourceShader, model, view, projection, lightVAO);
+		for (size_t i = 0; i < 4; i++)
+		{
+			lightSourceShader.setVec3("lightColor", lightColors[i]);
+
+			model = glm::mat4(1.0f);
+			model = glm::translate(model, pointLightPositions[i]);
+
+			useTexture(0, lightTexture);
+			DrawPlane(lightSourceShader, model, view, projection, lightVAO);
 	
+		}
 
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
 		// -------------------------------------------------------------------------------
@@ -359,6 +294,8 @@ int main() {
 		glfwPollEvents();
 
 	}
+
+	std::cout << "Lights coordniates are \n X:" << lightPosition.x << "f\n Y:" << lightPosition.y << "f\n Z:" << lightPosition.z << "f\n";
 
 	glfwTerminate();
 

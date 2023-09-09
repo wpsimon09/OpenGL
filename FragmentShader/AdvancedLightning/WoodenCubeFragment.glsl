@@ -78,8 +78,6 @@ void main()
 
     float shadow = 0.0;
 
-
-
     //---------
     // SPECULAR
     //---------
@@ -90,7 +88,7 @@ void main()
     specStrength = pow(max(dot(normal, halfwayDir), 0.0),64.0);
     vec3 specular = specularColor * specStrength;
 
-    vec3 result = (ambient + (1.0 - shadow) * (diffuse + specular));
+    vec3 result = ambient + diffuse + specular;
  
 
     //-------------
