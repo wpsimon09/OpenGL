@@ -266,8 +266,7 @@ int main() {
 		shadowMapShader.setMat4("lightSpaceMatrix", lightSpaceMatrix);
 
 		glm::mat4 lightModel = glm::mat4(1.0f);
-		lightModel = glm::translate(lightModel, glm::vec3(0.0f, 4.0f, 25.0));
-		lightModel = glm::scale(lightModel, glm::vec3(2.5f, 2.5f, 27.5f));
+		DrawShadowMapCube(shadowMapShader, lightModel, cubeVAO);
 		shadowMapShader.setMat4("model", lightModel);
 		
 		glCullFace(GL_BACK);
@@ -289,10 +288,21 @@ int main() {
 			//----------------------
 			useTexture(0, floorTexture);
 			floorShader.use();
-			floorShader.setVec3("lightPos", lightPosition);
+			floorShader.setVec3("directionLight.position", lightPosition);
+			floorShader.setVec3("directionLight.color", COLOR_WHITE);
 			floorShader.setVec3("viewPos", camera.Position);
 			floorShader.setMat4("lightMatrix", lightSpaceMatrix);
-			floorShader.setVec3("lightColor", lightColor);
+
+			for (int i = 0; i < 4; i++)
+			{
+				floorShader.setVec3("pointLights[" + std::to_string(i) + "].position", pointLightPositions[i]);
+				floorShader.setVec3("pointLights[" + std::to_string(i) + "].color", lightColors[i]);	
+				floorShader.setFloat("pointLights[" + std::to_string(i) + "].linear", 0.09f);
+				floorShader.setFloat("pointLights[" + std::to_string(i) + "].constant", 1.0f);
+				floorShader.setFloat("pointLights[" + std::to_string(i) + "].quadratic", 0.032f);
+			}
+
+			
 
 			useTexture(1, depthMap);
 			DrawPlane(floorShader, model, view, projection, planeVAO);
@@ -313,11 +323,9 @@ int main() {
 				mainObjectShader.setFloat("pointLights[" + std::to_string(i) + "].constant", 1.0f);
 				mainObjectShader.setFloat("pointLights[" + std::to_string(i) + "].quadratic", 0.032f);
 			}
-			
-			model = glm::translate(model, glm::vec3(0.0f, 4.0f, 25.0));
-			model = glm::scale(model, glm::vec3(2.5f, 2.5f, 27.5f)); 
+		
 			useTexture(0, cubeTexture);
-			
+			DrawCube(mainObjectShader, model, view, projection, cubeVAO);
 			//----------------------
 			// DRAW THE LIGHT SOURCE
 			//----------------------
@@ -345,7 +353,7 @@ int main() {
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		HDRshader.use();
-		HDRshader.setFloat("exposure", 1.0f);
+		HDRshader.setFloat("exposure", 0.3f);
 		useTexture(0, HDRtexture);
 		glBindVertexArray(hdrPlaneVAO);
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
