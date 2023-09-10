@@ -120,16 +120,16 @@ int main() {
 	unsigned int hdrPlaneVAO = createVAO(HDRframeBufferVertecies, sizeof(HDRframeBufferVertecies) / sizeof(float), false);
 
 	std::vector <glm::vec3> lightColors;
-	lightColors.push_back(glm::vec3(200.0f, 200.0f, 200.0f));
-	lightColors.push_back(glm::vec3(0.9f, 0.0f, 0.0f));
-	lightColors.push_back(glm::vec3(0.0f, 0.0f, 0.9f));
-	lightColors.push_back(glm::vec3(0.0f, 0.9f, 0.0f));
+	lightColors.push_back(glm::vec3(5.0f, 5.0f, 5.0f));
+	lightColors.push_back(glm::vec3(10.0f, 0.0f, 0.0f));
+	lightColors.push_back(glm::vec3(0.0f, 0.0f, 15.0f));
+	lightColors.push_back(glm::vec3(0.0f, 5.0f, 0.0f));
 
 	std::vector<glm::vec3> pointLightPositions;
-	pointLightPositions.push_back(glm::vec3(0.0f, 4.0f, 49.5f)); // back light
-	pointLightPositions.push_back(glm::vec3(-1.4f, 4.0f, 9.0f));
-	pointLightPositions.push_back(glm::vec3(0.0f, 4.0f, 4.0f));
-	pointLightPositions.push_back(glm::vec3(0.8f, 4.0f, 6.0f));
+	pointLightPositions.push_back(glm::vec3(0.0f, 0.5f, 1.5f));
+	pointLightPositions.push_back(glm::vec3(-4.0f, 0.5f, -3.0f));
+	pointLightPositions.push_back(glm::vec3(3.0f, 0.5f, 1.0f));
+	pointLightPositions.push_back(glm::vec3(-.8f, 2.4f, -1.0f));
 
 	//------------------
 	// DEPTH MAP TEXTURE
@@ -269,7 +269,7 @@ int main() {
 		lightModel = glm::translate(lightModel, glm::vec3(0.0f, 4.0f, 25.0));
 		lightModel = glm::scale(lightModel, glm::vec3(2.5f, 2.5f, 27.5f));
 		shadowMapShader.setMat4("model", lightModel);
-		DrawShadowMapCube(shadowMapShader, lightModel, cubeVAO);
+		
 		glCullFace(GL_BACK);
 		//--------------------------------------//
 		//---------- NORMAL SCENE -------------//
@@ -317,8 +317,7 @@ int main() {
 			model = glm::translate(model, glm::vec3(0.0f, 4.0f, 25.0));
 			model = glm::scale(model, glm::vec3(2.5f, 2.5f, 27.5f)); 
 			useTexture(0, cubeTexture);
-			DrawCube(mainObjectShader, model, view, projection, cubeVAO);
-
+			
 			//----------------------
 			// DRAW THE LIGHT SOURCE
 			//----------------------
@@ -337,12 +336,16 @@ int main() {
 				DrawPlane(lightSourceShader, model, view, projection, lightVAO);
 	
 			}
-		
+			model = glm::mat4(1.0f);
+			model = glm::translate(model, lightPosition);
+			lightSourceShader.setVec3("lightColor", lightColor);
+			DrawPlane(lightSourceShader, model, view, projection, lightVAO);
+
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		HDRshader.use();
-		HDRshader.setFloat("exposure", 0.2f);
+		HDRshader.setFloat("exposure", 1.0f);
 		useTexture(0, HDRtexture);
 		glBindVertexArray(hdrPlaneVAO);
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);

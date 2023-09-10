@@ -67,7 +67,7 @@ vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos,vec3 viewDir)
      vec3 halfwayDir = normalize(lightDir + viewDir);
 
 	float spec = pow(max(dot(normal, halfwayDir), 0.0),
-	32);
+	8);
 	
 	// attenuation
 	float distance = length(light.position - fragPos);
@@ -80,5 +80,5 @@ vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos,vec3 viewDir)
 	
 	diffuse *= attenuation;
 	specular *= attenuation;
-	return (ambient + diffuse);
+	return (ambient + diffuse + specular);
 }
