@@ -41,7 +41,7 @@ void main()
 
 	vec3 result = vec3(0.0);
 	//Directional lighting
-	for(int i = 0; i<4; i++)
+	for(int i = 0; i<4; ++i)
 	{
 		result += CalcPointLight(pointLights[i], norm, fs_in.FragPos, viewDir);
 	}
@@ -74,11 +74,11 @@ vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos,vec3 viewDir)
 	float attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * (distance * distance));
 	
 	// combine results
-	vec3 ambient = texture(texture_diffuse0,fs_in.TexCoords).rgb * 0.2;
+	vec3 ambient = texture(texture_diffuse0,fs_in.TexCoords).rgb * 0.0;
 	vec3 diffuse = light.color * diff * texture(texture_diffuse0,fs_in.TexCoords).rgb;
 	vec3 specular = light.color * spec * texture(texture_diffuse0,fs_in.TexCoords).rgb;
 	
 	diffuse *= attenuation;
 	specular *= attenuation;
-	return (ambient + diffuse + specular);
+	return (ambient + diffuse);
 }

@@ -1,7 +1,7 @@
-This chapter was a follow-up on the normal mapping chapter. We will use the height map that will offset the texture coordinates to create an illusion of the depth in the complete flat object/texture combined with the normal map it can give a pretty believable result
+In this chapter we were trying to implement HDR that mimics the human eye regarding the light and allows the light properties to be bigger than the range of 0.0 and 1.0 which can improve the details visible in the scene that are under the influence of very bright lightning source 
 
-![Alt text](Assets/ReadmeImages/ParallaxMapping/depth-map-toy.png)
 
-![Alt text](Assets/ReadmeImages/ParallaxMapping/toy-side.png)
+![Alt text](Assets/ReadmeImages/HDR/HDR.png)
 
-![Alt text](Assets/ReadmeImages/ParallaxMapping/depth-map-wall.png)
+The HDR is really visible in complex scenes with complicated light algorithms
+

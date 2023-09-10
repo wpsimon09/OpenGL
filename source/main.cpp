@@ -244,8 +244,8 @@ int main() {
 		//------------------------------------//
 
 		glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
-		//glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
-		//glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+		glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
+		glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 		
 		glCullFace(GL_FRONT);
 		// configure projection matrix
@@ -266,12 +266,11 @@ int main() {
 		shadowMapShader.setMat4("lightSpaceMatrix", lightSpaceMatrix);
 
 		glm::mat4 lightModel = glm::mat4(1.0f);
-		lightModel = glm::translate(lightModel, glm::vec3(0.0f, 0.5f, 0.0f));
-		lightModel = glm::rotate(lightModel, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-		lightModel = glm::scale(lightModel, glm::vec3(27.0f, 2.0f, 2.0f));
-		//shadowMapShader.setMat4("model", lightModel);
-		//DrawShadowMapCube(shadowMapShader, lightModel, cubeVAO);
-		//glCullFace(GL_BACK);
+		lightModel = glm::translate(lightModel, glm::vec3(0.0f, 4.0f, 25.0));
+		lightModel = glm::scale(lightModel, glm::vec3(2.5f, 2.5f, 27.5f));
+		shadowMapShader.setMat4("model", lightModel);
+		DrawShadowMapCube(shadowMapShader, lightModel, cubeVAO);
+		glCullFace(GL_BACK);
 		//--------------------------------------//
 		//---------- NORMAL SCENE -------------//
 		//------------------------------------//
@@ -316,7 +315,8 @@ int main() {
 			}
 			
 			model = glm::translate(model, glm::vec3(0.0f, 4.0f, 25.0));
-			model = glm::scale(model, glm::vec3(2.5f, 2.5f, 27.5f)); useTexture(0, cubeTexture);
+			model = glm::scale(model, glm::vec3(2.5f, 2.5f, 27.5f)); 
+			useTexture(0, cubeTexture);
 			DrawCube(mainObjectShader, model, view, projection, cubeVAO);
 
 			//----------------------
@@ -337,9 +337,12 @@ int main() {
 				DrawPlane(lightSourceShader, model, view, projection, lightVAO);
 	
 			}
+		
+
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		HDRshader.use();
+		HDRshader.setFloat("exposure", 0.2f);
 		useTexture(0, HDRtexture);
 		glBindVertexArray(hdrPlaneVAO);
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
