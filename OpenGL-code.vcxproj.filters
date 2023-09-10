@@ -105,6 +105,8 @@
     <None Include="FragmentShader\FloorFragment.glsl" />
     <None Include="VertexShader\AdvancedLightning\HDRvertex.glsl" />
     <None Include="FragmentShader\AdvancedLightning\HDRfragment.glsl" />
+    <None Include="FragmentShader\AdvancedLightning\FBOfragment.glsl" />
+    <None Include="VertexShader\AdvancedLightning\FBOvertex.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\Textures\container.jpg">

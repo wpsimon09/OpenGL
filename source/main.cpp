@@ -65,7 +65,7 @@ int main() {
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	
+
 	GLFWwindow* window = glfwCreateWindow(800, 600, "OpenGL", NULL, NULL);
 	if (window == NULL)
 	{
@@ -99,20 +99,25 @@ int main() {
 	Shader brickWallShader("VertexShader/AdvancedLightning/WoodenCubeVertex.glsl", "FragmentShader/AdvancedLightning/WoodenCubeFragment.glsl");
 
 	Shader shadowMapShader("VertexShader/AdvancedLightning/ShadowMapVertex.glsl", "FragmentShader/AdvancedLightning/ShadowMapFragement.glsl");
-		
+
 	Shader floorShader("VertexShader/FloorVertex.glsl", "FragmentShader/FloorFragment.glsl");
+
+	Shader HDRshader("VertexShader/AdvancedLightning/FBOvertex.glsl", "FragmentShader/AdvancedLightning/FBOfragment.glsl");
 
 	stbi_set_flip_vertically_on_load(true);
 
 	// plane VAO
-	unsigned int planeVAO = createVAO(planeVertices, sizeof(planeVertices)/sizeof(float));
+	unsigned int planeVAO = createVAO(planeVertices, sizeof(planeVertices) / sizeof(float));
 
 
 	//VBO, EBO and VAO for the square that represents light position
-	unsigned int lightVAO = createVAO(lightVertices,sizeof(lightVertices)/sizeof(float), false);
+	unsigned int lightVAO = createVAO(lightVertices, sizeof(lightVertices) / sizeof(float), false);
 
 	//cube VAO
 	unsigned int cubeVAO = createVAO(cubeVertices, sizeof(cubeVertices) / sizeof(float));
+
+	//Plane where to render framebufer
+	unsigned int hdrPlaneVAO = createVAO(HDRframeBufferVertecies, sizeof(HDRframeBufferVertecies) / sizeof(float), false);
 
 	std::vector <glm::vec3> lightColors;
 	lightColors.push_back(glm::vec3(200.0f, 200.0f, 200.0f));
@@ -136,7 +141,7 @@ int main() {
 	glBindTexture(GL_TEXTURE_2D, depthMap);
 	//NOTE how we set a texture type to be GL_DEPTH_COMPONENT instead GL_RGB or GL_RGBA
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-	float borderColor[] = {1.0f, 1.0f, 1.0f, 1.0f};
+	float borderColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
 	glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
 	//set the textures prameters
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -158,6 +163,37 @@ int main() {
 	glDrawBuffer(GL_NONE);
 	glReadBuffer(GL_NONE);
 	glBindBuffer(GL_FRAMEBUFFER, 0);
+
+	//------------------
+	// HDR FRAME BUFFER
+	//------------------
+	
+	//floating point color buffer
+	unsigned int HDRtexture;
+	glGenTextures(1, &HDRtexture);
+	glBindTexture(GL_TEXTURE_2D, HDRtexture);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGBA, GL_FLOAT, NULL);	
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	//depth render buffer
+	unsigned int HDRrbo;
+	glGenRenderbuffers(1, &HDRrbo);
+	glBindRenderbuffer(GL_RENDERBUFFER, HDRrbo);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, SCR_WIDTH, SCR_HEIGHT);
+	
+	unsigned int HDRfbo;
+	glGenFramebuffers(1, &HDRfbo);
+	glBindFramebuffer(GL_FRAMEBUFFER, HDRfbo);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, HDRtexture, 0);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, HDRrbo);
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+	{
+		std::cerr << "ERROR::FRAME BUFFER::COULD NOT CREATE FRAME BUFFER";
+	}
+	else
+		std::cout << "FRAMEBUFFER created successfully";
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	//-----------------
 	// TEXTURES LOADING
@@ -187,6 +223,8 @@ int main() {
 	floorShader.setInt("texture_diffuse0", 0);
 	floorShader.setInt("shadowMap", 1);
 
+	HDRshader.use();
+	HDRshader.setInt("hdrBuffer", 0);
 	//===================================== RENDER LOOP ================================================//
 
 	while (!glfwWindowShouldClose(window))
@@ -206,8 +244,8 @@ int main() {
 		//------------------------------------//
 
 		glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
-		glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
-		glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+		//glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
+		//glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 		
 		glCullFace(GL_FRONT);
 		// configure projection matrix
@@ -231,75 +269,82 @@ int main() {
 		lightModel = glm::translate(lightModel, glm::vec3(0.0f, 0.5f, 0.0f));
 		lightModel = glm::rotate(lightModel, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 		lightModel = glm::scale(lightModel, glm::vec3(27.0f, 2.0f, 2.0f));
-		shadowMapShader.setMat4("model", lightModel);
-		DrawShadowMapCube(shadowMapShader, lightModel, cubeVAO);
-		glCullFace(GL_BACK);
+		//shadowMapShader.setMat4("model", lightModel);
+		//DrawShadowMapCube(shadowMapShader, lightModel, cubeVAO);
+		//glCullFace(GL_BACK);
 		//--------------------------------------//
 		//---------- NORMAL SCENE -------------//
 		//------------------------------------//
 
 		glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
+		glBindFramebuffer(GL_FRAMEBUFFER, HDRfbo);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			glClearColor(0.101f, 0.101f, 0.101f, 1.0f);
+
+			glm::mat4 view = camera.GetViewMatrix();
+			glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+			glm::mat4 model = glm::mat4(1.0f);
+
+			//----------------------
+			// DRAW PLANE AS A FLOOR
+			//----------------------
+			useTexture(0, floorTexture);
+			floorShader.use();
+			floorShader.setVec3("lightPos", lightPosition);
+			floorShader.setVec3("viewPos", camera.Position);
+			floorShader.setMat4("lightMatrix", lightSpaceMatrix);
+			floorShader.setVec3("lightColor", lightColor);
+
+			useTexture(1, depthMap);
+			DrawPlane(floorShader, model, view, projection, planeVAO);
+
+			//---------------
+			// DRAW THE PLANE
+			//---------------
+			mainObjectShader.use();
+			mainObjectShader.setVec3("lightPos", lightPosition);
+			mainObjectShader.setVec3("viewPos", camera.Position);
+
+			for (int i = 0; i < 4; i++)
+			{
+				mainObjectShader.setVec3("pointLights[" + std::to_string(i) + "].position", pointLightPositions[i]);
+				mainObjectShader.setVec3("pointLights[" + std::to_string(i) + "].color", lightColors[i]);
+				
+				mainObjectShader.setFloat("pointLights[" + std::to_string(i) + "].linear", 0.09f);
+				mainObjectShader.setFloat("pointLights[" + std::to_string(i) + "].constant", 1.0f);
+				mainObjectShader.setFloat("pointLights[" + std::to_string(i) + "].quadratic", 0.032f);
+			}
+			
+			model = glm::translate(model, glm::vec3(0.0f, 4.0f, 25.0));
+			model = glm::scale(model, glm::vec3(2.5f, 2.5f, 27.5f)); useTexture(0, cubeTexture);
+			DrawCube(mainObjectShader, model, view, projection, cubeVAO);
+
+			//----------------------
+			// DRAW THE LIGHT SOURCE
+			//----------------------
+			model = glm::mat4(1.0f);
+			model = glm::translate(model, lightPosition);
+			model = glm::scale(model, glm::vec3(0.5f));
+			lightSourceShader.use();
+			for (int i = 0; i < 4; i++)
+			{
+				lightSourceShader.setVec3("lightColor", lightColors[i]);
+
+				model = glm::mat4(1.0f);
+				model = glm::translate(model, pointLightPositions[i]);
+
+				useTexture(0, lightTexture);
+				DrawPlane(lightSourceShader, model, view, projection, lightVAO);
+	
+			}
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		glClearColor(0.101f, 0.101f, 0.101f, 1.0f);
-
-		glm::mat4 view = camera.GetViewMatrix();
-		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
-		glm::mat4 model = glm::mat4(1.0f);
-
-		//----------------------
-		// DRAW PLANE AS A FLOOR
-		//----------------------
-		useTexture(0, floorTexture);
-		floorShader.use();
-		floorShader.setVec3("lightPos", lightPosition);
-		floorShader.setVec3("viewPos", camera.Position);
-		floorShader.setMat4("lightMatrix", lightSpaceMatrix);
-		floorShader.setVec3("lightColor", lightColor);
-
-		useTexture(1, depthMap);
-		DrawPlane(floorShader, model, view, projection, planeVAO);
-
-		//---------------
-		// DRAW THE PLANE
-		//---------------
-		mainObjectShader.use();
-		mainObjectShader.setVec3("lightPos", lightPosition);
-		mainObjectShader.setVec3("viewPos", camera.Position);
-
-		for (int i = 0; i < 4; i++)
-		{
-			mainObjectShader.setVec3("pointLights[" + std::to_string(i) + "].position", pointLightPositions[i]);
-			mainObjectShader.setVec3("pointLights[" + std::to_string(i) + "].color", lightColors[i]);
-			
-			mainObjectShader.setFloat("pointLights[" + std::to_string(i) + "].linear", 0.09f);
-			mainObjectShader.setFloat("pointLights[" + std::to_string(i) + "].constant", 1.0f);
-			mainObjectShader.setFloat("pointLights[" + std::to_string(i) + "].quadratic", 0.032f);
-		}
+		HDRshader.use();
+		useTexture(0, HDRtexture);
+		glBindVertexArray(hdrPlaneVAO);
+		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+		glBindVertexArray(0);
 		
-		model = glm::translate(model, glm::vec3(0.0f, 4.0f, 25.0));
-		model = glm::scale(model, glm::vec3(2.5f, 2.5f, 27.5f)); useTexture(0, cubeTexture);
-		DrawCube(mainObjectShader, model, view, projection, cubeVAO);
-
-		//----------------------
-		// DRAW THE LIGHT SOURCE
-		//----------------------
-		model = glm::mat4(1.0f);
-		model = glm::translate(model, lightPosition);
-		model = glm::scale(model, glm::vec3(0.5f));
-		lightSourceShader.use();
-		for (int i = 0; i < 4; i++)
-		{
-			lightSourceShader.setVec3("lightColor", lightColors[i]);
-
-			model = glm::mat4(1.0f);
-			model = glm::translate(model, pointLightPositions[i]);
-
-			useTexture(0, lightTexture);
-			DrawPlane(lightSourceShader, model, view, projection, lightVAO);
-	
-		}
-
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
 		// -------------------------------------------------------------------------------
 		glfwSwapBuffers(window);
