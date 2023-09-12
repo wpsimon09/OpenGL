@@ -39,7 +39,7 @@ bool firstMouse = true;
 float deltaTime = 0.0f;	// time between current frame and last frame
 float lastFrame = 0.0f;
 
-glm::vec3 lightColor = colorOf(241.0f, 180.0f, 87.0f);
+glm::vec3 lightColor = glm::vec3(2.0f,2.0f,2.0f);
 
 float constant = 1.0f;
 float linear = 0.22f;
@@ -123,13 +123,13 @@ int main() {
 	lightColors.push_back(glm::vec3(5.0f, 5.0f, 5.0f));
 	lightColors.push_back(glm::vec3(10.0f, 0.0f, 0.0f));
 	lightColors.push_back(glm::vec3(0.0f, 0.0f, 15.0f));
-	lightColors.push_back(glm::vec3(0.0f, 5.0f, 0.0f));
+	lightColors.push_back(glm::vec3(0.0f, 15.0f, 0.0f));
 
 	std::vector<glm::vec3> pointLightPositions;
-	pointLightPositions.push_back(glm::vec3(0.0f, 0.5f, 1.5f));
+	pointLightPositions.push_back(glm::vec3(0.0f, 0.5f, 10.5f));
 	pointLightPositions.push_back(glm::vec3(-4.0f, 0.5f, -3.0f));
-	pointLightPositions.push_back(glm::vec3(3.0f, 0.5f, 1.0f));
-	pointLightPositions.push_back(glm::vec3(-.8f, 2.4f, -1.0f));
+	pointLightPositions.push_back(glm::vec3(3.0f, 0.1f, 1.0f));
+	pointLightPositions.push_back(glm::vec3(-10.8f, 2.4f, -16.0f));
 
 	//------------------
 	// DEPTH MAP TEXTURE
@@ -169,23 +169,31 @@ int main() {
 	//------------------
 	
 	//floating point color buffer
-	unsigned int HDRtexture;
-	glGenTextures(1, &HDRtexture);
-	glBindTexture(GL_TEXTURE_2D, HDRtexture);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGBA, GL_FLOAT, NULL);	
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 	//depth render buffer
 	unsigned int HDRrbo;
 	glGenRenderbuffers(1, &HDRrbo);
 	glBindRenderbuffer(GL_RENDERBUFFER, HDRrbo);
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, SCR_WIDTH, SCR_HEIGHT);
-	
+
+	unsigned int HDRtextures[2];
+	glGenTextures(2, HDRtextures);
+
 	unsigned int HDRfbo;
 	glGenFramebuffers(1, &HDRfbo);
 	glBindFramebuffer(GL_FRAMEBUFFER, HDRfbo);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, HDRtexture, 0);
+	//set each collor attachment
+	for (int i = 0; i <2; i++)
+	{
+		glBindTexture(GL_TEXTURE_2D, HDRtextures[i]);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGBA, GL_FLOAT, NULL);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0+i, GL_TEXTURE_2D, HDRtextures[i], 0);
+	}
+
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, HDRrbo);
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 	{
@@ -193,6 +201,9 @@ int main() {
 	}
 	else
 		std::cout << "FRAMEBUFFER created successfully";
+
+	unsigned int colorBuffers[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
+	glDrawBuffers(2, colorBuffers);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	//-----------------
@@ -251,7 +262,7 @@ int main() {
 		// configure projection matrix
 		float nearPlane, farPlane;
 		nearPlane = 1.0f;
-		farPlane = 10.5f;
+		farPlane = 120.5f;
 		glm::mat4 lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, nearPlane, farPlane);
 
 		//configure view matrix
@@ -266,7 +277,13 @@ int main() {
 		shadowMapShader.setMat4("lightSpaceMatrix", lightSpaceMatrix);
 
 		glm::mat4 lightModel = glm::mat4(1.0f);
-		DrawShadowMapCube(shadowMapShader, lightModel, cubeVAO);
+
+		for (int i = 0; i < 3; i++)
+		{
+			lightModel = glm::mat4(1.0f);
+			lightModel = glm::translate(lightModel, pointLightPositions[i] - glm::vec3(2.0f, -2.2f, 2.3f));
+			DrawShadowMapCube(shadowMapShader, lightModel, cubeVAO);
+		}
 		shadowMapShader.setMat4("model", lightModel);
 		
 		glCullFace(GL_BACK);
@@ -289,7 +306,7 @@ int main() {
 			useTexture(0, floorTexture);
 			floorShader.use();
 			floorShader.setVec3("directionLight.position", lightPosition);
-			floorShader.setVec3("directionLight.color", COLOR_WHITE);
+			floorShader.setVec3("directionLight.color", lightColor);
 			floorShader.setVec3("viewPos", camera.Position);
 			floorShader.setMat4("lightMatrix", lightSpaceMatrix);
 
@@ -307,13 +324,13 @@ int main() {
 			useTexture(1, depthMap);
 			DrawPlane(floorShader, model, view, projection, planeVAO);
 
-			//---------------
-			// DRAW THE PLANE
-			//---------------
+			//----------------------------------------
+			// DRAW THE CUBES AND SET LIGHT PROPERTIES
+			//----------------------------------------
 			mainObjectShader.use();
-			mainObjectShader.setVec3("lightPos", lightPosition);
 			mainObjectShader.setVec3("viewPos", camera.Position);
-
+			mainObjectShader.setVec3("directionLight.position", lightPosition);
+			mainObjectShader.setVec3("directionLight.color", lightColor);
 			for (int i = 0; i < 4; i++)
 			{
 				mainObjectShader.setVec3("pointLights[" + std::to_string(i) + "].position", pointLightPositions[i]);
@@ -325,7 +342,12 @@ int main() {
 			}
 		
 			useTexture(0, cubeTexture);
-			DrawCube(mainObjectShader, model, view, projection, cubeVAO);
+			for (int i = 0; i < 3; i++)
+			{
+				model = glm::mat4(1.0f);
+				model = glm::translate(model, pointLightPositions[i] - glm::vec3(2.0f, -2.2f, 2.3f));
+				DrawCube(mainObjectShader, model, view, projection, cubeVAO);
+			}
 			//----------------------
 			// DRAW THE LIGHT SOURCE
 			//----------------------
@@ -342,19 +364,17 @@ int main() {
 
 				useTexture(0, lightTexture);
 				DrawPlane(lightSourceShader, model, view, projection, lightVAO);
-	
 			}
 			model = glm::mat4(1.0f);
 			model = glm::translate(model, lightPosition);
 			lightSourceShader.setVec3("lightColor", lightColor);
 			DrawPlane(lightSourceShader, model, view, projection, lightVAO);
 
-
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		HDRshader.use();
 		HDRshader.setFloat("exposure", 0.3f);
-		useTexture(0, HDRtexture);
+		useTexture(0, HDRtextures[0]);
 		glBindVertexArray(hdrPlaneVAO);
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 		glBindVertexArray(0);
