@@ -123,7 +123,7 @@ int main() {
 	unsigned int hdrPlaneVAO = createVAO(HDRframeBufferVertecies, sizeof(HDRframeBufferVertecies) / sizeof(float), false);
 
 	std::vector <glm::vec3> lightColors;
-	lightColors.push_back(glm::vec3(5.0f, 5.0f, 5.0f));
+	lightColors.push_back(glm::vec3(0.0f, 5.0f, 5.0f));
 	lightColors.push_back(glm::vec3(10.0f, 0.0f, 0.0f));
 	lightColors.push_back(glm::vec3(0.0f, 0.0f, 15.0f));
 	lightColors.push_back(glm::vec3(0.0f, 15.0f, 0.0f));
@@ -260,8 +260,6 @@ int main() {
 	HDRshader.setInt("hdrBuffer", 0);
 	HDRshader.setInt("blurred", 1);
 
-	blurShader.use();
-	blurShader.setInt("image", 0);
 	//===================================== RENDER LOOP ================================================//
 
 	while (!glfwWindowShouldClose(window))
@@ -406,13 +404,17 @@ int main() {
 			for (int i = 0; i < amount; i++)
 			{
 				glBindFramebuffer(GL_FRAMEBUFFER, pingPongFBO[horizontal]);
-				blurShader.setInt("horizontal", horizontal);
+				blurShader.setInt("horizontal", (int)horizontal);
 
 				//use the bright color buffer as a texture for first iteration than swap them
 				glActiveTexture(GL_TEXTURE0);
+
+				//set the texture of the frame buffer to be the previous one if its the first itteration we want it to first color buffer of the main FBO
 				glBindTexture(GL_TEXTURE_2D, firstIteration ? colorBuffers[1] : pingPongColorBuffers[!horizontal]);
 			
-				DrawPlane(blurShader, glm::mat4(0.0f), glm::mat4(0.0f), glm::mat4(0.0f), hdrPlaneVAO);
+				glBindVertexArray(hdrPlaneVAO);
+				glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
 				//swithc color buffers 
 				horizontal = !horizontal;
 				if (firstIteration)
