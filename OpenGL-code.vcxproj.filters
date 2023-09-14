@@ -107,6 +107,8 @@
     <None Include="FragmentShader\AdvancedLightning\HDRfragment.glsl" />
     <None Include="FragmentShader\AdvancedLightning\FBOfragment.glsl" />
     <None Include="VertexShader\AdvancedLightning\FBOvertex.glsl" />
+    <None Include="FragmentShader\AdvancedLightning\BlurFragment.glsl" />
+    <None Include="VertexShader\AdvancedLightning\BlurVertex.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\Textures\container.jpg">

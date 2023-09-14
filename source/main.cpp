@@ -104,6 +104,9 @@ int main() {
 
 	Shader HDRshader("VertexShader/AdvancedLightning/FBOvertex.glsl", "FragmentShader/AdvancedLightning/FBOfragment.glsl");
 
+	Shader blurShader("VertexShader/AdvancedLightning/BlurVertex.glsl", "FragmentShader/AdvancedLightning/BlurFragment.glsl");
+
+
 	stbi_set_flip_vertically_on_load(true);
 
 	// plane VAO
@@ -206,6 +209,25 @@ int main() {
 	glDrawBuffers(2, colorBuffers);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
+	unsigned int pingPongFBO[2];
+	glGenFramebuffers(2, pingPongFBO);
+	unsigned int pingPongColorBuffers[2];
+	glGenTextures(2, pingPongColorBuffers);
+
+	for (int i = 0; i < 2; i++)
+	{
+		glBindFramebuffer(GL_FRAMEBUFFER,pingPongFBO[i]);
+		glBindTexture(GL_TEXTURE_2D, pingPongColorBuffers[i]);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGBA, GL_FLOAT, NULL);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,pingPongColorBuffers[i], 0);
+	}
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
 	//-----------------
 	// TEXTURES LOADING
 	//-----------------
@@ -236,6 +258,10 @@ int main() {
 
 	HDRshader.use();
 	HDRshader.setInt("hdrBuffer", 0);
+	HDRshader.setInt("blurred", 1);
+
+	blurShader.use();
+	blurShader.setInt("image", 0);
 	//===================================== RENDER LOOP ================================================//
 
 	while (!glfwWindowShouldClose(window))
@@ -370,11 +396,37 @@ int main() {
 			lightSourceShader.setVec3("lightColor", lightColor);
 			DrawPlane(lightSourceShader, model, view, projection, lightVAO);
 
+
+			//--------------
+			//BLUR THE IMAGE
+			//--------------
+			bool horizontal = true, firstIteration = true;
+			int amount = 10;
+			blurShader.use();
+			for (int i = 0; i < amount; i++)
+			{
+				glBindFramebuffer(GL_FRAMEBUFFER, pingPongFBO[horizontal]);
+				blurShader.setInt("horizontal", horizontal);
+
+				//use the bright color buffer as a texture for first iteration than swap them
+				glActiveTexture(GL_TEXTURE0);
+				glBindTexture(GL_TEXTURE_2D, firstIteration ? colorBuffers[1] : pingPongColorBuffers[!horizontal]);
+			
+				DrawPlane(blurShader, glm::mat4(0.0f), glm::mat4(0.0f), glm::mat4(0.0f), hdrPlaneVAO);
+				//swithc color buffers 
+				horizontal = !horizontal;
+				if (firstIteration)
+				{
+					firstIteration = false;
+				}
+			}
+
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		HDRshader.use();
-		HDRshader.setFloat("exposure", 0.3f);
+		HDRshader.setFloat("exposure",0.6f);
 		useTexture(0, HDRtextures[0]);
+		useTexture(1, pingPongColorBuffers[!horizontal]);
 		glBindVertexArray(hdrPlaneVAO);
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 		glBindVertexArray(0);

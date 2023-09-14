@@ -178,6 +178,7 @@
     <None Include="Assets\Model\horse\Scaniverse.mtl" />
     <None Include="Assets\Model\spaceship\model\texture\spaceShip.fbx" />
     <None Include="FragmentShader\AdvancedLightning\AdvancedLightningFragmnet.glsl" />
+    <None Include="FragmentShader\AdvancedLightning\BlurFragment.glsl" />
     <None Include="FragmentShader\AdvancedLightning\FBOfragment.glsl" />
     <None Include="FragmentShader\AdvancedLightning\HDRfragment.glsl" />
     <None Include="FragmentShader\AdvancedLightning\LightSourceFragment.glsl" />
@@ -188,6 +189,7 @@
     <None Include="FragmentShader\FragmentShader.glsl" />
     <None Include="FragmentShader\LightFragmentShader.glsl" />
     <None Include="VertexShader\AdvancedLightning\AdvancedLightningVertex.glsl" />
+    <None Include="VertexShader\AdvancedLightning\BlurVertex.glsl" />
     <None Include="VertexShader\AdvancedLightning\FBOvertex.glsl" />
     <None Include="VertexShader\AdvancedLightning\HDRvertex.glsl" />
     <None Include="VertexShader\AdvancedLightning\LightSourceVertex.glsl" />
