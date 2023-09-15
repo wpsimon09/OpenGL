@@ -247,6 +247,12 @@
     <Image Include="Assets\Textures\AdvancedLightning\toy_box_normal.png">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="..\..\..\..\Obrázky\Snímky obrazovky\Bloom.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Assets\ReadmeImages\Bloom\Bloom.png">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Assets\Model\backpack\source_attribution.txt" />

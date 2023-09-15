@@ -201,6 +201,7 @@
     <None Include="VertexShader\VertexShader.glsl" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="..\..\..\..\Obrázky\Snímky obrazovky\Bloom.png" />
     <Image Include="Assets\Model\backpack\ao.jpg">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </Image>
@@ -234,6 +235,7 @@
     <Image Include="Assets\Model\spaceship\model\texture\mainMat_metal.png" />
     <Image Include="Assets\Model\spaceship\model\texture\mainMat_nrm.png" />
     <Image Include="Assets\Model\spaceship\model\texture\mainMat_rough.png" />
+    <Image Include="Assets\ReadmeImages\Bloom\Bloom.png" />
     <Image Include="Assets\Textures\AdvancedLightning\bricks2.jpg" />
     <Image Include="Assets\Textures\AdvancedLightning\bricks2_disp.jpg" />
     <Image Include="Assets\Textures\AdvancedLightning\bricks2_normal.jpg" />

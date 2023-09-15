@@ -411,7 +411,7 @@ int main() {
 
 				//use the bright color buffer as a texture for first iteration than swap them
 				//set the texture of the frame buffer to be the previous one if its the first itteration we want it to first color buffer of the main FBO
-				glBindTexture(GL_TEXTURE_2D, firstIteration ? colorBuffers[0] : pingPongColorBuffers[!horizontal]);
+				glBindTexture(GL_TEXTURE_2D, firstIteration ? HDRtextures[1] : pingPongColorBuffers[!horizontal]);
 			
 				glBindVertexArray(hdrPlaneVAO);
 				glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
@@ -427,7 +427,7 @@ int main() {
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		HDRshader.use();
-		HDRshader.setFloat("exposure",0.6f);
+		HDRshader.setFloat("exposure",0.4f);
 
 		useTexture(0, HDRtextures[0]);
 		useTexture(1, pingPongColorBuffers[!horizontal]);
