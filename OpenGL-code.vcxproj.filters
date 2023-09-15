@@ -247,9 +247,6 @@
     <Image Include="Assets\Textures\AdvancedLightning\toy_box_normal.png">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="..\..\..\..\Obrázky\Snímky obrazovky\Bloom.png">
-      <Filter>Resource Files</Filter>
-    </Image>
     <Image Include="Assets\ReadmeImages\Bloom\Bloom.png">
       <Filter>Resource Files</Filter>
     </Image>

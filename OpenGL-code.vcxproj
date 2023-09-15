@@ -201,7 +201,6 @@
     <None Include="VertexShader\VertexShader.glsl" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="..\..\..\..\Obrázky\Snímky obrazovky\Bloom.png" />
     <Image Include="Assets\Model\backpack\ao.jpg">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </Image>

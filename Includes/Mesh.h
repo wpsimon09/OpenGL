@@ -116,7 +116,7 @@ void Mesh::Draw(Shader& shader) {
 			number = std::to_string(normalNr++);
 		}
 
-		//shader.setInt((name + number).c_str(), i);
+		shader.setInt((name + number).c_str(), i);
 		//std::cout << "TEXTURE::LOADED::ASS:\n";
 		//std::cout << (name + number).c_str();
 		//std::cout << "\n";
@@ -125,7 +125,7 @@ void Mesh::Draw(Shader& shader) {
 
 	//draw mesh
 	glBindVertexArray(VAO);
-	glDrawElements(GL_TRIANGLES, indecies.size(), GL_UNSIGNED_INT, 0);
+	glDrawElements(GL_POINTS, indecies.size(), GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
 
 	glActiveTexture(GL_TEXTURE0);

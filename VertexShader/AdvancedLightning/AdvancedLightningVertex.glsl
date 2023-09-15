@@ -39,9 +39,6 @@ void main()
     // create the TBN matrix
     mat3 TBN = transpose(mat3(T,B,N));
 
-
-    //TODO: check if the object has normal mapping if it has one calculate everything using tangent space and use normal maps for normal vectors
-    //if object does not have normal send data in the wold space and use normal vectors passed in vertex attribute instead 
     vs_out.FragPos =  vec3(model * vec4(aPos, 1.0));
     vs_out.TexCoords = aTexCoords;
     vs_out.Normal = transpose(inverse(mat3(model))) * aNormal;
