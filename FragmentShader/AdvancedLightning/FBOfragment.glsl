@@ -12,7 +12,8 @@ void main()
 	vec3 hdrColor = texture(hdrBuffer, TexCoords).rgb;
 	vec3 bluredColor = texture(blurred, TexCoords).rgb;
 
-	hdrColor +=bluredColor;
+	hdrColor += bluredColor;
+
 	// exposure tone mapping
 	vec3 mapped = vec3(1.0) - exp(-hdrColor * exposure);
 

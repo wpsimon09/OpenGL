@@ -256,6 +256,9 @@ int main() {
 	floorShader.setInt("texture_diffuse0", 0);
 	floorShader.setInt("shadowMap", 1);
 
+	blurShader.use();
+	blurShader.setInt("image", 0);
+
 	HDRshader.use();
 	HDRshader.setInt("hdrBuffer", 0);
 	HDRshader.setInt("blurred", 1);
@@ -394,7 +397,7 @@ int main() {
 			lightSourceShader.setVec3("lightColor", lightColor);
 			DrawPlane(lightSourceShader, model, view, projection, lightVAO);
 
-
+			
 			//--------------
 			//BLUR THE IMAGE
 			//--------------
@@ -404,13 +407,11 @@ int main() {
 			for (int i = 0; i < amount; i++)
 			{
 				glBindFramebuffer(GL_FRAMEBUFFER, pingPongFBO[horizontal]);
-				blurShader.setInt("horizontal", (int)horizontal);
+				blurShader.setInt("horizontal", horizontal);
 
 				//use the bright color buffer as a texture for first iteration than swap them
-				glActiveTexture(GL_TEXTURE0);
-
 				//set the texture of the frame buffer to be the previous one if its the first itteration we want it to first color buffer of the main FBO
-				glBindTexture(GL_TEXTURE_2D, firstIteration ? colorBuffers[1] : pingPongColorBuffers[!horizontal]);
+				glBindTexture(GL_TEXTURE_2D, firstIteration ? colorBuffers[0] : pingPongColorBuffers[!horizontal]);
 			
 				glBindVertexArray(hdrPlaneVAO);
 				glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
@@ -427,6 +428,7 @@ int main() {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		HDRshader.use();
 		HDRshader.setFloat("exposure",0.6f);
+
 		useTexture(0, HDRtextures[0]);
 		useTexture(1, pingPongColorBuffers[!horizontal]);
 		glBindVertexArray(hdrPlaneVAO);
