@@ -35,6 +35,8 @@ float lastX = 800.0f / 2.0f;
 float lastY = 600.0f / 2.0f;
 bool firstMouse = true;
 
+float hasNormalMap = 1.0f;
+
 // timing
 float deltaTime = 0.0f;	// time between current frame and last frame
 float lastFrame = 0.0f;
@@ -254,7 +256,7 @@ int main() {
 		//---------------
 		// DRAW THE MODEL
 		//---------------
-		shader.setFloat("hasNormalMap", 1.0f);
+		shader.setFloat("hasNormalMap", hasNormalMap);
 		shader.setMat4("model", model);
 		cyborg.Draw(shader);
 
@@ -315,6 +317,10 @@ void processInput(GLFWwindow *window)
 		lightPosition.y -= lightSpeed;
 	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
 		lightPosition.y += lightSpeed;
+	if (glfwGetKey(window, GLFW_KEY_N) == GLFW_PRESS)
+		hasNormalMap = 1.0f;
+	if (glfwGetKey(window, GLFW_KEY_M) == GLFW_PRESS)
+		hasNormalMap = 0.0f;
 
 }
 
