@@ -177,6 +177,7 @@
     <None Include="Assets\Model\fluttershy\fg_funkoFluttershy.mtl" />
     <None Include="Assets\Model\horse\Scaniverse.mtl" />
     <None Include="Assets\Model\spaceship\model\texture\spaceShip.fbx" />
+    <None Include="Assets\Model\stormtrooper\stormtrooper.mtl" />
     <None Include="FragmentShader\AdvancedLightning\AdvancedLightningFragmnet.glsl" />
     <None Include="FragmentShader\AdvancedLightning\LightSourceFragment.glsl" />
     <None Include="FragmentShader\AdvancedLightning\ShadowMapFragement.glsl" />
@@ -226,6 +227,10 @@
     <Image Include="Assets\Model\spaceship\model\texture\mainMat_metal.png" />
     <Image Include="Assets\Model\spaceship\model\texture\mainMat_nrm.png" />
     <Image Include="Assets\Model\spaceship\model\texture\mainMat_rough.png" />
+    <Image Include="Assets\Model\stormtrooper\backbebap.png" />
+    <Image Include="Assets\Model\stormtrooper\Stormtrooper_D.tga" />
+    <Image Include="Assets\Model\stormtrooper\Stormtrooper_N.tga" />
+    <Image Include="Assets\Model\stormtrooper\Stormtrooper_S.tga" />
     <Image Include="Assets\Textures\AdvancedLightning\brickwall.jpg" />
     <Image Include="Assets\Textures\AdvancedLightning\brickwall_normal.jpg" />
     <Image Include="Assets\Textures\AdvancedLightning\cube-wood.jpg" />
@@ -265,6 +270,11 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\Model\cyborg\cyborg.obj">
+      <FileType>Document</FileType>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Assets\Model\stormtrooper\stormtrooper.obj">
       <FileType>Document</FileType>
     </Image>
   </ItemGroup>

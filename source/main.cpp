@@ -104,7 +104,7 @@ int main() {
 
 	Shader shadowMapShader("VertexShader/AdvancedLightning/ShadowMapVertex.glsl", "FragmentShader/AdvancedLightning/ShadowMapFragement.glsl");
 	
-	Model cyborg("Assets/Model/cyborg/cyborg.obj");
+	Model cyborg("Assets/Model/stormtrooper/stormtrooper.obj");
 	
 	stbi_set_flip_vertically_on_load(true);
 
