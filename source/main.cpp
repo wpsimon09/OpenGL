@@ -98,7 +98,7 @@ int main() {
 	}
 
 
-	Shader shader("VertexShader/AdvancedLightning/AdvancedLightningVertex.glsl", "FragmentShader/AdvancedLightning/AdvancedLightningFragmnet.glsl");
+	Shader mainObjShader("VertexShader/AdvancedLightning/AdvancedLightningVertex.glsl", "FragmentShader/AdvancedLightning/AdvancedLightningFragmnet.glsl");
 
 	Shader lightSourceShader("VertexShader/AdvancedLightning/LightSourceVertex.glsl", "FragmentShader/AdvancedLightning/LightSourceFragment.glsl");
 
@@ -106,7 +106,7 @@ int main() {
 
 	Shader shadowMapShader("VertexShader/AdvancedLightning/ShadowMapVertex.glsl", "FragmentShader/AdvancedLightning/ShadowMapFragement.glsl");
 	
-	Model cyborg("Assets/Model/stormtrooper/stormtrooper.obj");
+	Model stormtrooper("Assets/Model/stormtrooper/stormtrooper.obj");
 	
 	stbi_set_flip_vertically_on_load(true);
 
@@ -163,10 +163,10 @@ int main() {
 	unsigned int normalMap = loadTexture("Assets/Textures/AdvancedLightning/brickwall_normal.jpg", false);
 	unsigned int floorNormalMap = loadTexture("Assets/Textures/AdvancedLightning/floor_normal.jpg", false);
 
-	shader.use();
-	shader.setInt("wood", 0);
-	shader.setInt("shadowMap", 1);
-	shader.setInt("normalMap", 2);
+	mainObjShader.use();
+	mainObjShader.setInt("wood", 0);
+	mainObjShader.setInt("shadowMap", 1);
+	mainObjShader.setInt("normalMap", 2);
 
 	lightSourceShader.use();
 	lightSourceShader.setInt("lightTexture", 0);
@@ -217,7 +217,7 @@ int main() {
 
 		glm::mat4 ligthModel = glm::mat4(1.0f);
 		shadowMapShader.setMat4("model", ligthModel);
-		cyborg.Draw(shadowMapShader);
+		stormtrooper.Draw(shadowMapShader);
 
 
 		glCullFace(GL_BACK);
@@ -237,28 +237,28 @@ int main() {
 		//---------------------
 		// SET LIGHT PROPERTIES
 		//---------------------
-		shader.use();
+		mainObjShader.use();
 
 		useTexture(0, floorTexture);
 		useTexture(1, depthMap);
-		shader.setFloat("hasNormalMap", 0.0f);
-		shader.setVec3("lightPos", lightPosition);
-		shader.setVec3("lightColor", lightColor);
-		shader.setVec3("viewPos", camera.Position);
-		shader.setVec3("specularColor", lightColor);
-		shader.setMat4("lightMatrix", lightSpaceMatrix);
+		mainObjShader.setFloat("hasNormalMap", 0.0f);
+		mainObjShader.setVec3("lightPos", lightPosition);
+		mainObjShader.setVec3("lightColor", lightColor);
+		mainObjShader.setVec3("viewPos", camera.Position);
+		mainObjShader.setVec3("specularColor", lightColor);
+		mainObjShader.setMat4("lightMatrix", lightSpaceMatrix);
 
 		//----------------------
 		// DRAW PLANE AS A FLOOR
 		//----------------------
-		DrawPlane(shader, model, view, projection, planeVAO);
+		DrawPlane(mainObjShader, model, view, projection, planeVAO);
 
 		//---------------
 		// DRAW THE MODEL
 		//---------------
-		shader.setFloat("hasNormalMap", hasNormalMap);
-		shader.setMat4("model", model);
-		cyborg.Draw(shader);
+		mainObjShader.setFloat("hasNormalMap", hasNormalMap);
+		mainObjShader.setMat4("model", model);
+		stormtrooper.Draw(mainObjShader);
 
 		//----------------------
 		// DRAW THE LIGHT SOURCE
