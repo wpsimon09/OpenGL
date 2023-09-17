@@ -33,8 +33,11 @@ public:
 	void Draw(Shader& shader);
 	unsigned int VAO;
 
+	void setAmountOfDrawCals(unsigned int drawCalls) {
+		this->drawCalls = drawCalls;
+	}
 private:
-	unsigned int  VBO, EBO;
+	unsigned int  VBO, EBO, drawCalls;
 
 	//initialize the buffers
 	//--------------
@@ -125,6 +128,7 @@ void Mesh::Draw(Shader& shader) {
 
 	//draw mesh
 	glBindVertexArray(VAO);
+	glDrawElementsInstanced(GL_TRIANGLES, indecies.size(), GL_UNSIGNED_INT, 0, this->drawCalls);
 	glDrawElements(GL_TRIANGLES, indecies.size(), GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
 

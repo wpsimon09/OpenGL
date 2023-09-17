@@ -24,14 +24,16 @@ unsigned int TextureFromFile(const char* path, const std::string& directory, boo
 
 class Model {
 	public:
-		Model(const char* path)
+		Model(const char* path, unsigned int drawCalls = 1)
 		{
 			loadModel(path);
+			this->drawCalls = drawCalls;
 		}
 		void Draw(Shader& shader);
-	private:
-		//model data
 		std::vector<Mesh> meshes;
+	private:
+		unsigned int drawCalls;
+		//model data
 		std::string directory;
 		std::vector<Texture> textures_loaded;
 
@@ -48,6 +50,7 @@ class Model {
 void Model::Draw(Shader& shader) {
 	for (int i = 0; i < meshes.size(); i++)
 	{
+		meshes[i].setAmountOfDrawCals(this->drawCalls);
 		meshes[i].Draw(shader);
 	}
 }

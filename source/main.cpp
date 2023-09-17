@@ -97,6 +97,10 @@ int main() {
 		return -1;
 	}
 
+	unsigned int rows = 5;
+	unsigned int colums = 5;
+	unsigned int totalAmount = rows * colums;
+
 
 	Shader mainObjShader("VertexShader/AdvancedLightning/AdvancedLightningVertex.glsl", "FragmentShader/AdvancedLightning/AdvancedLightningFragmnet.glsl");
 
@@ -108,7 +112,7 @@ int main() {
 	
 	Shader floorShader("VertexShader/FloorVertex.glsl", "FragmentShader/FloorFragment.glsl");
 
-	Model stormtrooper("Assets/Model/stormtrooper/stormtrooper.obj");
+	Model stormtrooper("Assets/Model/stormtrooper/stormtrooper.obj",totalAmount);
 	
 	stbi_set_flip_vertically_on_load(true);
 
@@ -121,6 +125,63 @@ int main() {
 
 	//cube VAO
 	unsigned int cubeVAO = createVAO(cubeVertices, sizeof(cubeVertices) / sizeof(float));
+
+	//----------------
+	// INSTANCED MODEL
+	//----------------
+	float currentHeight = 0.0f;
+
+	std::vector<glm::mat4>modelMatrices;
+
+	for (int i = 0; i < rows; i++)
+	{
+		for (int j = 0; j < colums; j++)
+		{
+			glm::mat4 model = glm::mat4(1.0f);
+			model = glm::translate(model, glm::vec3(j * 3, 0.0f, currentHeight));
+			modelMatrices.push_back(model);
+		}
+
+		currentHeight += i + 3;
+	}
+
+	unsigned int buffer;
+	glGenBuffers(1, &buffer);
+	glBindBuffer(GL_ARRAY_BUFFER, buffer);
+	glBufferData(GL_ARRAY_BUFFER, (rows*colums) * sizeof(glm::mat4), &modelMatrices[0], GL_STATIC_DRAW);
+
+	for (unsigned int i = 0; i < stormtrooper.meshes.size(); i++)
+	{
+		unsigned int VAO = stormtrooper.meshes[i].VAO;
+
+		glBindVertexArray(VAO);
+
+		std::size_t v4s = sizeof(glm::vec4);
+
+		// 1st colum of the matrix
+		glEnableVertexAttribArray(5);
+		glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, 4 * v4s, (void*)0);
+
+
+		//2 nd colum of the matrix
+		glEnableVertexAttribArray(6);
+		glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, 4 * v4s, (void*)(1 * v4s));
+
+		//3 rd colum of the matrix
+		glEnableVertexAttribArray(7);
+		glVertexAttribPointer(7, 4, GL_FLOAT, GL_FALSE, 4 * v4s, (void*)(2 * v4s));
+
+		//4 th colum of the matrix
+		glEnableVertexAttribArray(8);
+		glVertexAttribPointer(8, 4, GL_FLOAT, GL_FALSE, 4 * v4s, (void*)(3 * v4s));
+
+		//update atribute arrays, 3, 4, 5, 6 each instace 
+		glVertexAttribDivisor(5, 1);
+		glVertexAttribDivisor(6, 1);
+		glVertexAttribDivisor(7, 1);
+		glVertexAttribDivisor(8, 1);
+		glBindVertexArray(0);
+	}
 
 	//------------------
 	// DEPTH MAP TEXTURE
