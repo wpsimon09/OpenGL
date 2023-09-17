@@ -116,7 +116,7 @@ void Mesh::Draw(Shader& shader) {
 			number = std::to_string(normalNr++);
 		}
 
-		//shader.setInt((name + number).c_str(), i);
+		shader.setInt((name + number).c_str(), i);
 		//std::cout << "TEXTURE::LOADED::ASS:\n";
 		//std::cout << (name + number).c_str();
 		//std::cout << "\n";

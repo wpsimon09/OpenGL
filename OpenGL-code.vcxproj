@@ -183,6 +183,7 @@
     <None Include="FragmentShader\AdvancedLightning\ShadowMapFragement.glsl" />
     <None Include="FragmentShader\AdvancedLightning\WoodenCubeFragment.glsl" />
     <None Include="FragmentShader\DepthTestingFragment.glsl" />
+    <None Include="FragmentShader\FloorFragment.glsl" />
     <None Include="FragmentShader\FragmentShader.glsl" />
     <None Include="FragmentShader\LightFragmentShader.glsl" />
     <None Include="VertexShader\AdvancedLightning\AdvancedLightningVertex.glsl" />
@@ -190,6 +191,7 @@
     <None Include="VertexShader\AdvancedLightning\ShadowMapVertex.glsl" />
     <None Include="VertexShader\AdvancedLightning\WoodenCubeVertex.glsl" />
     <None Include="VertexShader\DepthTestingVertex.glsl" />
+    <None Include="VertexShader\FloorVertex.glsl" />
     <None Include="VertexShader\LightVertexShader.glsl" />
     <None Include="VertexShader\VertexShader.glsl" />
   </ItemGroup>

@@ -101,6 +101,9 @@
     <None Include="Assets\Model\cyborg\cyborg.mtl" />
     <None Include="Assets\Model\cyborg\cyborg.blend1" />
     <None Include="Assets\Model\cyborg\cyborg.blend" />
+    <None Include="Assets\Model\stormtrooper\stormtrooper.mtl" />
+    <None Include="VertexShader\FloorVertex.glsl" />
+    <None Include="FragmentShader\FloorFragment.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\Textures\container.jpg">
@@ -221,6 +224,13 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="Assets\Model\cyborg\cyborg.obj" />
+    <Image Include="Assets\Model\stormtrooper\backbebap.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Assets\Model\stormtrooper\Stormtrooper_D.tga" />
+    <Image Include="Assets\Model\stormtrooper\Stormtrooper_N.tga" />
+    <Image Include="Assets\Model\stormtrooper\Stormtrooper_S.tga" />
+    <Image Include="Assets\Model\stormtrooper\stormtrooper.obj" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Assets\Model\backpack\source_attribution.txt" />

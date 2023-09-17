@@ -1,6 +1,7 @@
 #pragma once
 #include <iostream>
 #include<glm/glm.hpp>
+#include <Shader.h>
 
 #define COLOR_RED glm::vec3(1.0f, 0.0f, 0.0f)
 #define COLOR_GREEN glm::vec3(0.0f, 1.0f, 0.0f)
@@ -73,6 +74,15 @@ void useTexture(unsigned int samplerNumber, unsigned int texture)
 {
 	glActiveTexture(GL_TEXTURE0 + samplerNumber);
 	glBindTexture(GL_TEXTURE_2D, texture);
+}
+
+
+void setMatrices(Shader shader ,glm::mat4 model, glm::mat4 view, glm::mat4 projection)
+{
+	shader.use();
+	shader.setMat4("model", model);
+	shader.setMat4("view", view);
+	shader.setMat4("projection", projection);
 }
 
 

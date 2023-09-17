@@ -106,6 +106,8 @@ int main() {
 
 	Shader shadowMapShader("VertexShader/AdvancedLightning/ShadowMapVertex.glsl", "FragmentShader/AdvancedLightning/ShadowMapFragement.glsl");
 	
+	Shader floorShader("VertexShader/FloorVertex.glsl", "FragmentShader/FloorFragment.glsl");
+
 	Model stormtrooper("Assets/Model/stormtrooper/stormtrooper.obj");
 	
 	stbi_set_flip_vertically_on_load(true);
@@ -163,10 +165,9 @@ int main() {
 	unsigned int normalMap = loadTexture("Assets/Textures/AdvancedLightning/brickwall_normal.jpg", false);
 	unsigned int floorNormalMap = loadTexture("Assets/Textures/AdvancedLightning/floor_normal.jpg", false);
 
-	mainObjShader.use();
-	mainObjShader.setInt("wood", 0);
-	mainObjShader.setInt("shadowMap", 1);
-	mainObjShader.setInt("normalMap", 2);
+	floorShader.use();
+	floorShader.setInt("texture_diffuse0", 0);
+	floorShader.setInt("shadowMap", 1);
 
 	lightSourceShader.use();
 	lightSourceShader.setInt("lightTexture", 0);
@@ -234,30 +235,38 @@ int main() {
 		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
 		glm::mat4 model = glm::mat4(1.0f);
 
+		//----------------------
+		// DRAW PLANE AS A FLOOR
+		//----------------------
+		floorShader.use();
+		useTexture(0, floorTexture);
+		useTexture(1, depthMap);
+		floorShader.setMat4("lightMatrix", lightSpaceMatrix);
+		floorShader.setVec3("lightPos", lightPosition);
+		floorShader.setVec3("lightColor", lightColor);
+		floorShader.setVec3("viewPos", camera.Position);
+
+
+		DrawPlane(floorShader, model, view, projection, planeVAO);
+
+
 		//---------------------
 		// SET LIGHT PROPERTIES
-		//---------------------
+		//----------------------
 		mainObjShader.use();
-
 		useTexture(0, floorTexture);
 		useTexture(1, depthMap);
 		mainObjShader.setFloat("hasNormalMap", 0.0f);
 		mainObjShader.setVec3("lightPos", lightPosition);
 		mainObjShader.setVec3("lightColor", lightColor);
 		mainObjShader.setVec3("viewPos", camera.Position);
-		mainObjShader.setVec3("specularColor", lightColor);
 		mainObjShader.setMat4("lightMatrix", lightSpaceMatrix);
-
-		//----------------------
-		// DRAW PLANE AS A FLOOR
-		//----------------------
-		DrawPlane(mainObjShader, model, view, projection, planeVAO);
 
 		//---------------
 		// DRAW THE MODEL
 		//---------------
 		mainObjShader.setFloat("hasNormalMap", hasNormalMap);
-		mainObjShader.setMat4("model", model);
+		setMatrices(mainObjShader, model, view, projection);
 		stormtrooper.Draw(mainObjShader);
 
 		//----------------------
