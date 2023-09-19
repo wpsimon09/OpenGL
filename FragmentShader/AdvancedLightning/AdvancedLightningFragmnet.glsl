@@ -49,13 +49,12 @@ void main()
     //--------
     //SPECULAR
     //--------
-    vec3 texture_specular = lightColor;
     vec3 viewDir = normalize(fs_in.TangentViewPos - fs_in.TangentFragPos);
     float specStrength = 0.0;
     vec3 halfwayDir = normalize(lightDir + viewDir);
 
     specStrength = pow(max(dot(normal, halfwayDir), 0.0),64.0);
-    vec3 specular = texture_specular * specStrength * vec3(texture(texture_specular0, fs_in.TexCoords));
+    vec3 specular = lightColor * specStrength * vec3(texture(texture_specular0, fs_in.TexCoords));
 
     vec3 result = ambient + diffuse + specular;
 

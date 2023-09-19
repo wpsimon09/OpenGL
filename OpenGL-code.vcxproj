@@ -179,6 +179,7 @@
     <None Include="Assets\Model\spaceship\model\texture\spaceShip.fbx" />
     <None Include="Assets\Model\stormtrooper\stormtrooper.mtl" />
     <None Include="FragmentShader\AdvancedLightning\AdvancedLightningFragmnet.glsl" />
+    <None Include="FragmentShader\AdvancedLightning\FinalFragment.glsl" />
     <None Include="FragmentShader\AdvancedLightning\LightSourceFragment.glsl" />
     <None Include="FragmentShader\AdvancedLightning\ShadowMapFragement.glsl" />
     <None Include="FragmentShader\AdvancedLightning\WoodenCubeFragment.glsl" />
@@ -187,6 +188,7 @@
     <None Include="FragmentShader\FragmentShader.glsl" />
     <None Include="FragmentShader\LightFragmentShader.glsl" />
     <None Include="VertexShader\AdvancedLightning\AdvancedLightningVertex.glsl" />
+    <None Include="VertexShader\AdvancedLightning\FinalVertex.glsl" />
     <None Include="VertexShader\AdvancedLightning\LightSourceVertex.glsl" />
     <None Include="VertexShader\AdvancedLightning\ShadowMapVertex.glsl" />
     <None Include="VertexShader\AdvancedLightning\WoodenCubeVertex.glsl" />

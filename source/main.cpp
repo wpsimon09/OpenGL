@@ -41,7 +41,7 @@ float hasNormalMap = 1.0f;
 float deltaTime = 0.0f;	// time between current frame and last frame
 float lastFrame = 0.0f;
 
-glm::vec3 lightColor = colorOf(241.0f, 180.0f, 87.0f);
+glm::vec3 lightColor = glm::vec3(2.0f, 0.0f, 2.0f);
 
 float constant = 1.0f;
 float linear = 0.22f;
@@ -112,13 +112,17 @@ int main() {
 	
 	Shader floorShader("VertexShader/FloorVertex.glsl", "FragmentShader/FloorFragment.glsl");
 
-	Model stormtrooper("Assets/Model/stormtrooper/stormtrooper.obj",totalAmount);
+	Shader finalShader("VertexShader/AdvancedLightning/FinalVertex.glsl", "FragmentShader/AdvancedLightning/FinalFragment.glsl");
+
+	Model stormtrooper("Assets/Model/stormtrooper/stormtrooper.obj", totalAmount);
 	
 	stbi_set_flip_vertically_on_load(true);
 
 	// plane VAO
 	unsigned int planeVAO = createVAO(planeVertices, sizeof(planeVertices)/sizeof(float));
 
+	//final frame buffer VAO
+	unsigned int screenQuadVAO = createVAO(HDRframeBufferVertecies, sizeof(planeVertices) / sizeof(float), false, true);
 
 	//VBO, EBO and VAO for the square that represents light position
 	unsigned int lightVAO = createVAO(lightVertices,sizeof(lightVertices)/sizeof(float), false);
@@ -216,6 +220,43 @@ int main() {
 	glReadBuffer(GL_NONE);
 	glBindBuffer(GL_FRAMEBUFFER, 0);
 
+
+	//-----------------
+	//MAIN FRAME BUFFER
+	//-----------------
+	unsigned int fbo;
+	glGenFramebuffers(1, &fbo);
+	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+
+	unsigned int fboTexture;
+	glGenTextures(1, &fboTexture);
+	glBindTexture(GL_TEXTURE_2D, fboTexture);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, fboTexture, 0);
+	glBindTexture(GL_TEXTURE_2D, 0);
+	//render buffer object for depth and stencil values
+	unsigned int rbo;
+	glGenRenderbuffers(1, &rbo);
+	glBindRenderbuffer(GL_RENDERBUFFER, rbo);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, SCR_WIDTH, SCR_HEIGHT);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
+	glBindRenderbuffer(GL_RENDERBUFFER, 0);
+
+
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE)
+	{
+		std::cout << "-------------FRAME BUFFER BOUND SUCCESSFULLY-----------------\n";
+	}
+	else
+		std::cout << "ERROR:BUFFER:FRAME\n Frame buffer not bound successfully \n";
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
 	//-----------------
 	// TEXTURES LOADING
 	//-----------------
@@ -288,7 +329,7 @@ int main() {
 		//------------------------------------//
 
 		glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glClearColor(0.101f, 0.101f, 0.101f, 1.0f);
 
@@ -341,6 +382,15 @@ int main() {
 		useTexture(0, lightTexture);
 		DrawPlane(lightSourceShader, model, view, projection, lightVAO);
 	
+		glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		
+		//---------------------------
+		//RENDER THE QUAD AS A SCREEN
+		//---------------------------
+		useTexture(0, fboTexture);
+		DrawPlane(finalShader, glm::mat4(0.0f), glm::mat4(0.0f), glm::mat4(0.0f), screenQuadVAO, GL_TRIANGLE_STRIP, 4);
 
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
 		// -------------------------------------------------------------------------------

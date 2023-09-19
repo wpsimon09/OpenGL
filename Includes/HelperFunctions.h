@@ -164,3 +164,11 @@ float wallVertecies[] = {
 	0.0f, 1.0f, 0.0f,	0.0f, 0.0f, !.0f,	0.0f, 1.0f
 };
 
+float HDRframeBufferVertecies[] = {
+	// positions        // texture Coords
+	-1.0f,  1.0f, 0.0f, 0.0f, 1.0f,
+	-1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
+	 1.0f,  1.0f, 0.0f, 1.0f, 1.0f,
+	 1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
+};
+

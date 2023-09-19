@@ -59,7 +59,7 @@ void DrawShadowMapCube(Shader shader, glm::mat4 model, unsigned int VAO)
 /// <param name="texture">actual texture image to use</param>
 /// <param name="textureSamplerNumber">texture image sampler number</param>
 /// <param name=""></param>
-void DrawPlane(Shader shader, glm::mat4 model, glm::mat4 view, glm::mat4 projection, unsigned int VAO)
+void DrawPlane(Shader shader, glm::mat4 model, glm::mat4 view, glm::mat4 projection, unsigned int VAO, GLenum drawMode = GL_TRIANGLES, unsigned int vertecies = 6)
 {
 	shader.use();
 	glBindVertexArray(VAO);
@@ -68,7 +68,7 @@ void DrawPlane(Shader shader, glm::mat4 model, glm::mat4 view, glm::mat4 project
 	shader.setMat4("view", view);
 	shader.setMat4("projection", projection);
 
-	glDrawArrays(GL_TRIANGLES, 0, 6);
+	glDrawArrays(drawMode, 0, vertecies);
 
 	glBindVertexArray(0);
 }

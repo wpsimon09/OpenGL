@@ -104,6 +104,8 @@
     <None Include="Assets\Model\stormtrooper\stormtrooper.mtl" />
     <None Include="VertexShader\FloorVertex.glsl" />
     <None Include="FragmentShader\FloorFragment.glsl" />
+    <None Include="VertexShader\AdvancedLightning\FinalVertex.glsl" />
+    <None Include="FragmentShader\AdvancedLightning\FinalFragment.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\Textures\container.jpg">
