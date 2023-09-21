@@ -154,7 +154,6 @@ int main() {
 	glBindBuffer(GL_ARRAY_BUFFER, buffer);
 	glBufferData(GL_ARRAY_BUFFER, (rows*colums) * sizeof(glm::mat4), &modelMatrices[0], GL_STATIC_DRAW);
 
-	for (unsigned int i = 0; i < stormtrooper.meshes.size(); i++)
 	{
 		unsigned int VAO = stormtrooper.meshes[i].VAO;
 
@@ -163,7 +162,6 @@ int main() {
 		std::size_t v4s = sizeof(glm::vec4);
 
 		// 1st colum of the matrix
-		glEnableVertexAttribArray(5);
 		glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, 4 * v4s, (void*)0);
 
 
