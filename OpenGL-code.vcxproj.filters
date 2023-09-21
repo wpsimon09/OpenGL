@@ -106,6 +106,7 @@
     <None Include="FragmentShader\FloorFragment.glsl" />
     <None Include="VertexShader\AdvancedLightning\FinalVertex.glsl" />
     <None Include="FragmentShader\AdvancedLightning\FinalFragment.glsl" />
+    <None Include="VertexShader\AdvancedLightning\AdvancedLightningVertexNoInstance.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\Textures\container.jpg">

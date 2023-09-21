@@ -14,10 +14,10 @@ in VS_OUT {
 out vec4 FragColor;
 
 uniform sampler2D texture_diffuse0;
-uniform sampler2D shadowMap;
 uniform sampler2D texture_normal0;
 uniform sampler2D texture_specular0;
 
+uniform sampler2D shadowMap;
 uniform vec3 lightColor;
 
 void main() 
@@ -25,7 +25,7 @@ void main()
     //----------
     // AMBIENT
     //----------
-    vec3 ambient = vec3(texture(texture_diffuse0, fs_in.TexCoords)* 0.7);
+    vec3 ambient = vec3(texture(texture_diffuse0, fs_in.TexCoords)* 0.2);
     
     //--------
     // DIFFUSE

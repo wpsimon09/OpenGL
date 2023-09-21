@@ -188,6 +188,7 @@
     <None Include="FragmentShader\FragmentShader.glsl" />
     <None Include="FragmentShader\LightFragmentShader.glsl" />
     <None Include="VertexShader\AdvancedLightning\AdvancedLightningVertex.glsl" />
+    <None Include="VertexShader\AdvancedLightning\AdvancedLightningVertexNoInstance.glsl" />
     <None Include="VertexShader\AdvancedLightning\FinalVertex.glsl" />
     <None Include="VertexShader\AdvancedLightning\LightSourceVertex.glsl" />
     <None Include="VertexShader\AdvancedLightning\ShadowMapVertex.glsl" />

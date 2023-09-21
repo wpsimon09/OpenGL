@@ -27,8 +27,9 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 
 //screen coordinates
-int SCR_WIDTH = 800;
-int SCR_HEIGHT = 600;
+int SCR_WIDTH = 1920;
+int SCR_HEIGHT = 1080;
+
 // camera
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 float lastX = 800.0f / 2.0f;
@@ -41,7 +42,7 @@ float hasNormalMap = 1.0f;
 float deltaTime = 0.0f;	// time between current frame and last frame
 float lastFrame = 0.0f;
 
-glm::vec3 lightColor = glm::vec3(2.0f, 0.0f, 2.0f);
+glm::vec3 lightColor = COLOR_CYAN;
 
 float constant = 1.0f;
 float linear = 0.22f;
@@ -51,7 +52,7 @@ bool isLightBlinn = true;
 
 
 //light possition
-glm::vec3 lightPosition(-2.0f, 2.0f, -1.0f);
+glm::vec3 lightPosition(0.0f, 2.0f, -1.0f);
 
 glm::vec3 pointLightPositions[] = {
 glm::vec3(0.7f, 0.2f, 2.0f),
@@ -72,7 +73,7 @@ int main() {
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	GLFWwindow* window = glfwCreateWindow(800, 600, "OpenGL", NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "OpenGL", NULL, NULL);
 	if (window == NULL)
 	{
 		std::cout << "Failed to create GLFW window" << std::endl;
@@ -103,6 +104,8 @@ int main() {
 
 
 	Shader mainObjShader("VertexShader/AdvancedLightning/AdvancedLightningVertex.glsl", "FragmentShader/AdvancedLightning/AdvancedLightningFragmnet.glsl");
+
+	Shader mainObjShaderNoInstance("VertexShader/AdvancedLightning/AdvancedLightningVertexNoInstance.glsl", "FragmentShader/AdvancedLightning/AdvancedLightningFragmnet.glsl");
 
 	Shader lightSourceShader("VertexShader/AdvancedLightning/LightSourceVertex.glsl", "FragmentShader/AdvancedLightning/LightSourceFragment.glsl");
 
@@ -152,8 +155,8 @@ int main() {
 	unsigned int buffer;
 	glGenBuffers(1, &buffer);
 	glBindBuffer(GL_ARRAY_BUFFER, buffer);
-	glBufferData(GL_ARRAY_BUFFER, (rows*colums) * sizeof(glm::mat4), &modelMatrices[0], GL_STATIC_DRAW);
-
+	glBufferData(GL_ARRAY_BUFFER, (rows * colums) * sizeof(glm::mat4), &modelMatrices[0], GL_STATIC_DRAW);
+	for(int i = 0; i<stormtrooper.meshes.size() ; i++)
 	{
 		unsigned int VAO = stormtrooper.meshes[i].VAO;
 
@@ -162,8 +165,8 @@ int main() {
 		std::size_t v4s = sizeof(glm::vec4);
 
 		// 1st colum of the matrix
+		glEnableVertexAttribArray(5);
 		glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, 4 * v4s, (void*)0);
-
 
 		//2 nd colum of the matrix
 		glEnableVertexAttribArray(6);
@@ -255,6 +258,47 @@ int main() {
 		std::cout << "ERROR:BUFFER:FRAME\n Frame buffer not bound successfully \n";
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
+
+	//---------------
+	// G-FRAME BUFFER
+	//---------------
+	unsigned int gBuffer;
+	glGenFramebuffers(1, &gBuffer);
+	glBindBuffer(GL_FRAMEBUFFER, gBuffer);
+	unsigned int gPosition, gNormal, gColorSpec;
+
+	glGenTextures(1, &gPosition);
+	glBindTexture(GL_TEXTURE_2D, gPosition);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGB, GL_FLOAT, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, gPosition, 0);
+
+
+	glGenTextures(1, &gNormal);
+	glBindTexture(GL_TEXTURE_2D, gNormal);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGB, GL_FLOAT, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, gNormal, 0);
+	
+	glGenTextures(1, &gColorSpec);
+	glBindTexture(GL_TEXTURE_2D, gColorSpec);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGB, GL_FLOAT, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, gNormal, 0);
+
+	unsigned int colorBuffersAttachments[3] = { GL_COLOR_ATTACHMENT0,GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
+	glDrawBuffers(3,colorBuffersAttachments);
+
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE)
+		std::cout << "-------------FRAME BUFFER BOUND SUCCESSFULLY-----------------\n";
+	else
+		std::cout << "ERROR:BUFFER:FRAME\n Frame buffer not bound successfully \n";
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+
 	//-----------------
 	// TEXTURES LOADING
 	//-----------------
@@ -316,16 +360,17 @@ int main() {
 		shadowMapShader.use();
 		shadowMapShader.setMat4("lightSpaceMatrix", lightSpaceMatrix);
 
-		glm::mat4 ligthModel = glm::mat4(1.0f);
-		shadowMapShader.setMat4("model", ligthModel);
-		stormtrooper.Draw(shadowMapShader);
+		for (int i = 0; i < totalAmount; i++)
+		{
+			glm::mat4 ligthModel = glm::mat4(1.0f);
+			shadowMapShader.setMat4("model", modelMatrices[i]);
+			stormtrooper.Draw(shadowMapShader);
+			glCullFace(GL_BACK);
 
-
-		glCullFace(GL_BACK);
+		}
 		//--------------------------------------//
 		//---------- NORMAL SCENE -------------//
 		//------------------------------------//
-
 		glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
 		glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -345,10 +390,7 @@ int main() {
 		floorShader.setVec3("lightPos", lightPosition);
 		floorShader.setVec3("lightColor", lightColor);
 		floorShader.setVec3("viewPos", camera.Position);
-
-
 		DrawPlane(floorShader, model, view, projection, planeVAO);
-
 
 		//---------------------
 		// SET LIGHT PROPERTIES
@@ -367,8 +409,7 @@ int main() {
 		//---------------
 		mainObjShader.setFloat("hasNormalMap", hasNormalMap);
 		setMatrices(mainObjShader, model, view, projection);
-		stormtrooper.Draw(mainObjShader);
-
+		stormtrooper.DrawInstaced(mainObjShader);
 		//----------------------
 		// DRAW THE LIGHT SOURCE
 		//----------------------

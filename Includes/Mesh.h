@@ -31,6 +31,7 @@ public:
 
 	Mesh(std::vector<Vertex> vertecies, std::vector<unsigned int> indecies, std::vector<Texture> texutres);
 	void Draw(Shader& shader);
+	void DrawInstanced(Shader& shader);
 	unsigned int VAO;
 
 	void setAmountOfDrawCals(unsigned int drawCalls) {
@@ -42,7 +43,7 @@ private:
 	//initialize the buffers
 	//--------------
 	void setupMesh();
-
+	void setupTextures(Shader &shader);
 };
 
 Mesh::Mesh(std::vector<Vertex> vertecies, std::vector<unsigned int> indecies, std::vector<Texture> texutres)
@@ -94,13 +95,35 @@ void Mesh::setupMesh()
 }
 
 void Mesh::Draw(Shader& shader) {
+	
+	this->setupTextures(shader);
+
+	//draw mesh
+	glBindVertexArray(VAO);
+	glDrawElements(GL_TRIANGLES, indecies.size(), GL_UNSIGNED_INT, 0);
+	glBindVertexArray(0);
+
+	glActiveTexture(GL_TEXTURE0);
+}
+
+void Mesh::DrawInstanced(Shader& shader)
+{
+	this->setupTextures(shader);
+
+	//draw mesh
+	glBindVertexArray(VAO);
+	glDrawElementsInstanced(GL_TRIANGLES, indecies.size(), GL_UNSIGNED_INT, 0, this->drawCalls);
+	glBindVertexArray(0);
+
+	glActiveTexture(GL_TEXTURE0);
+}
+
+void Mesh::setupTextures(Shader &shader)
+{
 	unsigned int diffuseNr = 0;
 	unsigned int specularNr = 0;
 	unsigned int normalNr = 0;
-	//looping throught each texture and setting coresponding value
-	//in the shader
-	// TODO: set texture's name in the shader as well
-	//----------------
+	
 	shader.use();
 	for (unsigned int i = 0; i < textures.size(); i++) {
 		glActiveTexture(GL_TEXTURE0 + i);
@@ -125,13 +148,6 @@ void Mesh::Draw(Shader& shader) {
 		//std::cout << "\n";
 		glBindTexture(GL_TEXTURE_2D, textures[i].id);
 	}
-
-	//draw mesh
-	glBindVertexArray(VAO);
-	glDrawElementsInstanced(GL_TRIANGLES, indecies.size(), GL_UNSIGNED_INT, 0, this->drawCalls);
-	glDrawElements(GL_TRIANGLES, indecies.size(), GL_UNSIGNED_INT, 0);
-	glBindVertexArray(0);
-
-	glActiveTexture(GL_TEXTURE0);
 }
+
 #endif // !1

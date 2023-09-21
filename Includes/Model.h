@@ -30,6 +30,7 @@ class Model {
 			this->drawCalls = drawCalls;
 		}
 		void Draw(Shader& shader);
+		void DrawInstaced(Shader& shader);
 		std::vector<Mesh> meshes;
 	private:
 		unsigned int drawCalls;
@@ -52,6 +53,15 @@ void Model::Draw(Shader& shader) {
 	{
 		meshes[i].setAmountOfDrawCals(this->drawCalls);
 		meshes[i].Draw(shader);
+	}
+}
+
+void Model::DrawInstaced(Shader& shader)
+{
+	for (int i = 0; i < meshes.size(); i++)
+	{
+		meshes[i].setAmountOfDrawCals(this->drawCalls);
+		meshes[i].DrawInstanced(shader);
 	}
 }
 
