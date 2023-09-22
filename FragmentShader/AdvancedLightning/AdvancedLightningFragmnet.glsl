@@ -5,13 +5,15 @@ in VS_OUT {
     vec3 Normal;
     vec2 TexCoords;
     vec4 FragPosLight;
-    vec3 TangentViewPos;
-    vec3 TangentLightPos;
-    vec3 TangentFragPos;
+    mat3 TBN;
+
     float hasNormalMap;
 }fs_in;
 
 out vec4 FragColor;
+
+uniform vec3 lightPos;
+uniform vec3 viewPos;
 
 uniform sampler2D texture_diffuse0;
 uniform sampler2D texture_normal0;
@@ -25,7 +27,7 @@ void main()
     //----------
     // AMBIENT
     //----------
-    vec3 ambient = vec3(texture(texture_diffuse0, fs_in.TexCoords)* 0.2);
+    vec3 ambient = vec3(texture(texture_diffuse0, fs_in.TexCoords)* 0.6);
     
     //--------
     // DIFFUSE
@@ -37,19 +39,19 @@ void main()
         normal = texture(texture_normal0, fs_in.TexCoords).rgb;
         
         //convert from range [0,1] to the range [-1, 1]
-        normal = normalize(normal * 2.0 - 1.0);    
+        normal = normalize(normal * 2.0 - 1.0) * fs_in.TBN;   
     }
     else 
         normal = normalize(fs_in.Normal);
 
-    vec3 lightDir = normalize(fs_in.TangentLightPos - fs_in.TangentFragPos);
+    vec3 lightDir = normalize(lightPos - fs_in.FragPos);
     float diffStrength = max(dot(normal, lightDir), 0.0);
     vec3 diffuse = lightColor * diffStrength * vec3(texture(texture_diffuse0, fs_in.TexCoords));
     
     //--------
     //SPECULAR
     //--------
-    vec3 viewDir = normalize(fs_in.TangentViewPos - fs_in.TangentFragPos);
+    vec3 viewDir = normalize(viewPos - fs_in.FragPos);
     float specStrength = 0.0;
     vec3 halfwayDir = normalize(lightDir + viewDir);
 

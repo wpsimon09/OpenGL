@@ -9,6 +9,9 @@ layout (location = 5) in mat4 instancedModel;
 uniform mat4 projection;
 uniform mat4 view;
 
+uniform vec3 lightPos;
+uniform vec3 viewPos;
+
 uniform mat4 lightMatrix;
 
 uniform float hasNormalMap;
@@ -18,13 +21,16 @@ out VS_OUT {
     vec3 Normal;
     vec2 TexCoords;
     vec4 FragPosLight;
-    mat3 TBN;
+    vec3 TangentViewPos;
+    vec3 TangentLightPos;
+    vec3 TangentFragPos;
 
     float hasNormalMap;
 }vs_out;
 
 void main()
 {
+    
     mat3 normalMatrix = transpose(inverse(mat3(instancedModel)));
 
     // transform the vectors to the world space 
@@ -41,7 +47,18 @@ void main()
     vs_out.Normal = transpose(inverse(mat3(instancedModel))) * aNormal;
     vs_out.FragPosLight = lightMatrix * vec4(vs_out.FragPos ,1.0);
     vs_out.hasNormalMap = hasNormalMap;
-    vs_out.TBN = TBN;
+    
+    if(hasNormalMap == 1.0)
+    {
+        vs_out.TangentLightPos = TBN * lightPos;
+        vs_out.TangentViewPos = TBN * viewPos;
+        vs_out.TangentFragPos = TBN * vec3(instancedModel * vec4(aPos, 0.0));
+    }
+    else {
+        vs_out.TangentLightPos = lightPos;
+        vs_out.TangentViewPos = viewPos;
+        vs_out.TangentFragPos = vec3(instancedModel * vec4(aPos, 0.0));
+    }
 
     gl_Position = projection * view * instancedModel * vec4(aPos, 1.0);
 }

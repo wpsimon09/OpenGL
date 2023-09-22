@@ -27,8 +27,8 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 
 //screen coordinates
-int SCR_WIDTH = 1920;
-int SCR_HEIGHT = 1080;
+int SCR_WIDTH = 1000;
+int SCR_HEIGHT = 800;
 
 // camera
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
@@ -267,6 +267,7 @@ int main() {
 	glBindBuffer(GL_FRAMEBUFFER, gBuffer);
 	unsigned int gPosition, gNormal, gColorSpec;
 
+	//positions
 	glGenTextures(1, &gPosition);
 	glBindTexture(GL_TEXTURE_2D, gPosition);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGB, GL_FLOAT, NULL);
@@ -274,7 +275,7 @@ int main() {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, gPosition, 0);
 
-
+	//normals
 	glGenTextures(1, &gNormal);
 	glBindTexture(GL_TEXTURE_2D, gNormal);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGB, GL_FLOAT, NULL);
@@ -282,6 +283,7 @@ int main() {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, gNormal, 0);
 	
+	//colors and shinines
 	glGenTextures(1, &gColorSpec);
 	glBindTexture(GL_TEXTURE_2D, gColorSpec);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGB, GL_FLOAT, NULL);
@@ -360,14 +362,9 @@ int main() {
 		shadowMapShader.use();
 		shadowMapShader.setMat4("lightSpaceMatrix", lightSpaceMatrix);
 
-		for (int i = 0; i < totalAmount; i++)
-		{
-			glm::mat4 ligthModel = glm::mat4(1.0f);
-			shadowMapShader.setMat4("model", modelMatrices[i]);
-			stormtrooper.Draw(shadowMapShader);
-			glCullFace(GL_BACK);
+		stormtrooper.DrawInstaced(shadowMapShader);
+		glCullFace(GL_BACK);
 
-		}
 		//--------------------------------------//
 		//---------- NORMAL SCENE -------------//
 		//------------------------------------//
@@ -399,17 +396,18 @@ int main() {
 		useTexture(0, floorTexture);
 		useTexture(1, depthMap);
 		mainObjShader.setFloat("hasNormalMap", 0.0f);
-		mainObjShader.setVec3("lightPos", lightPosition);
 		mainObjShader.setVec3("lightColor", lightColor);
 		mainObjShader.setVec3("viewPos", camera.Position);
 		mainObjShader.setMat4("lightMatrix", lightSpaceMatrix);
+		mainObjShader.setFloat("hasNormalMap", hasNormalMap);
+		mainObjShader.setVec3("lightPos", lightPosition);
 
 		//---------------
 		// DRAW THE MODEL
 		//---------------
-		mainObjShader.setFloat("hasNormalMap", hasNormalMap);
 		setMatrices(mainObjShader, model, view, projection);
 		stormtrooper.DrawInstaced(mainObjShader);
+
 		//----------------------
 		// DRAW THE LIGHT SOURCE
 		//----------------------
