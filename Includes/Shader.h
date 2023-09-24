@@ -13,9 +13,10 @@ class Shader
 {
 public:
     unsigned int ID;
-   
-    Shader(const char* vertexPath, const char* fragmentPath)
+    std::string name;
+    Shader(const char* vertexPath, const char* fragmentPath, std::string name = "undefined")
     {
+        this->name = name;
         // 1. retrieve the vertex/fragment source code from filePath
         std::string vertexCode;
         std::string fragmentCode;
@@ -64,7 +65,7 @@ public:
         glAttachShader(ID, fragment);
         glLinkProgram(ID);
         checkCompileErrors(ID, "PROGRAM");
-        // delete the shaders as they're linked into our program now and no longer necessary
+        //delete the shaders as they're linked into our program now and no longer necessary
         glDeleteShader(vertex);
         glDeleteShader(fragment);
 
@@ -156,8 +157,10 @@ private:
             if (!success)
             {
                 glGetProgramInfoLog(shader, 1024, NULL, infoLog);
-                std::cout << "ERROR::PROGRAM_LINKING_ERROR of type: " << type << "\n" << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
+                std::cout << "ERROR::PROGRAM_LINKING_ERROR at shader" << this->ID << " of type : " << type << "\n" << infoLog << "\n-- -------------------------------------------------- - -- " << std::endl;
             }
+            else
+                std::cout << "Shaders linked successfull \n SHADER NAME: " << this->name << " \xE2\x9C\x93 " << std::endl;
         }
     }
 };

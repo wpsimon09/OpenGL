@@ -103,19 +103,17 @@ int main() {
 	unsigned int totalAmount = rows * colums;
 
 
-	Shader mainObjShader("VertexShader/AdvancedLightning/AdvancedLightningVertex.glsl", "FragmentShader/AdvancedLightning/AdvancedLightningFragmnet.glsl");
+	Shader mainObjShader("VertexShader/AdvancedLightning/AdvancedLightningVertex.glsl", "FragmentShader/AdvancedLightning/AdvancedLightningFragmnet.glsl", "main");
 
-	Shader mainObjShaderNoInstance("VertexShader/AdvancedLightning/AdvancedLightningVertexNoInstance.glsl", "FragmentShader/AdvancedLightning/AdvancedLightningFragmnet.glsl");
+	Shader lightSourceShader("VertexShader/AdvancedLightning/LightSourceVertex.glsl", "FragmentShader/AdvancedLightning/LightSourceFragment.glsl", "light sourece");
 
-	Shader lightSourceShader("VertexShader/AdvancedLightning/LightSourceVertex.glsl", "FragmentShader/AdvancedLightning/LightSourceFragment.glsl");
-
-	Shader brickWallShader("VertexShader/AdvancedLightning/WoodenCubeVertex.glsl", "FragmentShader/AdvancedLightning/WoodenCubeFragment.glsl");
-
-	Shader shadowMapShader("VertexShader/AdvancedLightning/ShadowMapVertex.glsl", "FragmentShader/AdvancedLightning/ShadowMapFragement.glsl");
+	Shader shadowMapShader("VertexShader/AdvancedLightning/ShadowMapVertex.glsl", "FragmentShader/AdvancedLightning/ShadowMapFragement.glsl", "shadow map");
 	
-	Shader floorShader("VertexShader/FloorVertex.glsl", "FragmentShader/FloorFragment.glsl");
+	Shader floorShader("VertexShader/FloorVertex.glsl", "FragmentShader/FloorFragment.glsl", "floor");
 
-	Shader finalShader("VertexShader/AdvancedLightning/FinalVertex.glsl", "FragmentShader/AdvancedLightning/FinalFragment.glsl");
+	Shader gBufferShader("VertexShader/AdvancedLightning/gBufferVertex.glsl", "FragmentShader/AdvancedLightning/gBufferFragment.glsl", "gBuffer");
+
+	Shader finalShaderStage("VertexShader/AdvancedLightning/FinalVertex.glsl", "FragmentShader/AdvancedLightning/FinalFragment.glsl", "final shader");
 
 	Model stormtrooper("Assets/Model/stormtrooper/stormtrooper.obj", totalAmount);
 	
@@ -151,6 +149,25 @@ int main() {
 
 		currentHeight += i + 3;
 	}
+
+	const unsigned int NR_LIGHTS = 32;
+	std::vector<glm::vec3> lightPositions;
+	std::vector<glm::vec3> lightColors;
+	srand(13);
+	for (unsigned int i = 0; i < NR_LIGHTS; i++)
+	{
+		// calculate slightly random offsets
+		float xPos = static_cast<float>(((rand() % 100) / 100.0) * 6.0 - 3.0);
+		float yPos = static_cast<float>(((rand() % 100) / 100.0) * 6.0 - 4.0);
+		float zPos = static_cast<float>(((rand() % 100) / 100.0) * 6.0 - 3.0);
+		lightPositions.push_back(glm::vec3(xPos, yPos, zPos));
+		// also calculate random color
+		float rColor = static_cast<float>(((rand() % 100) / 200.0f) + 0.5); // between 0.5 and 1.0
+		float gColor = static_cast<float>(((rand() % 100) / 200.0f) + 0.5); // between 0.5 and 1.0
+		float bColor = static_cast<float>(((rand() % 100) / 200.0f) + 0.5); // between 0.5 and 1.0
+		lightColors.push_back(glm::vec3(rColor, gColor, bColor));
+	}
+
 
 	unsigned int buffer;
 	glGenBuffers(1, &buffer);
@@ -270,7 +287,7 @@ int main() {
 	//positions
 	glGenTextures(1, &gPosition);
 	glBindTexture(GL_TEXTURE_2D, gPosition);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGB, GL_FLOAT, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGBA, GL_FLOAT, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, gPosition, 0);
@@ -278,7 +295,7 @@ int main() {
 	//normals
 	glGenTextures(1, &gNormal);
 	glBindTexture(GL_TEXTURE_2D, gNormal);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGB, GL_FLOAT, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGBA, GL_FLOAT, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, gNormal, 0);
@@ -286,13 +303,19 @@ int main() {
 	//colors and shinines
 	glGenTextures(1, &gColorSpec);
 	glBindTexture(GL_TEXTURE_2D, gColorSpec);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGB, GL_FLOAT, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGBA, GL_FLOAT, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, gNormal, 0);
 
 	unsigned int colorBuffersAttachments[3] = { GL_COLOR_ATTACHMENT0,GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
 	glDrawBuffers(3,colorBuffersAttachments);
+
+	unsigned int gRboDepth;
+	glGenRenderbuffers(1, &gRboDepth);
+	glBindRenderbuffer(GL_RENDERBUFFER, gRboDepth);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, SCR_WIDTH, SCR_HEIGHT);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, gRboDepth);
 
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE)
 		std::cout << "-------------FRAME BUFFER BOUND SUCCESSFULLY-----------------\n";
@@ -318,10 +341,10 @@ int main() {
 	lightSourceShader.use();
 	lightSourceShader.setInt("lightTexture", 0);
 
-	brickWallShader.use();
-	brickWallShader.setInt("texture_diffuse0", 0);
-	brickWallShader.setInt("shadowMap", 1);
-
+	finalShaderStage.use();
+	finalShaderStage.setInt("gPosition", 0);
+	finalShaderStage.setInt("gNormal", 1);
+	finalShaderStage.setInt("gColorAndShinines", 2);
 	//===================================== RENDER LOOP ================================================//
 
 	while (!glfwWindowShouldClose(window))
@@ -362,14 +385,14 @@ int main() {
 		shadowMapShader.use();
 		shadowMapShader.setMat4("lightSpaceMatrix", lightSpaceMatrix);
 
-		stormtrooper.DrawInstaced(shadowMapShader);
+		stormtrooper.Draw(shadowMapShader);
 		glCullFace(GL_BACK);
 
 		//--------------------------------------//
 		//---------- NORMAL SCENE -------------//
 		//------------------------------------//
 		glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
-		glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+		glBindFramebuffer(GL_FRAMEBUFFER, gBuffer);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glClearColor(0.101f, 0.101f, 0.101f, 1.0f);
 
@@ -377,36 +400,48 @@ int main() {
 		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
 		glm::mat4 model = glm::mat4(1.0f);
 
+		//---------------------
+		// SET LIGHT PROPERTIES
+		//----------------------
+		gBufferShader.use();
+		hasNormalMap = true;
+		gBufferShader.setFloat("hasNormalMap", hasNormalMap);
+		
+		//---------------
+		// DRAW THE MODEL
+		//---------------
+		setMatrices(gBufferShader, model, view, projection);
+		stormtrooper.DrawInstaced(gBufferShader);
+
+		glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		
 		//----------------------
 		// DRAW PLANE AS A FLOOR
 		//----------------------
-		floorShader.use();
+		/*floorShader.use();
 		useTexture(0, floorTexture);
 		useTexture(1, depthMap);
 		floorShader.setMat4("lightMatrix", lightSpaceMatrix);
 		floorShader.setVec3("lightPos", lightPosition);
 		floorShader.setVec3("lightColor", lightColor);
 		floorShader.setVec3("viewPos", camera.Position);
-		DrawPlane(floorShader, model, view, projection, planeVAO);
+		DrawPlane(floorShader, model, view, projection, planeVAO);*/
 
-		//---------------------
-		// SET LIGHT PROPERTIES
-		//----------------------
-		mainObjShader.use();
-		useTexture(0, floorTexture);
-		useTexture(1, depthMap);
-		mainObjShader.setFloat("hasNormalMap", 0.0f);
-		mainObjShader.setVec3("lightColor", lightColor);
-		mainObjShader.setVec3("viewPos", camera.Position);
-		mainObjShader.setMat4("lightMatrix", lightSpaceMatrix);
-		mainObjShader.setFloat("hasNormalMap", hasNormalMap);
-		mainObjShader.setVec3("lightPos", lightPosition);
+		//---------------------------
+		//RENDER THE QUAD AS A SCREEN
+		//---------------------------
 
-		//---------------
-		// DRAW THE MODEL
-		//---------------
-		setMatrices(mainObjShader, model, view, projection);
-		stormtrooper.DrawInstaced(mainObjShader);
+		//send light position uniform
+		//and setup light uniform
+
+		for (int i = 0; i < NR_LIGHTS; i++)
+		{
+			finalShaderStage.setVec3("lights[" + std::to_string(i) + "].position", lightPositions[i]);
+			finalShaderStage.setVec3("lights[" + std::to_string(i) + "].color", lightColors[i]);
+		}
+		finalShaderStage.setVec3("viewPos", camera.Position);
 
 		//----------------------
 		// DRAW THE LIGHT SOURCE
@@ -417,17 +452,13 @@ int main() {
 		lightSourceShader.use();
 		lightSourceShader.setVec3("lightColor", lightColor);
 		useTexture(0, lightTexture);
+		setMatrices(lightSourceShader, model, view, projection);
 		DrawPlane(lightSourceShader, model, view, projection, lightVAO);
 	
-		glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		
-		//---------------------------
-		//RENDER THE QUAD AS A SCREEN
-		//---------------------------
-		useTexture(0, fboTexture);
-		DrawPlane(finalShader, glm::mat4(0.0f), glm::mat4(0.0f), glm::mat4(0.0f), screenQuadVAO, GL_TRIANGLE_STRIP, 4);
+		useTexture(0, gPosition);
+		useTexture(1, gNormal);
+		useTexture(2, gColorSpec);
+		DrawPlane(finalShaderStage, glm::mat4(0.0f), glm::mat4(0.0f), glm::mat4(0.0f), screenQuadVAO, GL_TRIANGLE_STRIP, 4);
 
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
 		// -------------------------------------------------------------------------------
