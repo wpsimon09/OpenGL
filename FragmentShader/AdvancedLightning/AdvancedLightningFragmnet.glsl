@@ -1,7 +1,7 @@
 #version 330 core
 
 in VS_OUT {
-    vec3 FragPos;
+     vec3 FragPos;
     vec3 Normal;
     vec2 TexCoords;
     vec4 FragPosLight;

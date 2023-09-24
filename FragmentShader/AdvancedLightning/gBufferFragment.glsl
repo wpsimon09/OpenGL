@@ -1,64 +1,35 @@
 #version 330 core
-layout (location = 0) in vec3 aPos;
-layout (location = 1) in vec3 aNormal;
-layout (location = 2) in vec2 aTexCoords;
-layout (location = 3) in vec3 aTangetn;
-layout (location = 4) in vec3 aBitangent;
-layout (location = 5) in mat4 instancedModel;
+layout (location = 0) out vec3 gPos;
+layout (location = 1) out vec3 gNormal;
+layout (location = 2) out vec4 gColorAndShinines;
 
-uniform mat4 projection;
-uniform mat4 view;
-
-uniform vec3 lightPos;
-uniform vec3 viewPos;
-
-uniform mat4 lightMatrix;
-
-uniform float hasNormalMap;
-
-out VS_OUT {
+in VS_OUT {
     vec3 FragPos;
     vec3 Normal;
     vec2 TexCoords;
-    vec4 FragPosLight;
-    vec3 TangentViewPos;
-    vec3 TangentLightPos;
-    vec3 TangentFragPos;
-
+    mat3 TBN;
     float hasNormalMap;
-}vs_out;
+}fs_in;
+
+uniform sampler2D texture_diffuse0;
+uniform sampler2D texture_specular0;
+uniform sampler2D texture_normal0;
+
 
 void main()
 {
-    
-    mat3 normalMatrix = transpose(inverse(mat3(instancedModel)));
-
-    // transform the vectors to the world space 
-    vec3 T = normalize(normalMatrix * aTangetn);
-    vec3 N = normalize(normalMatrix * aNormal);
-    T = normalize(T - dot(T, N) * N);
-    vec3 B = cross(N, T);
-    
-    // create the TBN matrix
-    mat3 TBN = transpose(mat3(T,B,N));
-
-    vs_out.FragPos =  vec3(instancedModel * vec4(aPos, 1.0));
-    vs_out.TexCoords = aTexCoords;
-    vs_out.Normal = transpose(inverse(mat3(instancedModel))) * aNormal;
-    vs_out.FragPosLight = lightMatrix * vec4(vs_out.FragPos ,1.0);
-    vs_out.hasNormalMap = hasNormalMap;
-    
-    if(hasNormalMap == 1.0)
-    {
-        vs_out.TangentLightPos = TBN * lightPos;
-        vs_out.TangentViewPos = TBN * viewPos;
-        vs_out.TangentFragPos = TBN * vec3(instancedModel * vec4(aPos, 0.0));
-    }
-    else {
-        vs_out.TangentLightPos = lightPos;
-        vs_out.TangentViewPos = viewPos;
-        vs_out.TangentFragPos = vec3(instancedModel * vec4(aPos, 0.0));
-    }
-
-    gl_Position = projection * view * instancedModel * vec4(aPos, 1.0);
+   gPos = fs_in. FragPos;
+   if(fs_in.hasNormalMap == 1.0) 
+   {
+        //sample normal vectors from the texture
+        gNormal = texture(texture_normal0, fs_in.TexCoords).rgb;
+        
+        //convert from range [0,1] to the range [-1, 1]
+        gNormal = normalize(gNormal * 2.0 - 1.0) * fs_in.TBN;   
+   }
+   else
+    gNormal = normalize(fs_in.Normal);
+   
+   gColorAndShinines.rgb = texture(texture_diffuse0, fs_in.TexCoords).rgb;
+   gColorAndShinines.a = texture(texture_specular0, fs_in.TexCoords).a;
 }

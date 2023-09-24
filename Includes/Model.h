@@ -202,7 +202,7 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene) {
 		textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
 
 		// load normal	
-		std::vector<Texture> normalMaps = loadMaterialTextures(material, aiTextureType_HEIGHT, "texture_normal");
+		std::vector<Texture> normalMaps = loadMaterialTextures(material, aiTextureType_NORMALS, "texture_normal");
 
 		textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
 	}
