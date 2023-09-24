@@ -1,4 +1,3 @@
-
 #include <glad/glad.h>-
 #include <GLFW/glfw3.h>
 #include <iostream>
@@ -385,7 +384,7 @@ int main() {
 		shadowMapShader.use();
 		shadowMapShader.setMat4("lightSpaceMatrix", lightSpaceMatrix);
 
-		stormtrooper.Draw(shadowMapShader);
+		//stormtrooper.Draw(shadowMapShader);
 		glCullFace(GL_BACK);
 
 		//--------------------------------------//
