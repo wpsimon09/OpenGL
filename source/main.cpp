@@ -280,47 +280,43 @@ int main() {
 	//---------------
 	unsigned int gBuffer;
 	glGenFramebuffers(1, &gBuffer);
-	glBindBuffer(GL_FRAMEBUFFER, gBuffer);
-	unsigned int gPosition, gNormal, gColorSpec;
-
-	//positions
+	glBindFramebuffer(GL_FRAMEBUFFER, gBuffer);
+	unsigned int gPosition, gNormal, gAlbedoSpec;
+	// position color buffer
 	glGenTextures(1, &gPosition);
 	glBindTexture(GL_TEXTURE_2D, gPosition);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGBA, GL_FLOAT, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, gPosition, 0);
-
-	//normals
+	// normal color buffer
 	glGenTextures(1, &gNormal);
 	glBindTexture(GL_TEXTURE_2D, gNormal);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGBA, GL_FLOAT, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, gNormal, 0);
-	
-	//colors and shinines
-	glGenTextures(1, &gColorSpec);
-	glBindTexture(GL_TEXTURE_2D, gColorSpec);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGBA, GL_FLOAT, NULL);
+	// color + specular color buffer
+	glGenTextures(1, &gAlbedoSpec);
+	glBindTexture(GL_TEXTURE_2D, gAlbedoSpec);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, gNormal, 0);
-
-	unsigned int colorBuffersAttachments[3] = { GL_COLOR_ATTACHMENT0,GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
-	glDrawBuffers(3,colorBuffersAttachments);
-
-	unsigned int gRboDepth;
-	glGenRenderbuffers(1, &gRboDepth);
-	glBindRenderbuffer(GL_RENDERBUFFER, gRboDepth);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, gAlbedoSpec, 0);
+	// tell OpenGL which color attachments we'll use (of this framebuffer) for rendering 
+	unsigned int attachments[3] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
+	glDrawBuffers(3, attachments);
+	// create and attach depth buffer (renderbuffer)
+	unsigned int rboDepth;
+	glGenRenderbuffers(1, &rboDepth);
+	glBindRenderbuffer(GL_RENDERBUFFER, rboDepth);
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, SCR_WIDTH, SCR_HEIGHT);
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, gRboDepth);
-
-	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE)
-		std::cout << "-------------FRAME BUFFER BOUND SUCCESSFULLY-----------------\n";
-	else
-		std::cout << "ERROR:BUFFER:FRAME\n Frame buffer not bound successfully \n";
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rboDepth);
+	// finally check if framebuffer is complete
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+		std::cout << "Framebuffer not complete!" << std::endl;
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
 
 
 	//-----------------
@@ -343,7 +339,7 @@ int main() {
 	finalShaderStage.use();
 	finalShaderStage.setInt("gPosition", 0);
 	finalShaderStage.setInt("gNormal", 1);
-	finalShaderStage.setInt("gColorAndShinines", 2);
+	finalShaderStage.setInt("gAlbedoSpec", 2);
 	//===================================== RENDER LOOP ================================================//
 
 	while (!glfwWindowShouldClose(window))
@@ -416,32 +412,31 @@ int main() {
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		
-		//----------------------
-		// DRAW PLANE AS A FLOOR
-		//----------------------
-		/*floorShader.use();
-		useTexture(0, floorTexture);
-		useTexture(1, depthMap);
-		floorShader.setMat4("lightMatrix", lightSpaceMatrix);
-		floorShader.setVec3("lightPos", lightPosition);
-		floorShader.setVec3("lightColor", lightColor);
-		floorShader.setVec3("viewPos", camera.Position);
-		DrawPlane(floorShader, model, view, projection, planeVAO);*/
-
+		
 		//---------------------------
 		//RENDER THE QUAD AS A SCREEN
 		//---------------------------
 
 		//send light position uniform
 		//and setup light uniform
-
-		for (int i = 0; i < NR_LIGHTS; i++)
+		finalShaderStage.use();
+		for (int i = 0; i < 1; i++)
 		{
-			finalShaderStage.setVec3("lights[" + std::to_string(i) + "].position", lightPositions[i]);
-			finalShaderStage.setVec3("lights[" + std::to_string(i) + "].color", lightColors[i]);
+			finalShaderStage.setVec3("lights[" + std::to_string(i) + "].Position", lightPosition);
+			finalShaderStage.setVec3("lights[" + std::to_string(i) + "].Color", lightColors[i]);
 		}
 		finalShaderStage.setVec3("viewPos", camera.Position);
 
+		useTexture(0, gPosition);
+		useTexture(1, gNormal);
+		useTexture(2, gAlbedoSpec);
+		DrawPlane(finalShaderStage, glm::mat4(0.0f), glm::mat4(0.0f), glm::mat4(0.0f), screenQuadVAO, GL_TRIANGLE_STRIP, 4);
+		
+		glBindFramebuffer(GL_READ_FRAMEBUFFER, gBuffer);
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0); // write to default framebuffer
+		
+		glBlitFramebuffer(0, 0, SCR_WIDTH, SCR_HEIGHT, 0, 0, SCR_WIDTH, SCR_HEIGHT, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		//----------------------
 		// DRAW THE LIGHT SOURCE
 		//----------------------
@@ -453,17 +448,26 @@ int main() {
 		useTexture(0, lightTexture);
 		setMatrices(lightSourceShader, model, view, projection);
 		DrawPlane(lightSourceShader, model, view, projection, lightVAO);
-	
-		useTexture(0, gPosition);
-		useTexture(1, gNormal);
-		useTexture(2, gColorSpec);
-		DrawPlane(finalShaderStage, glm::mat4(0.0f), glm::mat4(0.0f), glm::mat4(0.0f), screenQuadVAO, GL_TRIANGLE_STRIP, 4);
+		finalShaderStage.use();
+
+		//----------------------
+		// DRAW PLANE AS A FLOOR
+		//----------------------
+		floorShader.use();
+		useTexture(0, floorTexture);
+		useTexture(1, depthMap);
+		model = glm::mat4(1.0f);
+		floorShader.setMat4("lightMatrix", lightSpaceMatrix);
+		floorShader.setVec3("lightPos", lightPosition);
+		floorShader.setVec3("lightColor", lightColor);
+		floorShader.setVec3("viewPos", camera.Position);
+		DrawPlane(floorShader, model, view, projection, planeVAO);
+
 
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
 		// -------------------------------------------------------------------------------
 		glfwSwapBuffers(window);
 		glfwPollEvents();
-
 	}
 
 	glfwTerminate();

@@ -1,66 +1,43 @@
 #version 330 core
 out vec4 FragColor;
-in vec2 TexCoord;
+
+in vec2 TexCoords;
 
 uniform sampler2D gPosition;
 uniform sampler2D gNormal;
-uniform sampler2D gColorAndShinines;
+uniform sampler2D gAlbedoSpec;
 
-const int NR_OF_LIGHTS = 32;
-
-struct Light{
-	vec3 position;
-	vec3 color;
+struct Light {
+    vec3 Position;
+    vec3 Color;
+    
 };
-
-uniform Light lights[NR_OF_LIGHTS];
+const int NR_LIGHTS = 32;
+uniform Light lights[NR_LIGHTS];
 uniform vec3 viewPos;
 
-vec3 CalcLight(Light light, vec3 normal, vec3 fragPos,vec3 viewDir);
-
-vec3 FragPos;
-vec3 Normal;
-vec3 texture_diffuse;
-float texture_specular;
-
 void main()
-{
-	vec3 result;
-	vec3 FragPos = texture(gPosition, TexCoord).rgb;
-	vec3 Normal = texture(gNormal, TexCoord).rgb;
-	vec3 texture_diffuse = texture(gColorAndShinines, TexCoord).rgb;
-	float texture_specular = texture(gColorAndShinines, TexCoord).a;
-
-	vec3 viewDir = normalize(viewPos - FragPos);
-
-	for(int i = 0; i< NR_OF_LIGHTS; i++)
-	{
-		result += CalcLight(lights[i], Normal, FragPos, viewDir);
-	}
-	FragColor = vec4(texture_diffuse,1.0);
-}
-
-vec3 CalcLight(Light light, vec3 normal, vec3 fragPos,vec3 viewDir)
-{
-
-	vec3 lightDir = normalize(light.position - fragPos);
-	
-	// diffuse shading
-	float diff = max(dot(normal, lightDir), 0.0);
-	
-	// specular shading
-    vec3 halfwayDir = normalize(lightDir + viewDir);
-
-	float spec = pow(max(dot(normal, halfwayDir), 0.0),
-	8);
-	
-	// combine results
-	vec3 ambient = texture_diffuse * 0.6;
-	vec3 diffuse = light.color * diff * texture_diffuse;
-	vec3 specular = light.color * spec * texture_specular;
-	
-	vec3 result = ambient + diffuse + specular;
+{             
+    // retrieve data from gbuffer
+    vec3 FragPos = texture(gPosition, TexCoords).rgb;
+    vec3 Normal = texture(gNormal, TexCoords).rgb;
+    vec3 Diffuse = texture(gAlbedoSpec, TexCoords).rgb;
+    float Specular = texture(gAlbedoSpec, TexCoords).a;
     
-	return result;
+    // then calculate lighting as usual
+    vec3 lighting  = Diffuse * 0.1; // hard-coded ambient component
+    vec3 viewDir  = normalize(viewPos - FragPos);
+    for(int i = 0; i < NR_LIGHTS; ++i)
+    {
+        // diffuse
+        vec3 lightDir = normalize(lights[i].Position - FragPos);
+        vec3 diffuse = max(dot(Normal, lightDir), 0.0) * Diffuse * lights[i].Color;
+        // specular
+        vec3 halfwayDir = normalize(lightDir + viewDir);  
+        float spec = pow(max(dot(Normal, halfwayDir), 0.0), 16.0);
+        vec3 specular = lights[i].Color * spec * Specular;
 
+        lighting += diffuse + specular;        
+    }
+    FragColor = vec4(lighting, 1.0);
 }
