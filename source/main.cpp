@@ -41,7 +41,7 @@ float hasNormalMap = 1.0f;
 float deltaTime = 0.0f;	// time between current frame and last frame
 float lastFrame = 0.0f;
 
-glm::vec3 lightColor = COLOR_CYAN;
+glm::vec3 lightColor = colorOf(241.0f, 180.0f, 87.0f);
 
 float constant = 1.0f;
 float linear = 0.22f;
@@ -432,7 +432,7 @@ int main() {
 		DrawPlane(finalShaderStage, glm::mat4(0.0f), glm::mat4(0.0f), glm::mat4(0.0f), screenQuadVAO, GL_TRIANGLE_STRIP, 4);
 		
 		glBindFramebuffer(GL_READ_FRAMEBUFFER, gBuffer);
-		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0); // write to default framebuffer
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0); 
 		
 		glBlitFramebuffer(0, 0, SCR_WIDTH, SCR_HEIGHT, 0, 0, SCR_WIDTH, SCR_HEIGHT, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
