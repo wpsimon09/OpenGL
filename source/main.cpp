@@ -399,7 +399,6 @@ int main() {
 		// SET LIGHT PROPERTIES
 		//----------------------
 		gBufferShader.use();
-		hasNormalMap = true;
 		gBufferShader.setFloat("hasNormalMap", hasNormalMap);
 		
 		//---------------
@@ -423,7 +422,7 @@ int main() {
 		for (int i = 0; i < 1; i++)
 		{
 			finalShaderStage.setVec3("lights[" + std::to_string(i) + "].Position", lightPosition);
-			finalShaderStage.setVec3("lights[" + std::to_string(i) + "].Color", lightColors[i]);
+			finalShaderStage.setVec3("lights[" + std::to_string(i) + "].Color", lightColor);
 		}
 		finalShaderStage.setVec3("viewPos", camera.Position);
 

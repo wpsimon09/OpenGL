@@ -18,8 +18,20 @@ uniform sampler2D texture_normal0;
 
 void main()
 {
+   if(fs_in.hasNormalMap == 1.0)
+   {
+        //sample normal vectors from the texture
+        gNormal = texture(texture_normal0, fs_in.TexCoords).rgb;
+        
+        //convert from range [0,1] to the range [-1, 1]
+        gNormal = normalize(gNormal * 2.0 - 1.0) * fs_in.TBN;   
+   }
+   else
+   {
+    gNormal = normalize(fs_in.Normal);
+   }
+
    gPos = fs_in. FragPos;
-   gNormal = normalize(fs_in.Normal);
    
    gColorAndShinines.rgb = texture(texture_diffuse0, fs_in.TexCoords).rgb;
    gColorAndShinines.a = 0.3;

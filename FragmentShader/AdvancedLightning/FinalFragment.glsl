@@ -12,7 +12,7 @@ struct Light {
     vec3 Color;
     
 };
-const int NR_LIGHTS = 32;
+const int NR_LIGHTS = 1;
 uniform Light lights[NR_LIGHTS];
 uniform vec3 viewPos;
 
@@ -39,5 +39,7 @@ void main()
 
         lighting += diffuse + specular;        
     }
+    float gamma = 2.2;
     FragColor = vec4(lighting, 1.0);
+    FragColor.rgb = pow(FragColor.rgb, vec3(1/gamma));
 }
