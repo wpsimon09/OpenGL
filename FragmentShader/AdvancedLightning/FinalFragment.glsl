@@ -44,5 +44,5 @@ void main()
     float exposure = 0.5;
     FragColor = vec4(lighting, 1.0);
     FragColor = vec4(1.0) - exp(-FragColor * exposure);
-    FragColor.rgb = pow(FragColor.rgb, vec3(1/gamma));
+    //FragColor.rgb = pow(FragColor.rgb, vec3(1/gamma));
 }

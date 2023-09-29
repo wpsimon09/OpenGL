@@ -1,5 +1,13 @@
-This chapter describes the technique called normal mapping where we add ilusion of depth to the completly flat texture by creating normal vectors for each fragment of the object instead for each surface / face of the object 
+This chapter is describing the different approach of the 
+rendering lightning 
 
-![Alt text](Assets/ReadmeImages/NormalMapping/normal-map.png)
+Instead of passing information to the lightnign calculations throuth the 
+vertex shader 
 
-![Alt text](Assets/ReadmeImages/NormalMapping/cyborg-normal.png)
+We will use the gBuffer which is the frame buffer where the input variables that are neccessary for the 
+lightning calculations are stored as the sepparate textures (position, normals and color) 
+
+When drawing the final output of the pipline we will calculate the light by sampling those texture 
+and use those sampled values as the input to the lightning calcualtions
+
+With this approach we can render lot of lightning 

@@ -156,7 +156,7 @@ int main() {
 	for (unsigned int i = 0; i < NR_LIGHTS; i++)
 	{
 		// calculate slightly random offsets
-		float xPos = static_cast<float>(((rand() % 100) / 100.0) * 20.0 - 3.0);
+		float xPos = static_cast<float>(((rand() % 100) / 100.0) * 16.0 - 3.0);
 		float yPos = static_cast<float>(((rand() % 100) / 100.0) * 6.0 - 4.0);
 		float zPos = static_cast<float>(((rand() % 100) / 100.0) * 20.0 - 3.0);
 		lightPositions.push_back(glm::vec3(xPos, yPos, zPos));
@@ -238,43 +238,6 @@ int main() {
 	glBindBuffer(GL_FRAMEBUFFER, 0);
 
 
-	//-----------------
-	//MAIN FRAME BUFFER
-	//-----------------
-	unsigned int fbo;
-	glGenFramebuffers(1, &fbo);
-	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-
-	unsigned int fboTexture;
-	glGenTextures(1, &fboTexture);
-	glBindTexture(GL_TEXTURE_2D, fboTexture);
-
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, fboTexture, 0);
-	glBindTexture(GL_TEXTURE_2D, 0);
-	//render buffer object for depth and stencil values
-	unsigned int rbo;
-	glGenRenderbuffers(1, &rbo);
-	glBindRenderbuffer(GL_RENDERBUFFER, rbo);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, SCR_WIDTH, SCR_HEIGHT);
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
-	glBindRenderbuffer(GL_RENDERBUFFER, 0);
-
-
-	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE)
-	{
-		std::cout << "-------------FRAME BUFFER BOUND SUCCESSFULLY-----------------\n";
-	}
-	else
-		std::cout << "ERROR:BUFFER:FRAME\n Frame buffer not bound successfully \n";
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-
 	//---------------
 	// G-FRAME BUFFER
 	//---------------
@@ -299,7 +262,7 @@ int main() {
 	// color + specular color buffer
 	glGenTextures(1, &gAlbedoSpec);
 	glBindTexture(GL_TEXTURE_2D, gAlbedoSpec);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, gAlbedoSpec, 0);
