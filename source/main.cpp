@@ -156,14 +156,14 @@ int main() {
 	for (unsigned int i = 0; i < NR_LIGHTS; i++)
 	{
 		// calculate slightly random offsets
-		float xPos = static_cast<float>(((rand() % 100) / 100.0) * 6.0 - 3.0);
+		float xPos = static_cast<float>(((rand() % 100) / 100.0) * 20.0 - 3.0);
 		float yPos = static_cast<float>(((rand() % 100) / 100.0) * 6.0 - 4.0);
-		float zPos = static_cast<float>(((rand() % 100) / 100.0) * 6.0 - 3.0);
+		float zPos = static_cast<float>(((rand() % 100) / 100.0) * 20.0 - 3.0);
 		lightPositions.push_back(glm::vec3(xPos, yPos, zPos));
 		// also calculate random color
-		float rColor = static_cast<float>(((rand() % 100) / 200.0f) + 0.5); // between 0.5 and 1.0
-		float gColor = static_cast<float>(((rand() % 100) / 200.0f) + 0.5); // between 0.5 and 1.0
-		float bColor = static_cast<float>(((rand() % 100) / 200.0f) + 0.5); // between 0.5 and 1.0
+		float rColor = static_cast<float>(((rand() % 100) / 200.0f)) + 0.5; // between 0.5 and 1.0
+		float gColor = static_cast<float>(((rand() % 100) / 200.0f)) + 0.5; // between 0.5 and 1.0
+		float bColor = static_cast<float>(((rand() % 100) / 200.0f)) + 0.5; // between 0.5 and 1.0
 		lightColors.push_back(glm::vec3(rColor, gColor, bColor));
 	}
 
@@ -366,7 +366,7 @@ int main() {
 		// configure projection matrix
 		float nearPlane, farPlane;
 		nearPlane = 1.0f;
-		farPlane = 10.5f;
+		farPlane = 25.0f;
 		glm::mat4 lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, nearPlane, farPlane);
 
 		//configure view matrix
@@ -379,8 +379,7 @@ int main() {
 		//draw the scene to the depth map
 		shadowMapShader.use();
 		shadowMapShader.setMat4("lightSpaceMatrix", lightSpaceMatrix);
-
-		//stormtrooper.Draw(shadowMapShader);
+		stormtrooper.DrawInstaced(shadowMapShader);
 		glCullFace(GL_BACK);
 
 		//--------------------------------------//
@@ -419,10 +418,10 @@ int main() {
 		//send light position uniform
 		//and setup light uniform
 		finalShaderStage.use();
-		for (int i = 0; i < 1; i++)
+		for (int i = 0; i < lightPositions.size(); i++)
 		{
-			finalShaderStage.setVec3("lights[" + std::to_string(i) + "].Position", lightPosition);
-			finalShaderStage.setVec3("lights[" + std::to_string(i) + "].Color", lightColor);
+			finalShaderStage.setVec3("lights[" + std::to_string(i) + "].Position", lightPositions[i]);
+			finalShaderStage.setVec3("lights[" + std::to_string(i) + "].Color", lightColors[i]);
 		}
 		finalShaderStage.setVec3("viewPos", camera.Position);
 
@@ -439,15 +438,18 @@ int main() {
 		//----------------------
 		// DRAW THE LIGHT SOURCE
 		//----------------------
-		model = glm::mat4(1.0f);
-		model = glm::translate(model, lightPosition);
-		model = glm::scale(model, glm::vec3(0.6f));
 		lightSourceShader.use();
-		lightSourceShader.setVec3("lightColor", lightColor);
 		useTexture(0, lightTexture);
-		setMatrices(lightSourceShader, model, view, projection);
-		DrawPlane(lightSourceShader, model, view, projection, lightVAO);
-		finalShaderStage.use();
+		for (int i = 0; i < lightPositions.size(); i++)
+		{
+			model = glm::mat4(1.0f);
+			model = glm::translate(model, lightPositions[i]);
+			model = glm::scale(model, glm::vec3(0.3f));
+			lightSourceShader.setVec3("lightColor", lightColors[i]);
+
+			setMatrices(lightSourceShader, model, view, projection);
+			DrawPlane(lightSourceShader, model, view, projection, lightVAO);
+		}
 
 		//----------------------
 		// DRAW PLANE AS A FLOOR
