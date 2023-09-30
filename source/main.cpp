@@ -43,10 +43,6 @@ float lastFrame = 0.0f;
 
 glm::vec3 lightColor = colorOf(241.0f, 180.0f, 87.0f);
 
-float constant = 1.0f;
-float linear = 0.22f;
-float quadratic = 0.20f;
-
 bool isLightBlinn = true;
 
 
@@ -385,6 +381,17 @@ int main() {
 		{
 			finalShaderStage.setVec3("lights[" + std::to_string(i) + "].Position", lightPositions[i]);
 			finalShaderStage.setVec3("lights[" + std::to_string(i) + "].Color", lightColors[i]);
+			float constant = 1.0f;
+			float linear = 0.7f;
+			float quadratic = 1.8f;
+			finalShaderStage.setFloat("lights[" + std::to_string(i) + "].Constant", constant);
+			finalShaderStage.setFloat("lights[" + std::to_string(i) + "].Linear", linear);
+		
+			float lightMax = std::fmaxf(std::fmaxf(lightColor.r, lightColor.g),
+				lightColor.b);
+			float radius = (-linear + std::sqrtf(linear * linear - 4 * quadratic *
+				(constant - (256.0 / 5.0) * lightMax))) / (2 * quadratic);
+			finalShaderStage.setFloat("lights[" + std::to_string(i) + "].Radius", radius);
 		}
 		finalShaderStage.setVec3("viewPos", camera.Position);
 
