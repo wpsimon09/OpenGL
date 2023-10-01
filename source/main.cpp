@@ -153,7 +153,7 @@ int main() {
 	{
 		// calculate slightly random offsets
 		float xPos = static_cast<float>(((rand() % 100) / 100.0) * 16.0 - 3.0);
-		float yPos = static_cast<float>(((rand() % 100) / 100.0) * 6.0 - 4.0);
+		float yPos = static_cast<float>(((rand() % 100) / 100.0) * 6.0 );
 		float zPos = static_cast<float>(((rand() % 100) / 100.0) * 20.0 - 3.0);
 		lightPositions.push_back(glm::vec3(xPos, yPos, zPos));
 		// also calculate random color
@@ -281,8 +281,9 @@ int main() {
 	//-----------------
 	// TEXTURES LOADING
 	//-----------------
-	unsigned int floorTexture = loadTexture("Assets/Textures/AdvancedLightning/grid_w.jpg", false);
-	unsigned int lightTexture = loadTexture("Assets/Textures/AdvancedLightning/light.png", false);
+	unsigned int floorTexture = loadTexture("Assets/Textures/AdvancedLightning/grid_w.jpg", true);
+	unsigned int pointLightTexture = loadTexture("Assets/Textures/AdvancedLightning/light.png", false);
+	unsigned int dirLightTexture = loadTexture("Assets/Textures/AdvancedLightning/sun.png", false);
 	unsigned int cubeTexture = loadTexture("Assets/Textures/AdvancedLightning/cube-wood.jpg", false);
 	unsigned int brickWall = loadTexture("Assets/Textures/AdvancedLightning/brickwall.jpg", false);
 	unsigned int normalMap = loadTexture("Assets/Textures/AdvancedLightning/brickwall_normal.jpg", false);
@@ -409,17 +410,23 @@ int main() {
 		// DRAW THE LIGHT SOURCE
 		//----------------------
 		lightSourceShader.use();
-		useTexture(0, lightTexture);
+		useTexture(0, pointLightTexture);
 		for (int i = 0; i < lightPositions.size(); i++)
 		{
 			model = glm::mat4(1.0f);
 			model = glm::translate(model, lightPositions[i]);
-			model = glm::scale(model, glm::vec3(0.3f));
+			model = glm::scale(model, glm::vec3(0.7f));
 			lightSourceShader.setVec3("lightColor", lightColors[i]);
 
 			setMatrices(lightSourceShader, model, view, projection);
 			DrawPlane(lightSourceShader, model, view, projection, lightVAO);
 		}
+		model = glm::mat4(1.0f);
+		model = glm::translate(model, lightPosition);
+		lightSourceShader.setVec3("lightColor", lightColor);
+		useTexture(0, dirLightTexture);
+		setMatrices(lightSourceShader, model, projection, view);
+		DrawPlane(lightSourceShader, model, view, projection, lightVAO);
 
 		//----------------------
 		// DRAW PLANE AS A FLOOR

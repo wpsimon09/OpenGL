@@ -242,8 +242,10 @@
     <Image Include="Assets\Textures\AdvancedLightning\cube-wood.jpg" />
     <Image Include="Assets\Textures\AdvancedLightning\floor_normal.jpg" />
     <Image Include="Assets\Textures\AdvancedLightning\grid.jpg" />
+    <Image Include="Assets\Textures\AdvancedLightning\grid_ch.png" />
     <Image Include="Assets\Textures\AdvancedLightning\grid_w.jpg" />
     <Image Include="Assets\Textures\AdvancedLightning\light.png" />
+    <Image Include="Assets\Textures\AdvancedLightning\sun.png" />
     <Image Include="Assets\Textures\AdvancedLightning\wood.png" />
     <Image Include="Assets\Textures\container.jpg" />
     <Image Include="Assets\Textures\container2.png" />

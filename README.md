@@ -10,4 +10,6 @@ lightning calculations are stored as the sepparate textures (position, normals a
 When drawing the final output of the pipline we will calculate the light by sampling those texture 
 and use those sampled values as the input to the lightning calcualtions
 
-With this approach we can render lot of lightning 
+With this approach we can render lot of lights without consuming a lot of preformance 
+
+![Alt text](Assets/ReadmeImages/DefferedShading/deffered-shading.png)
