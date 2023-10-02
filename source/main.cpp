@@ -87,6 +87,7 @@ int main() {
 
 	//enables gama correction that is build in opengl
 	glEnable(GL_FRAMEBUFFER_SRGB);
+	glEnable(GL_CULL_FACE);
 	glfwSetCursorPosCallback(window, mouse_callback);
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	glfwSetScrollCallback(window, scroll_callback);
@@ -97,8 +98,8 @@ int main() {
 		return -1;
 	}
 
-	unsigned int rows = 5;
-	unsigned int colums = 5;
+	unsigned int rows = 10;
+	unsigned int colums = 10;
 	unsigned int totalAmount = rows * colums;
 
 
@@ -146,7 +147,7 @@ int main() {
 			modelMatrices.push_back(model);
 		}
 
-		currentHeight += i + 3;
+		currentHeight += 3;
 	}
 
 	const unsigned int NR_LIGHTS = 32;
@@ -323,7 +324,7 @@ int main() {
 	// TEXTURES LOADING
 	//-----------------
 	unsigned int floorTexture = loadTexture("Assets/Textures/AdvancedLightning/grid_w.jpg", false);
-	unsigned int lightTexture = loadTexture("Assets/Textures/AdvancedLightning/light.png", false);
+	unsigned int lightTexture = loadTexture("Assets/Textures/AdvancedLightning/sun.png", false);
 	unsigned int cubeTexture = loadTexture("Assets/Textures/AdvancedLightning/cube-wood.jpg", false);
 	unsigned int brickWall = loadTexture("Assets/Textures/AdvancedLightning/brickwall.jpg", false);
 	unsigned int normalMap = loadTexture("Assets/Textures/AdvancedLightning/brickwall_normal.jpg", false);
@@ -380,8 +381,7 @@ int main() {
 		shadowMapShader.use();
 		shadowMapShader.setMat4("lightSpaceMatrix", lightSpaceMatrix);
 
-		//stormtrooper.Draw(shadowMapShader);
-		glCullFace(GL_BACK);
+		stormtrooper.DrawInstaced(shadowMapShader);
 
 		//--------------------------------------//
 		//---------- NORMAL SCENE -------------//
@@ -404,6 +404,7 @@ int main() {
 		//---------------
 		// DRAW THE MODEL
 		//---------------
+		glCullFace(GL_BACK);
 		setMatrices(gBufferShader, model, view, projection);
 		stormtrooper.DrawInstaced(gBufferShader);
 
@@ -439,6 +440,7 @@ int main() {
 		//----------------------
 		// DRAW THE LIGHT SOURCE
 		//----------------------
+		glDisable(GL_CULL_FACE);
 		model = glm::mat4(1.0f);
 		model = glm::translate(model, lightPosition);
 		model = glm::scale(model, glm::vec3(0.6f));
@@ -452,6 +454,7 @@ int main() {
 		//----------------------
 		// DRAW PLANE AS A FLOOR
 		//----------------------
+
 		floorShader.use();
 		useTexture(0, floorTexture);
 		useTexture(1, depthMap);
@@ -462,7 +465,7 @@ int main() {
 		floorShader.setVec3("viewPos", camera.Position);
 		DrawPlane(floorShader, model, view, projection, planeVAO);
 
-
+		glEnable(GL_CULL_FACE);
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
 		// -------------------------------------------------------------------------------
 		glfwSwapBuffers(window);
