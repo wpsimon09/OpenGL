@@ -34,6 +34,7 @@ void main()
     for(int i = 0; i < NR_LIGHTS; ++i)
     {
     float distance = length(lights[i].Position - FragPos);
+        //here we would discard fragments that are not withing the sphere radius
         if(distance < lights[i].Radius)
         {
         
