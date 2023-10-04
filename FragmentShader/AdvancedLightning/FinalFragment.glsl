@@ -21,8 +21,8 @@ void main()
     // retrieve data from gbuffer
     vec3 FragPos = texture(gPosition, TexCoords).rgb;
     vec3 Normal = texture(gNormal, TexCoords).rgb;
-    vec3 Diffuse = texture(gAlbedoSpec, TexCoords).rgb;
-    float Specular = texture(gAlbedoSpec, TexCoords).a;
+    vec3 Diffuse =vec3(0.9, 0.9, 0.9) ;//texture(gAlbedoSpec, TexCoords).rgb;
+    float Specular = 0.5;//texture(gAlbedoSpec, TexCoords).a;
     
     // then calculate lighting as usual
     vec3 lighting  = Diffuse * 0.1; // hard-coded ambient component
@@ -41,5 +41,5 @@ void main()
     }
     float gamma = 2.2;
     FragColor = vec4(lighting, 1.0);
-    FragColor.rgb = pow(FragColor.rgb, vec3(1/gamma));
+    FragColor.rgb = pow(lighting, vec3(1/gamma));
 }

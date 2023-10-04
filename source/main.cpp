@@ -41,7 +41,7 @@ float hasNormalMap = 1.0f;
 float deltaTime = 0.0f;	// time between current frame and last frame
 float lastFrame = 0.0f;
 
-glm::vec3 lightColor = COLOR_CYAN;
+glm::vec3 lightColor = colorOf(210.0f, 210.0f, 210.0f);
 
 float constant = 1.0f;
 float linear = 0.22f;
@@ -131,6 +131,9 @@ int main() {
 	//cube VAO
 	unsigned int cubeVAO = createVAO(cubeVertices, sizeof(cubeVertices) / sizeof(float));
 
+	//wall VAO
+	unsigned int wallVAO = createVAO(wallVertecies, sizeof(wallVertecies) / sizeof(float));
+
 	//----------------
 	// INSTANCED MODEL
 	//----------------
@@ -143,31 +146,16 @@ int main() {
 		for (int j = 0; j < colums; j++)
 		{
 			glm::mat4 model = glm::mat4(1.0f);
-			model = glm::translate(model, glm::vec3(j * 3, 0.0f, currentHeight));
+			model = glm::translate(model, glm::vec3(j * 7, 0.8f, currentHeight));
+			model = glm::rotate(model, glm::radians(-90.0f), glm::vec3(0.0f, 0.0f, 1.0F));
+			model = glm::rotate(model, glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0F));
 			modelMatrices.push_back(model);
 		}
 
 		currentHeight += 3;
 	}
 
-	const unsigned int NR_LIGHTS = 32;
-	std::vector<glm::vec3> lightPositions;
-	std::vector<glm::vec3> lightColors;
-	srand(13);
-	for (unsigned int i = 0; i < NR_LIGHTS; i++)
-	{
-		// calculate slightly random offsets
-		float xPos = static_cast<float>(((rand() % 100) / 100.0) * 6.0 - 3.0);
-		float yPos = static_cast<float>(((rand() % 100) / 100.0) * 6.0 - 4.0);
-		float zPos = static_cast<float>(((rand() % 100) / 100.0) * 6.0 - 3.0);
-		lightPositions.push_back(glm::vec3(xPos, yPos, zPos));
-		// also calculate random color
-		float rColor = static_cast<float>(((rand() % 100) / 200.0f) + 0.5); // between 0.5 and 1.0
-		float gColor = static_cast<float>(((rand() % 100) / 200.0f) + 0.5); // between 0.5 and 1.0
-		float bColor = static_cast<float>(((rand() % 100) / 200.0f) + 0.5); // between 0.5 and 1.0
-		lightColors.push_back(glm::vec3(rColor, gColor, bColor));
-	}
-
+	
 
 	unsigned int buffer;
 	glGenBuffers(1, &buffer);
@@ -363,11 +351,10 @@ int main() {
 		glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
 		glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 		
-		glCullFace(GL_FRONT);
 		// configure projection matrix
 		float nearPlane, farPlane;
 		nearPlane = 1.0f;
-		farPlane = 10.5f;
+		farPlane = 15.5f;
 		glm::mat4 lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, nearPlane, farPlane);
 
 		//configure view matrix
@@ -377,19 +364,25 @@ int main() {
 		// in the notes as T 
 		glm::mat4 lightSpaceMatrix = lightProjection * lightView;
 
+		glm::mat4 lightModel = glm::mat4(1.0f);
+
 		//draw the scene to the depth map
 		shadowMapShader.use();
 		shadowMapShader.setMat4("lightSpaceMatrix", lightSpaceMatrix);
+		lightModel = glm::rotate(lightModel, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+		lightModel = glm::rotate(lightModel, glm::radians(-90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+		lightModel = glm::translate(lightModel, glm::vec3(0.0f, 0.4f, 0.0f));
+		setMatrices(shadowMapShader, lightModel, lightView, lightProjection);
 
-		stormtrooper.DrawInstaced(shadowMapShader);
+		stormtrooper.Draw(shadowMapShader);
 
 		//--------------------------------------//
 		//---------- NORMAL SCENE -------------//
 		//------------------------------------//
 		glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
 		glBindFramebuffer(GL_FRAMEBUFFER, gBuffer);
+		glClearColor(0.0, 0.0f, 0.0f, 0.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		glClearColor(0.101f, 0.101f, 0.101f, 1.0f);
 
 		glm::mat4 view = camera.GetViewMatrix();
 		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
@@ -405,13 +398,23 @@ int main() {
 		// DRAW THE MODEL
 		//---------------
 		glCullFace(GL_BACK);
+		model = glm::translate(model, glm::vec3(0.0f, 0.4f, 0.0f));
+
 		setMatrices(gBufferShader, model, view, projection);
-		stormtrooper.DrawInstaced(gBufferShader);
+		stormtrooper.Draw(gBufferShader);
+
+		glDisable(GL_CULL_FACE);
+		//model = glm::rotate(model, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::translate(model, glm::vec3(-2.0f, 0.0f, -2.0f));
+		model = glm::scale(model, glm::vec3(5.0f));
+		gBufferShader.setFloat("hasNormalMap", false);
+		DrawPlane(gBufferShader, model, view, projection, wallVAO, GL_TRIANGLES);
 
 		glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		
+		glClearColor(0.0, 0.0f, 0.0f, 0.0f);
+
 		
 		//---------------------------
 		//RENDER THE QUAD AS A SCREEN
@@ -437,6 +440,7 @@ int main() {
 		
 		glBlitFramebuffer(0, 0, SCR_WIDTH, SCR_HEIGHT, 0, 0, SCR_WIDTH, SCR_HEIGHT, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
 		//----------------------
 		// DRAW THE LIGHT SOURCE
 		//----------------------

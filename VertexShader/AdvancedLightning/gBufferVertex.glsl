@@ -19,11 +19,12 @@ uniform mat4 view;
 
 uniform float hasNormalMap;
 
+uniform mat4 model;
+
 void main()
 {
-    mat4 model = instancedModel;
     mat3 normalMatrix = transpose(inverse(mat3(model)));
-
+    
     // transform the vectors to the world space 
     vec3 T = normalize(normalMatrix * aTangetn);
     vec3 N = normalize(normalMatrix * aNormal);
