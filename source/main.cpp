@@ -120,7 +120,7 @@ int main() {
 	stbi_set_flip_vertically_on_load(true);
 
 	// plane VAO
-	unsigned int planeVAO = createVAO(planeVertices, sizeof(planeVertices)/sizeof(float));
+	unsigned int floorVAO = createVAO(planeVertices, sizeof(planeVertices)/sizeof(float));
 
 	//final frame buffer VAO
 	unsigned int screenQuadVAO = createVAO(HDRframeBufferVertecies, sizeof(planeVertices) / sizeof(float), false, true);
@@ -329,6 +329,8 @@ int main() {
 	finalShaderStage.setInt("gPosition", 0);
 	finalShaderStage.setInt("gNormal", 1);
 	finalShaderStage.setInt("gAlbedoSpec", 2);
+	finalShaderStage.setInt("shadowMap", 3);
+
 	//===================================== RENDER LOOP ================================================//
 
 	while (!glfwWindowShouldClose(window))
@@ -369,15 +371,13 @@ int main() {
 		//draw the scene to the depth map
 		shadowMapShader.use();
 		shadowMapShader.setMat4("lightSpaceMatrix", lightSpaceMatrix);
-		lightModel = glm::rotate(lightModel, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-		lightModel = glm::rotate(lightModel, glm::radians(-90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 		lightModel = glm::translate(lightModel, glm::vec3(0.0f, 0.4f, 0.0f));
 		setMatrices(shadowMapShader, lightModel, lightView, lightProjection);
 
 		stormtrooper.Draw(shadowMapShader);
 
 		//--------------------------------------//
-		//---------- NORMAL SCENE -------------//
+		//---------- GEOMETRY PASS ------------//
 		//------------------------------------//
 		glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
 		glBindFramebuffer(GL_FRAMEBUFFER, gBuffer);
@@ -404,21 +404,27 @@ int main() {
 		stormtrooper.Draw(gBufferShader);
 
 		glDisable(GL_CULL_FACE);
-		//model = glm::rotate(model, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 		model = glm::translate(model, glm::vec3(-2.0f, 0.0f, -2.0f));
 		model = glm::scale(model, glm::vec3(5.0f));
 		gBufferShader.setFloat("hasNormalMap", false);
 		DrawPlane(gBufferShader, model, view, projection, wallVAO, GL_TRIANGLES);
 
+		//----------------------
+		// DRAW PLANE AS A FLOOR
+		//----------------------
+		gBufferShader.use();
+		useTexture(0, floorTexture);
+		model = glm::mat4(1.0f);
+		DrawPlane(gBufferShader, model, view, projection, floorVAO);
+
+		//--------------------------------------//
+		//----------   LIGHT PASS    ----------//
+		//------------------------------------//
+
 		glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glClearColor(0.0, 0.0f, 0.0f, 0.0f);
-
-		
-		//---------------------------
-		//RENDER THE QUAD AS A SCREEN
-		//---------------------------
 
 		//send light position uniform
 		//and setup light uniform
@@ -429,10 +435,12 @@ int main() {
 			finalShaderStage.setVec3("lights[" + std::to_string(i) + "].Color", lightColor);
 		}
 		finalShaderStage.setVec3("viewPos", camera.Position);
+		finalShaderStage.setMat4("lightMatrix", lightSpaceMatrix);
 
 		useTexture(0, gPosition);
 		useTexture(1, gNormal);
 		useTexture(2, gAlbedoSpec);
+		useTexture(3, depthMap);
 		DrawPlane(finalShaderStage, glm::mat4(0.0f), glm::mat4(0.0f), glm::mat4(0.0f), screenQuadVAO, GL_TRIANGLE_STRIP, 4);
 		
 		glBindFramebuffer(GL_READ_FRAMEBUFFER, gBuffer);
@@ -454,20 +462,6 @@ int main() {
 		setMatrices(lightSourceShader, model, view, projection);
 		DrawPlane(lightSourceShader, model, view, projection, lightVAO);
 		finalShaderStage.use();
-
-		//----------------------
-		// DRAW PLANE AS A FLOOR
-		//----------------------
-
-		floorShader.use();
-		useTexture(0, floorTexture);
-		useTexture(1, depthMap);
-		model = glm::mat4(1.0f);
-		floorShader.setMat4("lightMatrix", lightSpaceMatrix);
-		floorShader.setVec3("lightPos", lightPosition);
-		floorShader.setVec3("lightColor", lightColor);
-		floorShader.setVec3("viewPos", camera.Position);
-		DrawPlane(floorShader, model, view, projection, planeVAO);
 
 		glEnable(GL_CULL_FACE);
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
