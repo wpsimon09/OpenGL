@@ -104,7 +104,7 @@ void main()
     //-------------------------
     // HDR AND GAMMA CORRECTION
     //-------------------------
-    float exposure = 1.0;
+    float exposure = 0.8;
     float gamma = 2.2;
     result = vec3(1.0) - exp(-result * exposure); 
     FragColor.rgb = pow(result, vec3(1/gamma));

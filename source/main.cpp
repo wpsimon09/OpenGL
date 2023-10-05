@@ -41,7 +41,7 @@ float hasNormalMap = 1.0f;
 float deltaTime = 0.0f;	// time between current frame and last frame
 float lastFrame = 0.0f;
 
-glm::vec3 lightColor = colorOf(210.0f, 210.0f, 210.0f);
+glm::vec3 lightColor = colorOf(250.0f, 250.0f, 250.0f);
 
 float constant = 1.0f;
 float linear = 0.22f;
@@ -382,6 +382,7 @@ int main() {
 		shadowMapShader.use();
 		shadowMapShader.setMat4("lightSpaceMatrix", lightSpaceMatrix);
 		lightModel = glm::translate(lightModel, glm::vec3(0.0f, 0.4f, 0.0f));
+
 		//-----------------
 		// DRAW SHAOW MODEL
 		//-----------------
@@ -389,7 +390,8 @@ int main() {
 		setMatrices(shadowMapShader, lightModel, lightView, lightProjection);
 		stormtrooper.Draw(shadowMapShader);
 		
-
+		glDisable(GL_CULL_FACE);
+		lightModel = glm::mat4(1.0f);
 		lightModel = glm::translate(lightModel, glm::vec3(-2.0f, 0.0f, -2.0f));
 		lightModel = glm::scale(lightModel, glm::vec3(5.0f));
 		DrawShadowMapPlane(shadowMapShader, lightModel, wallVAO);
@@ -401,7 +403,7 @@ int main() {
 		glBindFramebuffer(GL_FRAMEBUFFER, gBuffer);
 		glClearColor(0.0, 0.0f, 0.0f, 0.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+		glEnable(GL_CULL_FACE);
 		glm::mat4 view = camera.GetViewMatrix();
 		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
 		glm::mat4 model = glm::mat4(1.0f);
