@@ -12,11 +12,10 @@ uniform mat4 lightMatrix;
 struct Light {
     vec3 Position;
     vec3 Color;
-    
 };
 
 const int NR_LIGHTS = 1;
-uniform Light lights[NR_LIGHTS];
+uniform Light light;
 uniform vec3 viewPos;
 
 float caclualteShadow(vec4 FragPosLight, float bias)
@@ -76,36 +75,38 @@ void main()
     //final lightning color
     vec3 result;
 
-    for(int i = 0; i < NR_LIGHTS; ++i)
-    {
-        //--------
-        // AMBIENT
-        //--------
-        vec3 ambient  = Diffuse * 0.1; // hard-coded ambient component
+    //--------
+    // AMBIENT
+    //--------
+    vec3 ambient  = Diffuse * 0.1; // hard-coded ambient component
         
-        //--------
-        // DIFFUSE
-        //--------
-        vec3 lightDir = normalize(lights[i].Position - FragPos);
-        vec3 diffuse = max(dot(Normal, lightDir), 0.0) * Diffuse * lights[i].Color;
+    //--------
+    // DIFFUSE
+    //--------
+    vec3 lightDir = normalize(light.Position - FragPos);
+    vec3 diffuse = max(dot(Normal, lightDir), 0.0) * Diffuse * light.Color;
 
-        //---------
-        // SPECULAR
-        //---------
-        vec3 halfwayDir = normalize(lightDir + viewDir);  
-        float spec = pow(max(dot(Normal, halfwayDir), 0.0), 16.0);
-        vec3 specular = lights[i].Color * spec * Specular;
+    //---------
+    // SPECULAR
+    //---------
+    vec3 halfwayDir = normalize(lightDir + viewDir);  
+    float spec = pow(max(dot(Normal, halfwayDir), 0.0), 16.0);
+    vec3 specular = light.Color * spec * Specular;
 
-        //------
-        //SHADWO
-        //------
-        float bias = max(0.09 * (1.0 - dot(Normal, lightDir)), 0.05);
+    //------
+    //SHADWO
+    //------
+    float bias = max(0.09 * (1.0 - dot(Normal, lightDir)), 0.05);
 
-        float shadow = caclualteShadow(FragPosLight, bias);
-        result += (ambient + (1.0 - shadow) * (diffuse + specular)) * Diffuse;
-                
-    }
+    float shadow = caclualteShadow(FragPosLight, bias);
+    result += (ambient + (1.0 - shadow) * (diffuse + specular)) * Diffuse;
+ 
+    //-------------------------
+    // HDR AND GAMMA CORRECTION
+    //-------------------------
+    float exposure = 1.0;
     float gamma = 2.2;
-    FragColor = vec4(result, 1.0);
+    result = vec3(1.0) - exp(-result * exposure); 
     FragColor.rgb = pow(result, vec3(1/gamma));
+    FragColor = vec4(result, 1.0);
 }
