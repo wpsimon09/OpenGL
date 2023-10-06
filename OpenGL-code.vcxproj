@@ -250,6 +250,7 @@
     <Image Include="Assets\Textures\container2.png" />
     <Image Include="Assets\Textures\container2_specular.png" />
     <Image Include="Assets\Textures\container2_specular_colored.png" />
+    <Image Include="Assets\Textures\default.jpg" />
     <Image Include="Assets\Textures\DepthTesting\marble.jpg" />
     <Image Include="Assets\Textures\DepthTesting\metal.png" />
     <Image Include="Assets\Textures\matrix.jpg" />

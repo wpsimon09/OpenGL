@@ -76,6 +76,13 @@ void useTexture(unsigned int samplerNumber, unsigned int texture)
 	glBindTexture(GL_TEXTURE_2D, texture);
 }
 
+int lastTexutreUsed()
+{
+	int lastTextureUsed;
+	glGetIntegerv(GL_ACTIVE_TEXTURE, &lastTextureUsed);
+	return lastTextureUsed;
+}
+
 
 void setMatrices(Shader shader ,glm::mat4 model, glm::mat4 view, glm::mat4 projection)
 {

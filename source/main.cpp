@@ -41,7 +41,7 @@ float hasNormalMap = 1.0f;
 float deltaTime = 0.0f;	// time between current frame and last frame
 float lastFrame = 0.0f;
 
-glm::vec3 lightColor = colorOf(250.0f, 250.0f, 250.0f);
+glm::vec3 lightColor = glm::vec3(2.0f, 2.0f,2.0f);
 
 float constant = 1.0f;
 float linear = 0.22f;
@@ -327,6 +327,7 @@ int main() {
 	unsigned int brickWall = loadTexture("Assets/Textures/AdvancedLightning/brickwall.jpg", false);
 	unsigned int normalMap = loadTexture("Assets/Textures/AdvancedLightning/brickwall_normal.jpg", false);
 	unsigned int floorNormalMap = loadTexture("Assets/Textures/AdvancedLightning/floor_normal.jpg", false);
+	unsigned int defaultTexture = loadTexture("Assets/Textures/default.jpg", false);
 
 	floorShader.use();
 	floorShader.setInt("texture_diffuse0", 0);
@@ -401,7 +402,7 @@ int main() {
 		//------------------------------------//
 		glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
 		glBindFramebuffer(GL_FRAMEBUFFER, gBuffer);
-		glClearColor(0.0, 0.0f, 0.0f, 0.0f);
+		glClearColor(0.1, 0.1f, 0.1f, 0.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glEnable(GL_CULL_FACE);
 		glm::mat4 view = camera.GetViewMatrix();
@@ -422,12 +423,13 @@ int main() {
 		glCullFace(GL_BACK);
 		setMatrices(gBufferShader, model, view, projection);
 		stormtrooper.Draw(gBufferShader);
-		
+	
+
 		//----------
 		// DRAW WALL
 		//----------
 		glDisable(GL_CULL_FACE);
-
+		useTexture(lastTexutreUsed() + 1, defaultTexture);
 		model = glm::translate(model, glm::vec3(-2.0f, 0.0f, -2.0f));
 		model = glm::scale(model, glm::vec3(5.0f));
 		gBufferShader.setFloat("hasNormalMap", false);
@@ -437,9 +439,7 @@ int main() {
 		// DRAW PLANE AS A FLOOR
 		//----------------------
 		gBufferShader.use();
-		int lastTextureUsed;
-		glGetIntegerv(GL_ACTIVE_TEXTURE, &lastTextureUsed);
-		useTexture(lastTextureUsed+1, floorTexture);
+		useTexture(lastTexutreUsed() + 2, floorTexture);
 		model = glm::mat4(1.0f);
 		DrawPlane(gBufferShader, model, view, projection, floorVAO);
 
@@ -450,7 +450,7 @@ int main() {
 		glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		glClearColor(0.0, 0.0f, 0.0f, 0.0f);
+		glClearColor(0.1, 0.1f, 0.1f, 0.0f);
 
 		//send light position uniform
 		//and setup light uniform

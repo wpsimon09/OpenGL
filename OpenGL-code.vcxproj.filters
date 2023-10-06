@@ -235,6 +235,12 @@
     <Image Include="Assets\Model\stormtrooper\Stormtrooper_N.tga" />
     <Image Include="Assets\Model\stormtrooper\Stormtrooper_S.tga" />
     <Image Include="Assets\Model\stormtrooper\stormtrooper.obj" />
+    <Image Include="Assets\Textures\AdvancedLightning\sun.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Assets\Textures\default.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Assets\Model\backpack\source_attribution.txt" />

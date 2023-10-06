@@ -65,8 +65,8 @@ void main()
     // retrieve data from gbuffer
     vec3 FragPos = texture(gPosition, TexCoords).rgb;
     vec3 Normal = texture(gNormal, TexCoords).rgb;
-    vec3 Diffuse =vec3(0.9, 0.9, 0.9) ;//texture(gAlbedoSpec, TexCoords).rgb;
-    float Specular = 0.5;//texture(gAlbedoSpec, TexCoords).a;
+    vec3 Diffuse =texture(gAlbedoSpec, TexCoords).rgb;// vec3(0.9, 0.9, 0.9) ;
+    float Specular = texture(gAlbedoSpec, TexCoords).a; //0.0
     vec4 FragPosLight = lightMatrix * vec4(FragPos, 1.0); //fragment postition
 
     // then calculate lighting as usual
