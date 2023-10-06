@@ -36,7 +36,7 @@ void main()
 
     vs_out.FragPos =  vec3(model * vec4(aPos, 1.0));
     vs_out.TexCoords = aTexCoords;
-    vs_out.Normal = transpose(inverse(mat3(model))) * aNormal;
+    vs_out.Normal = transpose(inverse(mat3(view * model))) * aNormal;
     vs_out.hasNormalMap = hasNormalMap;
     vs_out.TBN = TBN;
 

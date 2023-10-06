@@ -134,64 +134,6 @@ int main() {
 	//wall VAO
 	unsigned int wallVAO = createVAO(wallVertecies, sizeof(wallVertecies) / sizeof(float));
 
-	//----------------
-	// INSTANCED MODEL
-	//----------------
-	float currentHeight = 0.0f;
-
-	std::vector<glm::mat4>modelMatrices;
-
-	for (int i = 0; i < rows; i++)
-	{
-		for (int j = 0; j < colums; j++)
-		{
-			glm::mat4 model = glm::mat4(1.0f);
-			model = glm::translate(model, glm::vec3(j * 7, 0.8f, currentHeight));
-			model = glm::rotate(model, glm::radians(-90.0f), glm::vec3(0.0f, 0.0f, 1.0F));
-			model = glm::rotate(model, glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0F));
-			modelMatrices.push_back(model);
-		}
-
-		currentHeight += 3;
-	}
-
-	
-
-	unsigned int buffer;
-	glGenBuffers(1, &buffer);
-	glBindBuffer(GL_ARRAY_BUFFER, buffer);
-	glBufferData(GL_ARRAY_BUFFER, (rows * colums) * sizeof(glm::mat4), &modelMatrices[0], GL_STATIC_DRAW);
-	for(int i = 0; i<stormtrooper.meshes.size() ; i++)
-	{
-		unsigned int VAO = stormtrooper.meshes[i].VAO;
-
-		glBindVertexArray(VAO);
-
-		std::size_t v4s = sizeof(glm::vec4);
-
-		// 1st colum of the matrix
-		glEnableVertexAttribArray(5);
-		glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, 4 * v4s, (void*)0);
-
-		//2 nd colum of the matrix
-		glEnableVertexAttribArray(6);
-		glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, 4 * v4s, (void*)(1 * v4s));
-
-		//3 rd colum of the matrix
-		glEnableVertexAttribArray(7);
-		glVertexAttribPointer(7, 4, GL_FLOAT, GL_FALSE, 4 * v4s, (void*)(2 * v4s));
-
-		//4 th colum of the matrix
-		glEnableVertexAttribArray(8);
-		glVertexAttribPointer(8, 4, GL_FLOAT, GL_FALSE, 4 * v4s, (void*)(3 * v4s));
-
-		//update atribute arrays, 3, 4, 5, 6 each instace 
-		glVertexAttribDivisor(5, 1);
-		glVertexAttribDivisor(6, 1);
-		glVertexAttribDivisor(7, 1);
-		glVertexAttribDivisor(8, 1);
-		glBindVertexArray(0);
-	}
 
 	//------------------
 	// DEPTH MAP TEXTURE
@@ -277,9 +219,11 @@ int main() {
 	//---------
 	glGenTextures(1, &gPosition);
 	glBindTexture(GL_TEXTURE_2D, gPosition);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGBA, GL_FLOAT, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0,	GL_RGBA16F, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGBA, GL_FLOAT, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, gPosition, 0);
 	
 	//---------
