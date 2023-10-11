@@ -108,6 +108,9 @@
     <None Include="FragmentShader\AdvancedLightning\FinalFragment.glsl" />
     <None Include="VertexShader\AdvancedLightning\gBufferVertex.glsl" />
     <None Include="FragmentShader\AdvancedLightning\gBufferFragment.glsl" />
+    <None Include="VertexShader\AdvancedLightning\SSAOVertex.glsl" />
+    <None Include="FragmentShader\AdvancedLightning\SSAOFragment.glsl" />
+    <None Include="FragmentShader\AdvancedLightning\SSAOBlurFragment.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\Textures\container.jpg">

@@ -183,6 +183,8 @@
     <None Include="FragmentShader\AdvancedLightning\gBufferFragment.glsl" />
     <None Include="FragmentShader\AdvancedLightning\LightSourceFragment.glsl" />
     <None Include="FragmentShader\AdvancedLightning\ShadowMapFragement.glsl" />
+    <None Include="FragmentShader\AdvancedLightning\SSAOBlurFragment.glsl" />
+    <None Include="FragmentShader\AdvancedLightning\SSAOFragment.glsl" />
     <None Include="FragmentShader\AdvancedLightning\WoodenCubeFragment.glsl" />
     <None Include="FragmentShader\DepthTestingFragment.glsl" />
     <None Include="FragmentShader\FloorFragment.glsl" />
@@ -193,6 +195,7 @@
     <None Include="VertexShader\AdvancedLightning\gBufferVertex.glsl" />
     <None Include="VertexShader\AdvancedLightning\LightSourceVertex.glsl" />
     <None Include="VertexShader\AdvancedLightning\ShadowMapVertex.glsl" />
+    <None Include="VertexShader\AdvancedLightning\SSAOVertex.glsl" />
     <None Include="VertexShader\AdvancedLightning\WoodenCubeVertex.glsl" />
     <None Include="VertexShader\DepthTestingVertex.glsl" />
     <None Include="VertexShader\FloorVertex.glsl" />

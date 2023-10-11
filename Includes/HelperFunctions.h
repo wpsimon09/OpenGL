@@ -92,6 +92,18 @@ void setMatrices(Shader shader ,glm::mat4 model, glm::mat4 view, glm::mat4 proje
 	shader.setMat4("projection", projection);
 }
 
+/// <summary>
+/// Lineary interpolates between 3 parameters 
+/// </summary>
+/// <param name="a">fitst number</param>
+/// <param name="b">second number</param>
+/// <param name="c">third number</param>
+/// <returns>Lineary interpolated value of the 3 parameters</returns>
+float lerp(float a, float b, float f)
+{
+	return a + f * (b - a);
+}
+
 
 
 float cubeVertices[] = {

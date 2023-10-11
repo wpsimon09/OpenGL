@@ -7,6 +7,7 @@ uniform sampler2D gPosition;
 uniform sampler2D gNormal;
 uniform sampler2D gAlbedoSpec;
 uniform sampler2D shadowMap;
+uniform sampler2D ssaoEffect;
 uniform mat4 lightMatrix;
 
 struct Light {
@@ -65,12 +66,13 @@ void main()
     // retrieve data from gbuffer
     vec3 FragPos = texture(gPosition, TexCoords).rgb;
     vec3 Normal = texture(gNormal, TexCoords).rgb;
-    vec3 Diffuse =texture(gAlbedoSpec, TexCoords).rgb;// vec3(0.9, 0.9, 0.9) ;
+    vec3 Diffuse = texture(gAlbedoSpec, TexCoords).rgb ;
     float Specular = texture(gAlbedoSpec, TexCoords).a; //0.0
     vec4 FragPosLight = lightMatrix * vec4(FragPos, 1.0); //fragment postition
+    float SSAOEffect = texture(ssaoEffect, TexCoords).r;
 
     // then calculate lighting as usual
-    vec3 viewDir  = normalize(viewPos - FragPos);
+    vec3 viewDir  = normalize(viewPos-FragPos);
 
     //final lightning color
     vec3 result;
@@ -78,7 +80,7 @@ void main()
     //--------
     // AMBIENT
     //--------
-    vec3 ambient  = Diffuse * 0.1; // hard-coded ambient component
+    vec3 ambient  = vec3(0.3 * Diffuse * SSAOEffect); // hard-coded ambient component
         
     //--------
     // DIFFUSE
@@ -108,5 +110,6 @@ void main()
     float gamma = 2.2;
     result = vec3(1.0) - exp(-result * exposure); 
     FragColor.rgb = pow(result, vec3(1/gamma));
+    
     FragColor = vec4(result, 1.0);
 }
