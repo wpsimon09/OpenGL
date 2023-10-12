@@ -18,9 +18,7 @@ struct PointLight {
 
 	glm::vec3 position;
 
-	glm::vec3 ambient;
-	glm::vec3 diffuse;
-	glm::vec3 specular;
+	glm::vec3 color;
 };
 
 struct SpotLight {
@@ -45,10 +43,10 @@ class Light
 {
 	public:
 		Light(glm::vec3 direction, glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular);
-		Light(float constant, float linear, float quadratic, glm::vec3 position, glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular);
+		Light(float constant, float linear, float quadratic, glm::vec3 position, glm::vec3 color, std::string structName, Shader shader);
 		Light(float cutOff, float outerCutOFF,float constant, float linear, float quadratic, bool isOn, glm::vec3 position, glm::vec3 direction, glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular);
 
-		void setLight(Shader &shader);
+		void setLight(Shader &shader, std::string structName);
 
 		std::string getType();
 	private:
@@ -84,54 +82,54 @@ Light::Light(float cutOff, float outerCutOFF, float constant, float linear, floa
 	this->lightType = "spot";
 }
 
-Light::Light(float constant, float linear, float quadratic, glm::vec3 position, glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular) {
+Light::Light(float constant, float linear, float quadratic, glm::vec3 position, glm::vec3 color, std::string structName, Shader shader) {
 	this->_pointLight.constant = constant;
 	this->_pointLight.linear = linear;
 	this->_pointLight.quadratic = quadratic;
 	this->_pointLight.position = position;
-	this->_pointLight.ambient = ambient;
-	this->_pointLight.diffuse = diffuse;
-	this->_pointLight.specular = specular;
+	this->_pointLight.color = color;
+
 
 	this->lightType = "point";
+
+	this->setLight(shader, structName);
 }
 
-void Light::setLight(Shader& shader) {
+void Light::setLight(Shader& shader, std::string structName) {
 	shader.use();
 	shader.setFloat("material.shininess", 32);
 	if (this->lightType == "dir")
 	{
-		shader.setVec3("dirLight.direction", this->_dirLight.direction);
-		shader.setVec3("dirLight.ambient", this->_dirLight.ambient);
-		shader.setVec3("dirLight.diffuse", this->_dirLight.diffuse);
-		shader.setVec3("dirLight.specular", this->_dirLight.specular);
+		shader.setVec3(structName+".direction", this->_dirLight.direction);
+		shader.setVec3(structName+".ambient", this->_dirLight.ambient);
+		shader.setVec3(structName+".diffuse", this->_dirLight.diffuse);
+		shader.setVec3(structName+".specular", this->_dirLight.specular);
 	}
 
 	if(this->lightType == "point")
 	{
-		shader.setFloat("pointLights.constant", this->_pointLight.constant);
-		shader.setFloat("pointLights.linear", this->_pointLight.linear);
-		shader.setFloat("pointLights.quadratic", this->_pointLight.quadratic);
+		shader.setFloat(structName + ".constant", this->_pointLight.constant);
+		shader.setFloat(structName + ".linear", this->_pointLight.linear);
+		shader.setFloat(structName + ".quadratic", this->_pointLight.quadratic);
 
-		shader.setVec3("pointLights.position", this->_pointLight.position);
+		shader.setVec3(structName + ".position", this->_pointLight.position);
 		
-		shader.setVec3("pointLights.ambient", this->_pointLight.ambient);
-		shader.setVec3("pointLights.diffuse", this->_pointLight.diffuse);
-		shader.setVec3("pointLights.specular", this->_pointLight.specular);
+		shader.setVec3(structName + ".color", this->_pointLight.color);
+
 	}
 
 	if (this->lightType == "spot")
 	{
-		shader.setFloat("spotLight.constant", this->_spotLight.constant);
-		shader.setFloat("spotLight.linear", this->_spotLight.linear);
-		shader.setFloat("spotLight.quadratic", this->_spotLight.quadratic);
+		shader.setFloat(structName+ ".constant", this->_spotLight.constant);
+		shader.setFloat(structName+ ".linear", this->_spotLight.linear);
+		shader.setFloat(structName+ ".quadratic", this->_spotLight.quadratic);
 		
-		shader.setBool("spotLight.isOn", this->_spotLight.isOn);
-		shader.setVec3("spotLight.position", this->_spotLight.position);
+		shader.setBool(structName + ".isOn", this->_spotLight.isOn);
+		shader.setVec3(structName + ".position", this->_spotLight.position);
 		
-		shader.setVec3("spotLight.ambient", this->_spotLight.ambient);
-		shader.setVec3("spotLight.diffuse", this->_spotLight.diffuse);
-		shader.setVec3("spotLight.specular", this->_spotLight.specular);
+		shader.setVec3(structName + ".ambient", this->_spotLight.ambient);
+		shader.setVec3(structName + ".diffuse", this->_spotLight.diffuse);
+		shader.setVec3(structName + ".specular", this->_spotLight.specular);
 	}
 }
 

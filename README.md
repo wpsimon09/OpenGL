@@ -1,5 +1,9 @@
-This chapter describes the technique called normal mapping where we add ilusion of depth to the completly flat texture by creating normal vectors for each fragment of the object instead for each surface / face of the object 
+This chapter's main foccus was SSAO screen-space ambient occlusion
 
-![Alt text](Assets/ReadmeImages/NormalMapping/normal-map.png)
+It is trying to simulate how does light shatter in the corners or holes
 
-![Alt text](Assets/ReadmeImages/NormalMapping/cyborg-normal.png)
+However its not as noticable effect it can add a lot realism to the scene 
+
+![Alt text](/Assets/ReadmeImages/SSAO/SSAO.png);
+
+TODO: fix remaining artifacts

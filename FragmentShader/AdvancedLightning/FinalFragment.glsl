@@ -11,8 +11,12 @@ uniform sampler2D ssaoEffect;
 uniform mat4 lightMatrix;
 
 struct Light {
-    vec3 Position;
-    vec3 Color;
+    vec3 position;
+    vec3 color;
+
+    float constant;
+    float linear;
+    float quadratic;
 };
 
 const int NR_LIGHTS = 1;
@@ -72,7 +76,7 @@ void main()
     float SSAOEffect = texture(ssaoEffect, TexCoords).r;
 
     // then calculate lighting as usual
-    vec3 viewDir  = normalize(viewPos-FragPos);
+    vec3 viewDir  = normalize(viewPos -FragPos);
 
     //final lightning color
     vec3 result;
@@ -85,15 +89,24 @@ void main()
     //--------
     // DIFFUSE
     //--------
-    vec3 lightDir = normalize(light.Position - FragPos);
-    vec3 diffuse = max(dot(Normal, lightDir), 0.0) * Diffuse * light.Color;
+    vec3 lightDir = normalize(light.position - FragPos);
+    vec3 diffuse = max(dot(Normal, lightDir), 0.0) * Diffuse * light.color;
 
     //---------
     // SPECULAR
     //---------
     vec3 halfwayDir = normalize(lightDir + viewDir);  
     float spec = pow(max(dot(Normal, halfwayDir), 0.0), 16.0);
-    vec3 specular = light.Color * spec * Specular;
+    vec3 specular = light.color * spec * Specular;
+    
+    //---------------
+    // ATTENTUANTION
+    //--------------
+    float distance = length(light.position - FragPos);
+    float attenuation = 1.0 / (1.0 + light.linear * distance + light.quadratic * distance * distance);
+
+    specular *= attenuation;
+    diffuse *= attenuation;
 
     //------
     //SHADWO
@@ -110,6 +123,6 @@ void main()
     float gamma = 2.2;
     result = vec3(1.0) - exp(-result * exposure); 
     FragColor.rgb = pow(result, vec3(1/gamma));
-    
     FragColor = vec4(result, 1.0);
+    
 }

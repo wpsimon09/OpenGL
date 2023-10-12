@@ -12,6 +12,8 @@ uniform sampler2D texNoise;
 uniform vec3 samples[64];
 uniform mat4 projection;
 
+uniform float hasNormalMap ;
+
 const vec2 noiseScale = vec2(1000.0/4.0, 800.0/4.0);
 
 int kernelSize = 64;
@@ -31,17 +33,38 @@ void main()
 	// no need for per vertex tangent and bitangent values	
 	vec3 tangent = normalize(randomVec - normal * dot(randomVec, normal));
 	vec3 bitangent = cross(normal, tangent);
-	mat3 TBN = mat3(tangent, bitangent, normal);
+	mat3 TBN;
+	if(hasNormalMap==0)
+	{
+		vec3 T = vec3(projection * vec4(tangent,1.0)); 
+		vec3 B = vec3(projection * vec4(bitangent,1.0));
+		vec3 N = vec3(projection * vec4(normal,1.0));
+		TBN = mat3(T,B,N);
+	}
+	else 
+	{
+		TBN = mat3(tangent, bitangent, normal);
+	}
+
+
 
 	//----------------------
 	// CALCUALTION OCCULSION
 	//---------------------
 	float occlusion = 0.0;
+
 	for(int i = 0; i < kernelSize; ++i)
 	{
-		vec3 samplePos = TBN * samples[i]; //from tangent space to view-space
-		samplePos = fragPos + samplePos * radius; //get the sample position offseted by radius
-	
+		vec3 samplePos; //from tangent space to view-space
+		if(hasNormalMap == 1.0)
+		{
+			samplePos = TBN * samples[i];
+			samplePos = fragPos + samplePos * radius; //get the sample position offseted by radius
+		}
+		else
+		{
+			samplePos = fragPos + samplePos * radius;
+		}
 		vec4 offset = vec4(samplePos, 1.0);
 		offset = projection * offset; // from view-space to screen (clip) space
 		offset.xyz /= offset.w; //perspective dividion

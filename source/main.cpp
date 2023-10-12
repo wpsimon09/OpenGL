@@ -1,4 +1,4 @@
-#include <glad/glad.h>-
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include "Shader.h"
@@ -42,7 +42,7 @@ float hasNormalMap = 1.0f;
 float deltaTime = 0.0f;	// time between current frame and last frame
 float lastFrame = 0.0f;
 
-glm::vec3 lightColor = glm::vec3(2.0f, 2.0f,2.0f);
+glm::vec3 lightColor = glm::vec3(2.5f, 2.0f,2.5f);
 
 float constant = 1.0f;
 float linear = 0.22f;
@@ -441,6 +441,7 @@ int main() {
 		//----------
 		glDisable(GL_CULL_FACE);
 		useTexture(lastTexutreUsed() + 1, defaultTexture);
+		model = glm::mat4(1.0f);
 		model = glm::translate(model, glm::vec3(-2.0f, 0.0f, -2.0f));
 		model = glm::scale(model, glm::vec3(5.0f));
 		gBufferShader.setFloat("hasNormalMap", false);
@@ -452,9 +453,9 @@ int main() {
 		gBufferShader.use();
 		useTexture(lastTexutreUsed() + 2, floorTexture);
 		model = glm::mat4(1.0f);
+		gBufferShader.setFloat("hasNormalMap", false);
 		DrawPlane(gBufferShader, model, view, projection, floorVAO);
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
 
 		//--------------------------------------//
 		//-------------- SSAO PASS ------------//
@@ -475,6 +476,8 @@ int main() {
 		useTexture(0, gPosition);
 		useTexture(1, gNormal);
 		useTexture(2, noiseTexture);
+
+		ssaoShader.setBool("hasNormalMap", false);
 		
 		DrawPlane(ssaoShader, glm::mat4(0.0f), glm::mat4(0.0f), projection, screenQuadVAO, GL_TRIANGLE_STRIP, 4);
 
@@ -488,7 +491,6 @@ int main() {
 		
 		ssaoBlurShade.use();
 		useTexture(0, ssaoColorBuffer);
-		
 		DrawPlane(ssaoBlurShade, glm::mat4(1.0f), glm::mat4(1.0f), glm::mat4(1.0f), screenQuadVAO, GL_TRIANGLE_STRIP, 4);
         
 		//--------------------------------------//
@@ -503,9 +505,7 @@ int main() {
 		//send light position uniform
 		//and setup light uniform
 		finalShaderStage.use();
-		
-		finalShaderStage.setVec3("light.Position", lightPosition);
-		finalShaderStage.setVec3("light.Color", lightColor);
+		Light mainpointLight(constant, linear, quadratic, lightPosition, lightColor, "light", finalShaderStage);
 		finalShaderStage.setVec3("viewPos", camera.Position);
 		finalShaderStage.setMat4("lightMatrix", lightSpaceMatrix);
 
