@@ -364,6 +364,7 @@ int main() {
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
 
+
 		// input
 		// -----
 		processInput(window);
