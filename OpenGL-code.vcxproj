@@ -168,6 +168,7 @@
     <ClCompile Include="source\stb_image.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Assets\Model\anime-girl\D0207034A.mtl" />
     <None Include="Assets\Model\backpack\backpack.mtl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </None>
@@ -203,6 +204,20 @@
     <None Include="VertexShader\VertexShader.glsl" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="Assets\Model\anime-girl\c00_02_01_00_black.bmp" />
+    <Image Include="Assets\Model\anime-girl\c00_02_01_00_fuku.bmp" />
+    <Image Include="Assets\Model\anime-girl\c00_02_01_00_nail.bmp" />
+    <Image Include="Assets\Model\anime-girl\c00_02_01_00_obi.bmp" />
+    <Image Include="Assets\Model\anime-girl\c00_02_01_00_pants.bmp" />
+    <Image Include="Assets\Model\anime-girl\c00_02_01_00_race.bmp" />
+    <Image Include="Assets\Model\anime-girl\c00_02_01_00_skin.bmp" />
+    <Image Include="Assets\Model\anime-girl\c00_02_01_00_sox.bmp" />
+    <Image Include="Assets\Model\anime-girl\c00_02_10_eyes.bmp" />
+    <Image Include="Assets\Model\anime-girl\c00_02_10_hair.bmp" />
+    <Image Include="Assets\Model\anime-girl\c00_02_10_hoho.tga" />
+    <Image Include="Assets\Model\anime-girl\c00_02_10_namida.tga" />
+    <Image Include="Assets\Model\anime-girl\c00_02_10_ribbon.bmp" />
+    <Image Include="Assets\Model\anime-girl\c00_02_10_skin.bmp" />
     <Image Include="Assets\Model\backpack\ao.jpg">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </Image>
@@ -286,6 +301,11 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\Model\stormtrooper\stormtrooper.obj">
+      <FileType>Document</FileType>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Assets\Model\anime-girl\D0207034A.obj">
       <FileType>Document</FileType>
     </Image>
   </ItemGroup>

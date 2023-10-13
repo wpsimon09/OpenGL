@@ -76,7 +76,7 @@ void main()
     float SSAOEffect = texture(ssaoEffect, TexCoords).r;
 
     // then calculate lighting as usual
-    vec3 viewDir  = normalize(viewPos-FragPos);
+    vec3 viewDir  = normalize(-FragPos);
 
     //final lightning color
     vec3 result;
@@ -104,7 +104,8 @@ void main()
     //--------------
     float distance = length(light.position - FragPos);
     float attenuation = 1.0 / (1.0 + light.linear * distance + light.quadratic * distance * distance);
-
+    specular *= attenuation;
+    diffuse *= attenuation;
     //------
     //SHADWO
     //------
@@ -113,7 +114,7 @@ void main()
     float shadow = caclualteShadow(FragPosLight, bias);
     result += (ambient + (1.0 - shadow) * (diffuse + specular)) * Diffuse;
  
-    result *= attenuation;
+   // result *= attenuation;
     //-------------------------
     // HDR AND GAMMA CORRECTION
     //-------------------------

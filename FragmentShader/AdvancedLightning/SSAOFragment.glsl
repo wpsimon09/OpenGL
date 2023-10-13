@@ -9,14 +9,15 @@ uniform sampler2D gPosition;
 uniform sampler2D gNormal;
 uniform sampler2D texNoise;
 
-uniform vec3 samples[64];
+const int kernelSize = ;
+
+uniform vec3 samples[kernelSize];
 uniform mat4 projection;
 
-uniform float hasNormalMap ;
+uniform float hasNormalMap;
 
 const vec2 noiseScale = vec2(1000.0/4.0, 800.0/4.0);
 
-int kernelSize = 64;
 float radius = 0.5;
 
 void main()
@@ -75,7 +76,7 @@ void main()
 
 		float rangeCheck = smoothstep(0.0, 1.0, radius)/abs(fragPos.z - sampleDepth);
 
-		occlusion += (sampleDepth >= samplePos.z + 0.025 ? 1.0 : 0.0) * rangeCheck;
+		occlusion += (sampleDepth >= samplePos.z + 0.25 ? 1.0 : 0.0) * rangeCheck;
 	}
 	occlusion = 1.0 - (occlusion / kernelSize);
 	FragColor = occlusion;

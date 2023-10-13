@@ -114,7 +114,7 @@ int main() {
 	//-------------------------
 	// HEMISPHERE SAMPLE KERNEL
 	//-------------------------
-	std::uniform_real_distribution<float> randomFloats(0.0, 1.0);
+	std::uniform_real_distribution<float> randomFloats(0.15, 0.8);
 	std::default_random_engine generator;
 	std::vector<glm::vec3> ssaoKernel;
 	for (unsigned int i = 0; i < 64; ++i)
@@ -432,6 +432,7 @@ int main() {
 		//---------------
 		// DRAW THE MODEL
 		//---------------
+		model = glm::mat4(1.0f);
 		model = glm::translate(model, glm::vec3(0.0f, 0.4f, 0.0f));
 		glCullFace(GL_BACK);
 		setMatrices(gBufferShader, model, view, projection);
@@ -503,8 +504,6 @@ int main() {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glClearColor(0.1, 0.1f, 0.1f, 0.0f);
 
-		//send light position uniform
-		//and setup light uniform
 		finalShaderStage.use();
 		Light mainpointLight(constant, linear, quadratic, lightPosition, lightColor, "light", finalShaderStage);
 		finalShaderStage.setVec3("viewPos", camera.Position);
