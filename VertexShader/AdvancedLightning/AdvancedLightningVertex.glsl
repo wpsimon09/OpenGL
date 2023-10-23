@@ -8,6 +8,7 @@ layout (location = 5) in mat4 instancedModel;
 
 uniform mat4 projection;
 uniform mat4 view;
+uniform mat4 model;
 
 uniform mat4 lightMatrix;
 

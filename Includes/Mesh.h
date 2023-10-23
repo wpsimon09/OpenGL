@@ -90,8 +90,6 @@ void Mesh::setupMesh()
 	//bytangents
 	glEnableVertexAttribArray(4);
 	glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Bitangents));
-
-	glBindVertexArray(0);
 }
 
 void Mesh::Draw(Shader& shader) {

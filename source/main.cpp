@@ -126,61 +126,11 @@ int main() {
 	//cube VAO
 	unsigned int cubeVAO = createVAO(cubeVertices, sizeof(cubeVertices) / sizeof(float));
 
-	//----------------
-	// INSTANCED MODEL
-	//----------------
-	float currentHeight = 0.0f;
-
-	std::vector<glm::mat4>modelMatrices;
-
-	for (int i = 0; i < rows; i++)
-	{
-		for (int j = 0; j < colums; j++)
-		{
-			glm::mat4 model = glm::mat4(1.0f);
-			model = glm::translate(model, glm::vec3(j * 3, 0.0f, currentHeight));
-			modelMatrices.push_back(model);
-		}
-
-		currentHeight += i + 3;
-	}
-
-	unsigned int instanceBuffer;
-	glGenBuffers(1, &instanceBuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, instanceBuffer);
-	glBufferData(GL_ARRAY_BUFFER, (rows * colums) * sizeof(glm::mat4), &modelMatrices[0], GL_STATIC_DRAW);
-	for(int i = 0; i<stormtrooper.meshes.size() ; i++)
-	{
-		unsigned int VAO = stormtrooper.meshes[i].VAO;
-
-		glBindVertexArray(VAO);
-
-		std::size_t v4s = sizeof(glm::vec4);
-
-		// 1st colum of the matrix
-		glEnableVertexAttribArray(5);
-		glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, 4 * v4s, (void*)0);
-
-		//2 nd colum of the matrix
-		glEnableVertexAttribArray(6);
-		glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, 4 * v4s, (void*)(1 * v4s));
-
-		//3 rd colum of the matrix
-		glEnableVertexAttribArray(7);
-		glVertexAttribPointer(7, 4, GL_FLOAT, GL_FALSE, 4 * v4s, (void*)(2 * v4s));
-
-		//4 th colum of the matrix
-		glEnableVertexAttribArray(8);
-		glVertexAttribPointer(8, 4, GL_FLOAT, GL_FALSE, 4 * v4s, (void*)(3 * v4s));
-
-		//update atribute arrays, 3, 4, 5, 6 each instace 
-		glVertexAttribDivisor(5, 1);
-		glVertexAttribDivisor(6, 1);
-		glVertexAttribDivisor(7, 1);
-		glVertexAttribDivisor(8, 1);
-		glBindVertexArray(0);
-	}
-
+	//sphereVAO
+	unsigned int indexNum;
+	unsigned int instanceCount;
+	unsigned int sphereVAO = createInstancedSphereVAO(5, 5, instanceCount, indexNum);
+	
 	//-------------------
 	// SHADOW MAP TEXTURE
 	//-------------------
@@ -270,9 +220,11 @@ int main() {
 		glm::mat4 lightSpaceMatrix = lightProjection * lightView;
 
 		//draw the scene to the depth map
+		glCullFace(GL_FRONT);
 		shadowMapShader.use();
 		shadowMapShader.setMat4("lightSpaceMatrix", lightSpaceMatrix);
-		stormtrooper.DrawInstaced(shadowMapShader);
+		glBindVertexArray(sphereVAO);
+		glDrawElementsInstanced(GL_TRIANGLE_STRIP, indexNum, GL_UNSIGNED_INT, 0, instanceCount);
 		glCullFace(GL_BACK);
 
 		//--------------------------------------//
@@ -287,19 +239,21 @@ int main() {
 		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
 		glm::mat4 model = glm::mat4(1.0f);
 
-
 		//---------------
 		// DRAW THE MODEL
 		//---------------
 		glCullFace(GL_BACK);
-			mainObjShader.use();
-			mainObjShader.setVec3("lightPos", lightPosition);
-			mainObjShader.setVec3("viewPos", camera.Position);
-			mainObjShader.setVec3("lightColor", lightColor);
-			mainObjShader.setFloat("hasNormalMap", hasNormalMap);
-			setMatrices(mainObjShader, model, view, projection);
-			stormtrooper.DrawInstaced(mainObjShader);
+		mainObjShader.use();
+		mainObjShader.setVec3("lightPos", lightPosition);
+		mainObjShader.setVec3("viewPos", camera.Position);
+		mainObjShader.setVec3("lightColor", lightColor);
+		mainObjShader.setFloat("hasNormalMap", false);
+		setMatrices(mainObjShader, model, view, projection);
+		useTexture(0, cubeTexture);
+		glBindVertexArray(sphereVAO);
+		glDrawElementsInstanced(GL_TRIANGLE_STRIP, indexNum, GL_UNSIGNED_INT, 0, instanceCount);
 		glDisable(GL_CULL_FACE);
+			
 		//----------------------
 		// DRAW THE LIGHT SOURCE
 		//----------------------

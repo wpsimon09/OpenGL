@@ -112,3 +112,159 @@ unsigned int createVAOForTangentSpace(float data[], float numberOfComponents)
 	std::cout << "4 - bitangent vector (vec3)" << std::endl;
 	return VAO;
 }
+
+
+/// <summary>
+/// Creates VAO and EBO for sphere
+/// </summary>
+/// <returns>Vertex array object of sphere </returns>
+unsigned int createSphereVAO(unsigned int &indexNum)
+{
+	unsigned int sphereVAO;
+	unsigned int indexCount;
+	glGenVertexArrays(1, &sphereVAO);
+
+	unsigned int vbo, ebo;
+	glGenBuffers(1, &vbo);
+	glGenBuffers(1, &ebo);
+
+	std::vector<glm::vec3> positions;
+	std::vector<glm::vec2> uv;
+	std::vector<glm::vec3> normals;
+	std::vector<unsigned int> indices;
+
+	const unsigned int X_SEGMENTS = 64;
+	const unsigned int Y_SEGMENTS = 64;
+	const float PI = 3.14159265359f;
+	for (unsigned int x = 0; x <= X_SEGMENTS; ++x)
+	{
+		for (unsigned int y = 0; y <= Y_SEGMENTS; ++y)
+		{
+			float xSegment = (float)x / (float)X_SEGMENTS;
+			float ySegment = (float)y / (float)Y_SEGMENTS;
+			float xPos = std::cos(xSegment * 2.0f * PI) * std::sin(ySegment * PI);
+			float yPos = std::cos(ySegment * PI);
+			float zPos = std::sin(xSegment * 2.0f * PI) * std::sin(ySegment * PI);
+
+			positions.push_back(glm::vec3(xPos, yPos, zPos));
+			uv.push_back(glm::vec2(xSegment, ySegment));
+			normals.push_back(glm::vec3(xPos, yPos, zPos));
+		}
+	}
+
+	bool oddRow = false;
+	for (unsigned int y = 0; y < Y_SEGMENTS; ++y)
+	{
+		if (!oddRow) // even rows: y == 0, y == 2; and so on
+		{
+			for (unsigned int x = 0; x <= X_SEGMENTS; ++x)
+			{
+				indices.push_back(y * (X_SEGMENTS + 1) + x);
+				indices.push_back((y + 1) * (X_SEGMENTS + 1) + x);
+			}
+		}
+		else
+		{
+			for (int x = X_SEGMENTS; x >= 0; --x)
+			{
+				indices.push_back((y + 1) * (X_SEGMENTS + 1) + x);
+				indices.push_back(y * (X_SEGMENTS + 1) + x);
+			}
+		}
+		oddRow = !oddRow;
+	}
+	indexCount = static_cast<unsigned int>(indices.size());
+
+	std::vector<float> data;
+	for (unsigned int i = 0; i < positions.size(); ++i)
+	{
+		data.push_back(positions[i].x);
+		data.push_back(positions[i].y);
+		data.push_back(positions[i].z);
+		if (normals.size() > 0)
+		{
+			data.push_back(normals[i].x);
+			data.push_back(normals[i].y);
+			data.push_back(normals[i].z);
+		}
+		if (uv.size() > 0)
+		{
+			data.push_back(uv[i].x);
+			data.push_back(uv[i].y);
+		}
+	}
+	glBindVertexArray(sphereVAO);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(float), &data[0], GL_STATIC_DRAW);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
+	unsigned int stride = (3 + 2 + 3) * sizeof(float);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride, (void*)0);
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, stride, (void*)(3 * sizeof(float)));
+	glEnableVertexAttribArray(2);
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, stride, (void*)(6 * sizeof(float)));
+
+	indexNum = indexCount;
+	return sphereVAO;
+}
+
+
+unsigned int createInstancedSphereVAO(unsigned int rows, unsigned int columns, unsigned int& instanceCount, unsigned int& indexCount)
+{
+	unsigned int sphereVAO = createSphereVAO(indexCount);
+	glBindVertexArray(sphereVAO);
+	//----------------
+	// INSTANCED MODEL
+	//----------------
+	float currentHeight = 0.0f;
+
+	instanceCount = rows * columns;
+
+	std::vector<glm::mat4>modelMatrices;
+
+	for (int i = 0; i < rows; i++)
+	{
+		for (int j = 0; j < columns; j++)
+		{
+			glm::mat4 model = glm::mat4(1.0f);
+			model = glm::translate(model, glm::vec3(j * 3, 2.0f, currentHeight));
+			modelMatrices.push_back(model);
+		}
+
+		currentHeight += i + 3;
+	}
+
+	unsigned int instanceBuffer;
+	glGenBuffers(1, &instanceBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, instanceBuffer);
+	glBufferData(GL_ARRAY_BUFFER, (rows * columns) * sizeof(glm::mat4), &modelMatrices[0], GL_STATIC_DRAW);
+
+	std::size_t v4s = sizeof(glm::vec4);
+
+	// 1st colum of the matrix
+	glEnableVertexAttribArray(5);
+	glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, 4 * v4s, (void*)0);
+
+	//2 nd colum of the matrix
+	glEnableVertexAttribArray(6);
+	glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, 4 * v4s, (void*)(1 * v4s));
+
+	//3 rd colum of the matrix
+	glEnableVertexAttribArray(7);
+	glVertexAttribPointer(7, 4, GL_FLOAT, GL_FALSE, 4 * v4s, (void*)(2 * v4s));
+
+	//4 th colum of the matrix
+	glEnableVertexAttribArray(8);
+	glVertexAttribPointer(8, 4, GL_FLOAT, GL_FALSE, 4 * v4s, (void*)(3 * v4s));
+
+	//update atribute arrays, 3, 4, 5, 6 each instace 
+	glVertexAttribDivisor(5, 1);
+	glVertexAttribDivisor(6, 1);
+	glVertexAttribDivisor(7, 1);
+	glVertexAttribDivisor(8, 1);
+	glBindVertexArray(0);
+
+	return sphereVAO;
+}
