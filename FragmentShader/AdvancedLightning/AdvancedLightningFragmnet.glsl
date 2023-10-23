@@ -1,7 +1,7 @@
 #version 330 core
 
 in VS_OUT {
-     vec3 FragPos;
+    vec3 FragPos;
     vec3 Normal;
     vec2 TexCoords;
     vec4 FragPosLight;
@@ -19,7 +19,6 @@ uniform sampler2D texture_diffuse0;
 uniform sampler2D texture_normal0;
 uniform sampler2D texture_specular0;
 
-uniform sampler2D shadowMap;
 uniform vec3 lightColor;
 
 void main() 
