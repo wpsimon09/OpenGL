@@ -41,7 +41,7 @@ float hasNormalMap = 1.0f;
 float deltaTime = 0.0f;	// time between current frame and last frame
 float lastFrame = 0.0f;
 
-glm::vec3 lightColor = colorOf(241.0f, 180.0f, 87.0f);
+glm::vec3 lightColor = COLOR_SUN;
 
 bool isLightBlinn = true;
 
@@ -100,7 +100,7 @@ int main() {
 
 	Shader mainObjShader("VertexShader/AdvancedLightning/AdvancedLightningVertex.glsl", "FragmentShader/AdvancedLightning/AdvancedLightningFragmnet.glsl", "main");
 
-	Shader PBRShader("VertexShader/PBR/PBRVertex.glsl", "FragmentShader/PBR/PBRFragment.glsl", "PBR shader");
+	Shader PBRShader("VertexShader/PBR/PBRVertexInstanced.glsl", "FragmentShader/PBR/PBRFragment.glsl", "PBR shader");
 
 	Shader lightSourceShader("VertexShader/AdvancedLightning/LightSourceVertex.glsl", "FragmentShader/AdvancedLightning/LightSourceFragment.glsl", "light sourece");
 
@@ -253,7 +253,7 @@ int main() {
 		PBRShader.setVec3("camPos", camera.Position);
 		PBRShader.setVec3("lightPositions[0]", lightPosition);
 		PBRShader.setVec3("lightColors[0]", glm::vec3(300.0f, 300.0f, 300.0f));
-		PBRShader.setFloat("roughness", 0.7f);
+		PBRShader.setFloat("roughness", 0.2f);
 		PBRShader.setFloat("metallic", 2.8);
 		setMatrices(PBRShader, model, view, projection);
 		glBindVertexArray(sphereVAO);

@@ -229,11 +229,12 @@ unsigned int createInstancedSphereVAO(unsigned int rows, unsigned int columns, u
 		for (int j = 0; j < columns; j++)
 		{
 			glm::mat4 model = glm::mat4(1.0f);
-			model = glm::translate(model, glm::vec3(j * 3, currentHeight, 0.0));
+			model = glm::translate(model, glm::vec3(j + 1.5, currentHeight, 0.0));
+			model = glm::scale(model, glm::vec3(0.4f));
 			modelMatrices.push_back(model);
 		}
 
-		currentHeight += i + 3;
+		currentHeight = i;
 	}
 
 	unsigned int instanceBuffer;

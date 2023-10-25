@@ -1,15 +1,5 @@
-This chapter is describing the different approach of the 
-rendering lightning 
+This chapter explained what Physics Based Rendering or PBR is and how it is calculated using rendering equation. 
 
-Instead of passing information to the lightnign calculations throuth the 
-vertex shader 
+First part of the chapter was focused on direction light wich was defined by us and not by the enviroment
 
-We will use the gBuffer which is the frame buffer where the input variables that are neccessary for the 
-lightning calculations are stored as the sepparate textures (position, normals and color) 
-
-When drawing the final output of the pipline we will calculate the light by sampling those texture 
-and use those sampled values as the input to the lightning calcualtions
-
-With this approach we can render lot of lights without consuming a lot of preformance 
-
-![Alt text](Assets/ReadmeImages/DefferedShading/deffered-shading.png)
+![Alt text](Assets/ReadmeImages/PBR/pbrLight.png)
