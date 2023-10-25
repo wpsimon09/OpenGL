@@ -250,15 +250,12 @@ int main() {
 		//-----------------
 		glCullFace(GL_BACK);
 		PBRShader.use();
-		
-		
-		mainObjShader.use();
-		mainObjShader.setVec3("lightPos", lightPosition);
-		mainObjShader.setVec3("viewPos", camera.Position);
-		mainObjShader.setVec3("lightColor", lightColor);
-		mainObjShader.setFloat("hasNormalMap", false);
-		setMatrices(mainObjShader, model, view, projection);
-		useTexture(0, cubeTexture);
+		PBRShader.setVec3("camPos", camera.Position);
+		PBRShader.setVec3("lightPositions[0]", lightPosition);
+		PBRShader.setVec3("lightColors[0]", glm::vec3(300.0f, 300.0f, 300.0f));
+		PBRShader.setFloat("roughness", 0.7f);
+		PBRShader.setFloat("metallic", 2.8);
+		setMatrices(PBRShader, model, view, projection);
 		glBindVertexArray(sphereVAO);
 		glDrawElementsInstanced(GL_TRIANGLE_STRIP, indexNum, GL_UNSIGNED_INT, 0, instanceCount);
 		glDisable(GL_CULL_FACE);
