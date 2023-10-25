@@ -218,7 +218,7 @@ unsigned int createInstancedSphereVAO(unsigned int rows, unsigned int columns, u
 	//----------------
 	// INSTANCED MODEL
 	//----------------
-	float currentHeight = 0.0f;
+	float currentHeight = 1.0f;
 
 	instanceCount = rows * columns;
 
@@ -229,7 +229,7 @@ unsigned int createInstancedSphereVAO(unsigned int rows, unsigned int columns, u
 		for (int j = 0; j < columns; j++)
 		{
 			glm::mat4 model = glm::mat4(1.0f);
-			model = glm::translate(model, glm::vec3(j * 3, 2.0f, currentHeight));
+			model = glm::translate(model, glm::vec3(j * 3, currentHeight, 0.0));
 			modelMatrices.push_back(model);
 		}
 

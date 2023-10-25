@@ -188,6 +188,7 @@
     <None Include="FragmentShader\FloorFragment.glsl" />
     <None Include="FragmentShader\FragmentShader.glsl" />
     <None Include="FragmentShader\LightFragmentShader.glsl" />
+    <None Include="FragmentShader\PBR\PBRFragment.glsl" />
     <None Include="VertexShader\AdvancedLightning\AdvancedLightningVertex.glsl" />
     <None Include="VertexShader\AdvancedLightning\FinalVertex.glsl" />
     <None Include="VertexShader\AdvancedLightning\gBufferVertex.glsl" />
@@ -197,6 +198,7 @@
     <None Include="VertexShader\DepthTestingVertex.glsl" />
     <None Include="VertexShader\FloorVertex.glsl" />
     <None Include="VertexShader\LightVertexShader.glsl" />
+    <None Include="VertexShader\PBR\PBRVertex.glsl" />
     <None Include="VertexShader\VertexShader.glsl" />
   </ItemGroup>
   <ItemGroup>

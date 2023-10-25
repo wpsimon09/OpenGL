@@ -100,6 +100,8 @@ int main() {
 
 	Shader mainObjShader("VertexShader/AdvancedLightning/AdvancedLightningVertex.glsl", "FragmentShader/AdvancedLightning/AdvancedLightningFragmnet.glsl", "main");
 
+	Shader PBRShader("VertexShader/PBR/PBRVertex.glsl", "FragmentShader/PBR/PBRFragment.glsl", "PBR shader");
+
 	Shader lightSourceShader("VertexShader/AdvancedLightning/LightSourceVertex.glsl", "FragmentShader/AdvancedLightning/LightSourceFragment.glsl", "light sourece");
 
 	Shader shadowMapShader("VertexShader/AdvancedLightning/ShadowMapVertex.glsl", "FragmentShader/AdvancedLightning/ShadowMapFragement.glsl", "shadow map");
@@ -183,6 +185,10 @@ int main() {
 	lightSourceShader.use();
 	lightSourceShader.setInt("lightTexture", 0);
 
+	PBRShader.use();
+	PBRShader.setVec3("albedo", glm::vec3(0.5f, 0.0f, 0.0f));
+	PBRShader.setFloat("ao", 1.0f);
+
 	//===================================== RENDER LOOP ================================================//
 
 	while (!glfwWindowShouldClose(window))
@@ -239,10 +245,13 @@ int main() {
 		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
 		glm::mat4 model = glm::mat4(1.0f);
 
-		//---------------
-		// DRAW THE MODEL
-		//---------------
+		//----------------
+		// DRAW THE SPHERES
+		//-----------------
 		glCullFace(GL_BACK);
+		PBRShader.use();
+		
+		
 		mainObjShader.use();
 		mainObjShader.setVec3("lightPos", lightPosition);
 		mainObjShader.setVec3("viewPos", camera.Position);
