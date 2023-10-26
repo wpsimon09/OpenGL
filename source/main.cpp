@@ -172,7 +172,7 @@ int main() {
 	lightSourceShader.setInt("lightTexture", 0);
 
 	PBRShader.use();
-	PBRShader.setVec3("albedo", glm::vec3(0.5f, 0.0f, 0.0f));
+	PBRShader.setVec3("albedo", colorOf(255.0f, 0.0f, 245.0f));
 	PBRShader.setFloat("ao", 1.0f);
 
 	glm::vec3 lightPositions[] = {
@@ -288,22 +288,34 @@ int main() {
 			}
 		}
 
+		//set light properties
+		for (unsigned int i = 0; i < 5; ++i)
+		{
+			PBRShader.use();
+			if (i<=4)
+			{
+				PBRShader.setVec3("lightPositions[" + std::to_string(i) + "]", lightPositions[i]);
+				PBRShader.setVec3("lightColors[" + std::to_string(i) + "]", lightColors[i]);
+			}
+			else
+			{
+				PBRShader.setVec3("lightPositions[" + std::to_string(i) + "]", lightPosition);
+				PBRShader.setVec3("lightColors[" + std::to_string(i) + "]", lightColor);
+			}
+			
+		}
 
-		//----------------------
-		// DRAW THE LIGHT SOURCE
-		//----------------------
+
+		//-----------------------
+		// DRAW THE LIGHT SOURCES
+		//-----------------------
 		lightSourceShader.use();
 		model = glm::mat4(1.0f);
 		model = glm::translate(model, lightPosition);
 		
 		for (unsigned int i = 0; i < 4; ++i)
 		{
-			glm::vec3 newPos = lightPositions[i] + glm::vec3(sin(glfwGetTime() * 5.0) * 5.0, 0.0, 0.0);
-			newPos = lightPositions[i];
-			PBRShader.use();
-			PBRShader.setVec3("lightPositions[" + std::to_string(i) + "]", newPos);
-			PBRShader.setVec3("lightColors[" + std::to_string(i) + "]", lightColors[i]);
-
+			glm::vec3 newPos = lightPositions[i];
 			model = glm::mat4(1.0f);
 			model = glm::translate(model, newPos);
 			model = glm::scale(model, glm::vec3(0.5f));
