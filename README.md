@@ -20,11 +20,11 @@ Each branch is covering one chapter in the book and I used the following naming
 
 or
 
-`advanced-lightning-shadow-mapping`
+`advanced-lightning-name-of-the-chapter`
 
 or
 
-`PBR-light`
+`PBR-name-of-the-chapter`
 
 With this approach, I can see different results of the chapter simply just by checking out to the different branch
 
