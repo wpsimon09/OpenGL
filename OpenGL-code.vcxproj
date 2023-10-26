@@ -158,6 +158,7 @@
     <ClInclude Include="Includes\Light.h" />
     <ClInclude Include="Includes\Mesh.h" />
     <ClInclude Include="Includes\Model.h" />
+    <ClInclude Include="Includes\PBRTextureLoader.h" />
     <ClInclude Include="Includes\Shader.h" />
     <ClInclude Include="Includes\stb_image.h" />
     <ClInclude Include="Includes\VaoCreation.h" />
@@ -189,6 +190,7 @@
     <None Include="FragmentShader\FragmentShader.glsl" />
     <None Include="FragmentShader\LightFragmentShader.glsl" />
     <None Include="FragmentShader\PBR\PBRFragment.glsl" />
+    <None Include="FragmentShader\PBR\PBRFragmentTextures.glsl" />
     <None Include="VertexShader\AdvancedLightning\AdvancedLightningVertex.glsl" />
     <None Include="VertexShader\AdvancedLightning\FinalVertex.glsl" />
     <None Include="VertexShader\AdvancedLightning\gBufferVertex.glsl" />
@@ -257,6 +259,10 @@
     <Image Include="Assets\Textures\DepthTesting\marble.jpg" />
     <Image Include="Assets\Textures\DepthTesting\metal.png" />
     <Image Include="Assets\Textures\matrix.jpg" />
+    <Image Include="Assets\Textures\PBR\RustedIron\rustediron2_basecolor.png" />
+    <Image Include="Assets\Textures\PBR\RustedIron\rustediron2_metallic.png" />
+    <Image Include="Assets\Textures\PBR\RustedIron\rustediron2_normal.png" />
+    <Image Include="Assets\Textures\PBR\RustedIron\rustediron2_roughness.png" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\Model\backpack\backpack.obj">

@@ -14,6 +14,7 @@
 #include "DrawingFunctions.h"
 #include "VaoCreation.h"
 #include "Model.h"
+#include "PBRTextureLoader.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
@@ -164,6 +165,24 @@ int main() {
 	unsigned int normalMap = loadTexture("Assets/Textures/AdvancedLightning/brickwall_normal.jpg", false);
 	unsigned int floorNormalMap = loadTexture("Assets/Textures/AdvancedLightning/floor_normal.jpg", false);
 
+	//--------------------
+	//PBR TEXTURES LOADING
+	//--------------------
+	std::vector<PBRTexture> pbrTextures;
+	PBRTexture albedo("Assets/Textures/PBR/RustedIron/rustediron2_basecolor.png", ALBEDO);
+	pbrTextures.push_back(albedo);
+
+	PBRTexture metallic("Assets/Textures/PBR/RustedIron/rustediron2_metallic.png", METALLIC);
+	pbrTextures.push_back(metallic);
+
+	PBRTexture normal("Assets/Textures/PBR/RustedIron/rustediron2_normal.png", NORMAL);
+	pbrTextures.push_back(normal);
+
+	PBRTexture roughness("Assets/Textures/PBR/RustedIron/rustediron2_roughness.png", ROUGHNESS);
+	pbrTextures.push_back(roughness);
+
+	PBRTextures loadedPbrTextures(pbrTextures, PBRShader);
+
 	floorShader.use();
 	floorShader.setInt("texture_diffuse0", 0);
 	floorShader.setInt("shadowMap", 1);
@@ -172,7 +191,7 @@ int main() {
 	lightSourceShader.setInt("lightTexture", 0);
 
 	PBRShader.use();
-	PBRShader.setVec3("albedo", colorOf(255.0f, 0.0f, 245.0f));
+	PBRShader.setVec3("albedo", colorOf(255.0f, 210.0f, 0.0f));
 	PBRShader.setFloat("ao", 1.0f);
 
 	glm::vec3 lightPositions[] = {

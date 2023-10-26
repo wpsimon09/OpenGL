@@ -23,7 +23,7 @@ glm::vec3 colorOf(float r, float g, float b) {
 }
 
 
-unsigned int loadTexture(char const* path, bool gammaCorrection)
+unsigned int loadTexture(const char *path, bool gammaCorrection)
 {
 	unsigned int textureID;
 	glGenTextures(1, &textureID);
