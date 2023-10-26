@@ -18,6 +18,14 @@ Each branch is covering one chapter in the book and I used the following naming
 
 `advance-opengl-name-of-the-chapter`
 
+or
+
+`advanced-lightning-name-of-the-chapter`
+
+or
+
+`PBR-name-of-the-chapter`
+
 With this approach, I can see different results of the chapter simply just by checking out to the different branch
 
 **README** of each branch will contain screenshots of the scene that will be showing different outcomes of different rendering techniques 
@@ -25,6 +33,16 @@ With this approach, I can see different results of the chapter simply just by ch
 # Scene
 
 In the scene, you are able to move around with your mouse and with W, A, S, D
+
+
+You are also able to move light
+- up and down arrows move light along z-axis
+
+- left and right arrows move light along x-axis
+
+- left shift move light up
+
+- left control move light down
 
 # Building
 
