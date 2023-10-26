@@ -41,15 +41,15 @@ public:
 			switch (textures[i].type)
 			{
 			case ALBEDO:
-				this->albedo = loadTexture(textures[i].path.c_str(), false);
+				this->albedo = loadTexture(textures[i].path.c_str(), true);
 			case METALLIC:
-				this->metallic = loadTexture(textures[i].path.c_str(), false);
+				this->metallic = loadTexture(textures[i].path.c_str(), true);
 			case ROUGHNESS:
-				this->roughness = loadTexture(textures[i].path.c_str(), false);
+				this->roughness = loadTexture(textures[i].path.c_str(), true);
 			case NORMAL:
-				this->normal = loadTexture(textures[i].path.c_str(), false);
+				this->normal = loadTexture(textures[i].path.c_str(), true);
 			case AO:
-				this->ao = loadTexture(textures[i].path.c_str(), false);
+				this->ao = loadTexture(textures[i].path.c_str(), true);
 			default:
 				break;
 			}

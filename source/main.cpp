@@ -89,7 +89,7 @@ int main() {
 
 	Shader mainObjShader("VertexShader/AdvancedLightning/AdvancedLightningVertex.glsl", "FragmentShader/AdvancedLightning/AdvancedLightningFragmnet.glsl", "main");
 
-	Shader PBRShader("VertexShader/PBR/PBRVertex.glsl", "FragmentShader/PBR/PBRFragment.glsl", "PBR shader");
+	Shader PBRShader("VertexShader/PBR/PBRVertex.glsl", "FragmentShader/PBR/PBRFragmentTextures.glsl", "PBR shader");
 
 	Shader lightSourceShader("VertexShader/AdvancedLightning/LightSourceVertex.glsl", "FragmentShader/AdvancedLightning/LightSourceFragment.glsl", "light sourece");
 
@@ -180,6 +180,9 @@ int main() {
 
 	PBRTexture roughness("Assets/Textures/PBR/RustedIron/rustediron2_roughness.png", ROUGHNESS);
 	pbrTextures.push_back(roughness);
+	
+	PBRTexture ao("Assets/Textures/PBR/RustedIron/rustediron2_roughness.png", AO);
+	pbrTextures.push_back(ao);
 
 	PBRTextures loadedPbrTextures(pbrTextures, PBRShader);
 
@@ -291,11 +294,8 @@ int main() {
 
 		for (int row = 0; row < nrRows; ++row)
 		{
-			PBRShader.setFloat("metallic", (float)row / (float)nrRows);
 			for (int col = 0; col < nrColumns; ++col)
 			{
-				PBRShader.setFloat("roughness", glm::clamp((float)col / (float)nrColumns, 0.05f, 1.0f));
-
 				model = glm::mat4(1.0f);
 
 				model = glm::translate(model, glm::vec3(
@@ -303,6 +303,7 @@ int main() {
 					(row - (nrRows / 2)) * spacing,
 					0.0f
 				));
+				loadedPbrTextures.useTextures();
 				DrawSphere(PBRShader, model, view, projection, sphereVAO, indexNum);
 			}
 		}

@@ -25,6 +25,24 @@ uniform vec3 camPos;
 
 const float PI = 3.14159265359;
 
+
+vec3 getNormalFromMap()
+{
+    vec3 tangentNormal = texture(_normalMap, fs_in.TexCoords).xyz * 2.0 - 1.0;
+
+    vec3 Q1  = dFdx(fs_in.FragPos);
+    vec3 Q2  = dFdy(fs_in.FragPos);
+    vec2 st1 = dFdx(fs_in.TexCoords);
+    vec2 st2 = dFdy(fs_in.TexCoords);
+
+    vec3 N   = normalize(fs_in.Normal);
+    vec3 T  = normalize(Q1*st2.t - Q2*st1.t);
+    vec3 B  = -normalize(cross(N, T));
+    mat3 TBN = mat3(T, B, N);
+
+    return normalize(TBN * tangentNormal);
+}
+
 // caclulate how much light geths reflected vs how much light gets refracted
 //cosThete = angle we are looking at the surface
 //F0 = how much surface reflects when looking directly at it (big database)
@@ -83,11 +101,11 @@ float GeometrySmith(vec3 N, vec3 V, vec3 L, float roughness)
 
 void main()
 {
-    vec3 albedo = pow(texture(_albedoMap, fs_in.TexCoords).rgb, 2.2);
-    vec3 normal = texture(_normalMap, fs_in.TexCoords).rgb;
-    float metallic;
-    float roughness;
-    float ao;
+    vec3 albedo = pow(texture(_albedoMap, fs_in.TexCoords).rgb, vec3(2.2));
+    vec3 normal = getNormalFromMap();
+    float metallic = texture(_metallnesMap, fs_in.TexCoords).r;
+    float roughness = texture(_roughnessMap, fs_in.TexCoords).r;
+    float ao = texture(_aoMap, fs_in.TexCoords).r;
 
     //normal
     vec3 N = normalize(normal);
@@ -150,5 +168,6 @@ void main()
     // gamma corection
     color = pow(color,vec3(1.0/2.2));
 
+    //todo go over every texture to see which one is off
     FragColor = vec4(color, 1.0);
 }
