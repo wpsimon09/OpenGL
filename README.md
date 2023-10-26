@@ -6,4 +6,4 @@ First part of the chapter was focused on direction light wich was defined by us 
 ![Alt text](Assets/ReadmeImages/PBR/pbrLight.png)
 
 > PBR with 5 lights and different Metallic and Roughness properties per sphere 
-![Alt text](image.png)
+![Alt text](Assets/ReadmeImages/PBR/pbrLight-multiple-values.png)
