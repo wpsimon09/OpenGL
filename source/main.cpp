@@ -437,27 +437,6 @@ int main() {
 		glCullFace(GL_BACK);
 		setMatrices(gBufferShader, model, view, projection);
 		stormtrooper.Draw(gBufferShader);
-	
-		//----------
-		// DRAW WALL
-		//----------
-		glDisable(GL_CULL_FACE);
-		useTexture(lastTexutreUsed() + 1, defaultTexture);
-		model = glm::mat4(1.0f);
-		model = glm::translate(model, glm::vec3(-2.0f, 0.0f, -2.0f));
-		model = glm::scale(model, glm::vec3(5.0f));
-		gBufferShader.setFloat("hasNormalMap", false);
-		DrawPlane(gBufferShader, model, view, projection, wallVAO, GL_TRIANGLES);
-
-		//----------------------
-		// DRAW PLANE AS A FLOOR
-		//----------------------
-		gBufferShader.use();
-		useTexture(lastTexutreUsed() + 2, floorTexture);
-		model = glm::mat4(1.0f);
-		gBufferShader.setFloat("hasNormalMap", false);
-		DrawPlane(gBufferShader, model, view, projection, floorVAO);
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 		//--------------------------------------//
 		//-------------- SSAO PASS ------------//

@@ -70,7 +70,7 @@ void main()
     // retrieve data from gbuffer
     vec3 FragPos = texture(gPosition, TexCoords).rgb;
     vec3 Normal = texture(gNormal, TexCoords).rgb;
-    vec3 Diffuse = texture(gAlbedoSpec, TexCoords).rgb ;
+    vec3 Diffuse = vec3(0.4,0.4,0.4); //texture(gAlbedoSpec, TexCoords).rgb ;
     float Specular = texture(gAlbedoSpec, TexCoords).a; //0.0
     vec4 FragPosLight = lightMatrix * vec4(FragPos, 1.0); //fragment postition
     float SSAOEffect = texture(ssaoEffect, TexCoords).r;

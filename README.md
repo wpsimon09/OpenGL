@@ -4,6 +4,8 @@ It is trying to simulate how does light shatter in the corners or holes
 
 However its not as noticable effect it can add a lot realism to the scene 
 
-![Alt text](/Assets/ReadmeImages/SSAO/SSAO.png);
+>SSAO off
+![Alt text](Assets/ReadmeImages/SSAO/ssao0FF.png)
 
-TODO: fix remaining artifacts
+>SSAO on
+![Alt text](Assets/ReadmeImages/SSAO/ssaoOn.png)
