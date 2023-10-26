@@ -22,6 +22,10 @@ or
 
 `advanced-lightning-shadow-mapping`
 
+or
+
+`PBR-light`
+
 With this approach, I can see different results of the chapter simply just by checking out to the different branch
 
 **README** of each branch will contain screenshots of the scene that will be showing different outcomes of different rendering techniques 
