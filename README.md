@@ -48,5 +48,5 @@ Contains rendered model using Assimp with Phong lighting model that has a blueis
 
 Light sources are: point light, direction light 
 
-![Alt text](Assets/Readme%20images/endOfBasicOpenGL.png)
+![Alt text](Assets/ReadmeImages/endOfBasicOpenGL.png)
 
