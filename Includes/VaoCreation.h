@@ -210,7 +210,14 @@ unsigned int createSphereVAO(unsigned int &indexNum)
 	return sphereVAO;
 }
 
-
+/// <summary>
+/// Creates VAO for sphere that will be rendered instaced in a grid
+/// </summary>
+/// <param name="rows">Number of rows in the grid</param>
+/// <param name="columns">Number of colums in the grid</param>
+/// <param name="instanceCount">Number of instaces</param>
+/// <param name="indexCount">Index count for rendering with EBO</param>
+/// <returns>Created VAO instance of the sphere</returns>
 unsigned int createInstancedSphereVAO(unsigned int rows, unsigned int columns, unsigned int& instanceCount, unsigned int& indexCount)
 {
 	unsigned int sphereVAO = createSphereVAO(indexCount);

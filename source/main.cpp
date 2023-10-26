@@ -26,8 +26,8 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 
 //screen coordinates
-int SCR_WIDTH = 1000;
-int SCR_HEIGHT = 800;
+int SCR_WIDTH = 1800;
+int SCR_HEIGHT = 1600;
 
 // camera
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
@@ -49,18 +49,6 @@ bool isLightBlinn = true;
 //light possition
 glm::vec3 lightPosition(0.0f, 2.0f, -1.0f);
 
-glm::vec3 pointLightPositions[] = {
-glm::vec3(0.7f, 0.2f, 2.0f),
-glm::vec3(2.3f, -3.3f, -4.0f),
-glm::vec3(-4.0f, 2.0f, -12.0f),
-glm::vec3(0.0f, 0.0f, -3.0f)
-};
-
-glm::vec3 cubePostions[] = {
-	glm::vec3(-0.2f, 1.0f, 0.0),
-	glm::vec3(3.0f, 0.0f, 3.0),
-	glm::vec3(-1.0f, 0.0f, 2.0)
-};
 
 int main() {
 	glfwInit();
@@ -100,7 +88,7 @@ int main() {
 
 	Shader mainObjShader("VertexShader/AdvancedLightning/AdvancedLightningVertex.glsl", "FragmentShader/AdvancedLightning/AdvancedLightningFragmnet.glsl", "main");
 
-	Shader PBRShader("VertexShader/PBR/PBRVertexInstanced.glsl", "FragmentShader/PBR/PBRFragment.glsl", "PBR shader");
+	Shader PBRShader("VertexShader/PBR/PBRVertex.glsl", "FragmentShader/PBR/PBRFragment.glsl", "PBR shader");
 
 	Shader lightSourceShader("VertexShader/AdvancedLightning/LightSourceVertex.glsl", "FragmentShader/AdvancedLightning/LightSourceFragment.glsl", "light sourece");
 
@@ -111,8 +99,6 @@ int main() {
 	Shader gBufferShader("VertexShader/AdvancedLightning/gBufferVertex.glsl", "FragmentShader/AdvancedLightning/gBufferFragment.glsl", "gBuffer");
 
 	Shader finalShaderStage("VertexShader/AdvancedLightning/FinalVertex.glsl", "FragmentShader/AdvancedLightning/FinalFragment.glsl", "final shader");
-
-	Model stormtrooper("Assets/Model/stormtrooper/stormtrooper.obj", totalAmount);
 	
 	stbi_set_flip_vertically_on_load(true);
 
@@ -131,13 +117,13 @@ int main() {
 	//sphereVAO
 	unsigned int indexNum;
 	unsigned int instanceCount;
-	unsigned int sphereVAO = createInstancedSphereVAO(5, 5, instanceCount, indexNum);
+	unsigned int sphereVAO = createSphereVAO(indexNum);
 	
 	//-------------------
 	// SHADOW MAP TEXTURE
 	//-------------------
 	//resolution of the depth map
-	const unsigned int SHADOW_HEIGHT = 2024, SHADOW_WIDTH = 2024;
+	const unsigned int SHADOW_HEIGHT = 1980, SHADOW_WIDTH = 1980;
 	unsigned int depthMap;
 	glGenTextures(1, &depthMap);
 	glBindTexture(GL_TEXTURE_2D, depthMap);
@@ -189,6 +175,22 @@ int main() {
 	PBRShader.setVec3("albedo", glm::vec3(0.5f, 0.0f, 0.0f));
 	PBRShader.setFloat("ao", 1.0f);
 
+	glm::vec3 lightPositions[] = {
+		glm::vec3(-10.0f,  10.0f, 10.0f),
+		glm::vec3(10.0f,  10.0f, 10.0f),
+		glm::vec3(-10.0f, -10.0f, 10.0f),
+		glm::vec3(10.0f, -10.0f, 10.0f),
+	};
+	glm::vec3 lightColors[] = {
+		glm::vec3(300.0f, 300.0f, 300.0f),
+		glm::vec3(300.0f, 300.0f, 300.0f),
+		glm::vec3(300.0f, 300.0f, 300.0f),
+		glm::vec3(300.0f, 300.0f, 300.0f)
+	};
+	int nrRows = 7;
+	int nrColumns = 7;
+	float spacing = 2.5;
+
 	//===================================== RENDER LOOP ================================================//
 
 	while (!glfwWindowShouldClose(window))
@@ -215,7 +217,7 @@ int main() {
 		// configure projection matrix
 		float nearPlane, farPlane;
 		nearPlane = 1.0f;
-		farPlane = 25.0f;
+		farPlane = 75.0f;
 		glm::mat4 lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, nearPlane, farPlane);
 
 		//configure view matrix
@@ -225,12 +227,28 @@ int main() {
 		// in the notes as T 
 		glm::mat4 lightSpaceMatrix = lightProjection * lightView;
 
+		glm::mat4 lightModel = glm::mat4(1.0f);
+		lightModel = glm::scale(lightModel, glm::vec3(6.0f));
 		//draw the scene to the depth map
 		glCullFace(GL_FRONT);
 		shadowMapShader.use();
-		shadowMapShader.setMat4("lightSpaceMatrix", lightSpaceMatrix);
-		glBindVertexArray(sphereVAO);
-		glDrawElementsInstanced(GL_TRIANGLE_STRIP, indexNum, GL_UNSIGNED_INT, 0, instanceCount);
+		for (int row = 0; row < nrRows; ++row)
+		{
+			PBRShader.setFloat("metallic", (float)row / (float)nrRows);
+			for (int col = 0; col < nrColumns; ++col)
+			{
+				PBRShader.setFloat("roughness", glm::clamp((float)col / (float)nrColumns, 0.05f, 1.0f));
+
+				lightModel = glm::mat4(1.0f);
+
+				lightModel = glm::translate(lightModel, glm::vec3(
+					(col - (nrColumns / 2)) * spacing,
+					(row - (nrRows / 2)) * spacing,
+					0.0f
+				));
+				DrawSphere(PBRShader, lightModel, lightView, lightProjection, sphereVAO, indexNum);
+			}
+		}
 		glCullFace(GL_BACK);
 
 		//--------------------------------------//
@@ -239,7 +257,7 @@ int main() {
 		glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		glClearColor(0.101f, 0.101f, 0.101f, 1.0f);
+		glClearColor(0.01f, 0.01f, 0.01f, 1.0f);
 		
 		glm::mat4 view = camera.GetViewMatrix();
 		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
@@ -251,25 +269,63 @@ int main() {
 		glCullFace(GL_BACK);
 		PBRShader.use();
 		PBRShader.setVec3("camPos", camera.Position);
-		PBRShader.setVec3("lightPositions[0]", lightPosition);
-		PBRShader.setVec3("lightColors[0]", glm::vec3(300.0f, 300.0f, 300.0f));
-		PBRShader.setFloat("roughness", 0.2f);
-		PBRShader.setFloat("metallic", 2.8);
-		setMatrices(PBRShader, model, view, projection);
-		glBindVertexArray(sphereVAO);
-		glDrawElementsInstanced(GL_TRIANGLE_STRIP, indexNum, GL_UNSIGNED_INT, 0, instanceCount);
-		glDisable(GL_CULL_FACE);
-			
+
+		for (int row = 0; row < nrRows; ++row)
+		{
+			PBRShader.setFloat("metallic", (float)row / (float)nrRows);
+			for (int col = 0; col < nrColumns; ++col)
+			{
+				PBRShader.setFloat("roughness", glm::clamp((float)col / (float)nrColumns, 0.05f, 1.0f));
+
+				model = glm::mat4(1.0f);
+
+				model = glm::translate(model, glm::vec3(
+					(col - (nrColumns / 2)) * spacing,
+					(row - (nrRows / 2)) * spacing,
+					0.0f
+				));
+				DrawSphere(PBRShader, model, view, projection, sphereVAO, indexNum);
+			}
+		}
+
+
 		//----------------------
 		// DRAW THE LIGHT SOURCE
 		//----------------------
 		lightSourceShader.use();
 		model = glm::mat4(1.0f);
 		model = glm::translate(model, lightPosition);
+		
+		for (unsigned int i = 0; i < 4; ++i)
+		{
+			glm::vec3 newPos = lightPositions[i] + glm::vec3(sin(glfwGetTime() * 5.0) * 5.0, 0.0, 0.0);
+			newPos = lightPositions[i];
+			PBRShader.use();
+			PBRShader.setVec3("lightPositions[" + std::to_string(i) + "]", newPos);
+			PBRShader.setVec3("lightColors[" + std::to_string(i) + "]", lightColors[i]);
+
+			model = glm::mat4(1.0f);
+			model = glm::translate(model, newPos);
+			model = glm::scale(model, glm::vec3(0.5f));
+			lightSourceShader.use();
+			lightSourceShader.setMat4("model", model);
+			lightSourceShader.setVec3("lightColor", lightColors[i]);
+			useTexture(0, pointLightTexture);
+			DrawPlane(lightSourceShader, model, view, projection, lightVAO);
+		}
+
+		PBRShader.use();
+		PBRShader.setVec3("lightPositions[4]", lightPosition);
+		PBRShader.setVec3("lightColors[4]", lightColors[1]);
+
+		model = glm::mat4(1.0f);
+		model = glm::translate(model, lightPosition);
+		model = glm::scale(model, glm::vec3(0.5f));
+		lightSourceShader.use();
+		lightSourceShader.setMat4("model", model);
 		lightSourceShader.setVec3("lightColor", lightColor);
 		useTexture(0, dirLightTexture);
-		setMatrices(lightSourceShader, model, projection, view);
-		DrawPlane(lightSourceShader, model, view, projection, lightVAO);
+		DrawPlane(lightSourceShader, model, view, projection, lightVAO);	
 
 		//----------------------
 		// DRAW PLANE AS A FLOOR
@@ -278,6 +334,7 @@ int main() {
 		useTexture(0, floorTexture);
 		useTexture(1, depthMap);
 		model = glm::mat4(1.0f);
+		model = glm::translate(model, glm::vec3(0.0f, -10.0f, 0.0f));
 		floorShader.setMat4("lightMatrix", lightSpaceMatrix);
 		floorShader.setVec3("lightPos", lightPosition);
 		floorShader.setVec3("lightColor", lightColor);

@@ -11,8 +11,8 @@ in VS_OUT {
     float hasNormalMap;
 }fs_in;
 
-uniform vec3 lightPositions[4];
-uniform vec3 lightColors[4];
+uniform vec3 lightPositions[5];
+uniform vec3 lightColors[5];
 uniform vec3 camPos;
 
 uniform vec3 albedo;
@@ -93,7 +93,7 @@ void main()
     //result
     vec3 Lo = vec3(0.0);
 
-    for(int i = 0; i<1 ; i++)
+    for(int i = 0; i<5 ; i++)
     {
         //light direction
         vec3 L = normalize(lightPositions[i] - fs_in.FragPos);

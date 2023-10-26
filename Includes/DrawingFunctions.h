@@ -92,3 +92,27 @@ void DrawShadowMapPlane(Shader shader, glm::mat4 model, unsigned int VAO)
 	glBindVertexArray(0);
 }
 
+/// <summary>
+/// Draws a sphere with instanced approach
+/// </summary>
+/// <param name="shader">Shader to use for rendering</param>
+/// <param name="view">View matrix to transform to view space</param>
+/// <param name="projection">Projection matrix to trasform to clip space</param>
+/// <param name="VAO">Vertex array object to render</param>
+/// <param name="indexNum">Number of inecies</param>
+/// <param name="instanceCount">Number of instance we are goign to render</param>
+void DrawSphereInstanced(Shader shader, glm::mat4 view, glm::mat4 projection, unsigned int VAO, int indexNum, int instanceCount)
+{
+	setMatrices(shader, glm::mat4(1.0), view, projection);
+	glBindVertexArray(VAO);
+	glDrawElementsInstanced(GL_TRIANGLE_STRIP, indexNum, GL_UNSIGNED_INT, 0, instanceCount);
+	glDisable(GL_CULL_FACE);
+}
+
+void DrawSphere(Shader shader, glm::mat4 model, glm::mat4 view, glm::mat4 projection, unsigned int VAO, int indexNum)
+{
+	setMatrices(shader, model, view, projection);
+	glBindVertexArray(VAO);
+	glDrawElements(GL_TRIANGLE_STRIP, indexNum, GL_UNSIGNED_INT, 0);
+	glDisable(GL_CULL_FACE);
+}
