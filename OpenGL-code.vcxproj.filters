@@ -278,6 +278,36 @@
     <Image Include="Assets\Textures\PBR\Gold\roughness.png">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="Assets\Textures\PBR\Wall\metallic.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Assets\Textures\PBR\Wall\albedo.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Assets\Textures\PBR\Wall\ao.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Assets\Textures\PBR\Wall\normal.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Assets\Textures\PBR\Wall\roughness.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Assets\Textures\PBR\RustedIron\albedo.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Assets\Textures\PBR\RustedIron\ao.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Assets\Textures\PBR\RustedIron\metallic.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Assets\Textures\PBR\RustedIron\normal.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Assets\Textures\PBR\RustedIron\roughness.png">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Assets\Model\backpack\source_attribution.txt" />

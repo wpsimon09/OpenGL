@@ -9,6 +9,8 @@ uniform mat4 projection;
 uniform mat4 view;
 uniform mat4 model;
 
+uniform mat3 normalMatrix;
+
 uniform mat4 lightMatrix;
 
 uniform float hasNormalMap;
@@ -25,8 +27,6 @@ out VS_OUT {
 
 void main()
 {
-    mat3 normalMatrix = transpose(inverse(mat3(model)));
-
     // transform the vectors to the world space 
     vec3 T = normalize(normalMatrix * aTangetn);
     vec3 N = normalize(normalMatrix * aNormal);
@@ -38,10 +38,10 @@ void main()
 
     vs_out.FragPos =  vec3(model * vec4(aPos, 1.0));
     vs_out.TexCoords = aTexCoords;
-    vs_out.Normal = transpose(inverse(mat3(model))) * aNormal;
+    vs_out.Normal = normalMatrix * aNormal;
     vs_out.FragPosLight = lightMatrix * vec4(vs_out.FragPos ,1.0);
     vs_out.hasNormalMap = hasNormalMap;
     vs_out.TBN = TBN;
 
-    gl_Position = projection * view * model * vec4(aPos, 1.0);
+    gl_Position = projection * view * vec4(vs_out.FragPos, 1.0);
 }

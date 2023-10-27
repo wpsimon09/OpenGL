@@ -282,6 +282,7 @@ int main() {
 					0.0f
 				));
 				glCullFace(GL_BACK);
+				PBRShader.setMat3("normalMatrix", glm::transpose(glm::inverse(glm::mat3(model))));
 				DrawSphere(PBRShader, model, view, projection, sphereVAO, indexNum);
 			}
 		}
