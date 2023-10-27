@@ -48,7 +48,7 @@ vec3 getNormalFromMap()
 //F0 = how much surface reflects when looking directly at it (big database)
 vec3 FresnelShlick(float cosTheta, vec3 F0)
 {
-    return F0 + (1.0 - F0) * pow(1.0 - cosTheta, 5.0);   
+    return F0 + (1.0 - F0) * pow(clamp(1.0 - cosTheta, 0.0, 1.0), 5.0);
 }
 
 // N in the eqation
@@ -108,7 +108,7 @@ void main()
     float ao = texture(_aoMap, fs_in.TexCoords).r;
 
     //normal
-    vec3 N = normalize(normal);
+    vec3 N = fs_in.Normal;
     
     //view direction;
     vec3 V = normalize(camPos - fs_in.FragPos);
@@ -142,7 +142,7 @@ void main()
         //for forking with metallic materials
         //specifiing the metallness of the object
         vec3 numerator = NDF * G * F;
-        float denominator = 4.0 * max(dot(N,V), 0.0) * max(dot(N,L), 0.0);
+        float denominator = 4.0 * max(dot(N,V), 0.0) * max(dot(N,L), 0.0) + 0.0001;
         
         //calculate the specular component
         vec3 specular = numerator / max(denominator, 0.001);
@@ -169,5 +169,5 @@ void main()
     color = pow(color,vec3(1.0/2.2));
 
     //todo go over every texture to see which one is off
-    FragColor = vec4(color, 1.0);
+    FragColor = vec4(color , 1.0);
 }

@@ -259,10 +259,16 @@
     <Image Include="Assets\Textures\DepthTesting\marble.jpg" />
     <Image Include="Assets\Textures\DepthTesting\metal.png" />
     <Image Include="Assets\Textures\matrix.jpg" />
+    <Image Include="Assets\Textures\PBR\Gold\albedo.png" />
+    <Image Include="Assets\Textures\PBR\Gold\ao.png" />
+    <Image Include="Assets\Textures\PBR\Gold\metallic.png" />
+    <Image Include="Assets\Textures\PBR\Gold\normal.png" />
+    <Image Include="Assets\Textures\PBR\Gold\roughness.png" />
     <Image Include="Assets\Textures\PBR\RustedIron\rustediron2_basecolor.png" />
     <Image Include="Assets\Textures\PBR\RustedIron\rustediron2_metallic.png" />
     <Image Include="Assets\Textures\PBR\RustedIron\rustediron2_normal.png" />
     <Image Include="Assets\Textures\PBR\RustedIron\rustediron2_roughness.png" />
+    <Image Include="Assets\Textures\PBR\RustedIron\rustediron2_ao.png" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\Model\backpack\backpack.obj">

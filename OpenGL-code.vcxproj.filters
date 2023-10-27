@@ -63,6 +63,9 @@
     <ClInclude Include="Includes\VaoCreation.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Includes\PBRTextureLoader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\main.cpp">
@@ -243,6 +246,36 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="Assets\Textures\AdvancedLightning\grid_ch.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Assets\Textures\PBR\RustedIron\rustediron2_basecolor.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Assets\Textures\PBR\RustedIron\rustediron2_metallic.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Assets\Textures\PBR\RustedIron\rustediron2_normal.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Assets\Textures\PBR\RustedIron\rustediron2_roughness.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Assets\Textures\PBR\RustedIron\rustediron2_ao.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Assets\Textures\PBR\Gold\albedo.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Assets\Textures\PBR\Gold\ao.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Assets\Textures\PBR\Gold\metallic.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Assets\Textures\PBR\Gold\normal.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Assets\Textures\PBR\Gold\roughness.png">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

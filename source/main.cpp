@@ -71,7 +71,7 @@ int main() {
 	glEnable(GL_DEPTH_TEST);
 
 	//enables gama correction that is build in opengl
-	glEnable(GL_FRAMEBUFFER_SRGB);
+	//glEnable(GL_FRAMEBUFFER_SRGB);
 	glfwSetCursorPosCallback(window, mouse_callback);
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	glfwSetScrollCallback(window, scroll_callback);
@@ -168,23 +168,7 @@ int main() {
 	//--------------------
 	//PBR TEXTURES LOADING
 	//--------------------
-	std::vector<PBRTexture> pbrTextures;
-	PBRTexture albedo("Assets/Textures/PBR/RustedIron/rustediron2_basecolor.png", ALBEDO);
-	pbrTextures.push_back(albedo);
-
-	PBRTexture metallic("Assets/Textures/PBR/RustedIron/rustediron2_metallic.png", METALLIC);
-	pbrTextures.push_back(metallic);
-
-	PBRTexture normal("Assets/Textures/PBR/RustedIron/rustediron2_normal.png", NORMAL);
-	pbrTextures.push_back(normal);
-
-	PBRTexture roughness("Assets/Textures/PBR/RustedIron/rustediron2_roughness.png", ROUGHNESS);
-	pbrTextures.push_back(roughness);
-	
-	PBRTexture ao("Assets/Textures/PBR/RustedIron/rustediron2_roughness.png", AO);
-	pbrTextures.push_back(ao);
-
-	PBRTextures loadedPbrTextures(pbrTextures, PBRShader);
+	PBRTextures loadedPbrTextures("Assets/Textures/PBR/RustedIron", PBRShader);
 
 	floorShader.use();
 	floorShader.setInt("texture_diffuse0", 0);
@@ -194,8 +178,6 @@ int main() {
 	lightSourceShader.setInt("lightTexture", 0);
 
 	PBRShader.use();
-	PBRShader.setVec3("albedo", colorOf(255.0f, 210.0f, 0.0f));
-	PBRShader.setFloat("ao", 1.0f);
 
 	glm::vec3 lightPositions[] = {
 		glm::vec3(-10.0f,  10.0f, 10.0f),
@@ -256,11 +238,8 @@ int main() {
 		shadowMapShader.use();
 		for (int row = 0; row < nrRows; ++row)
 		{
-			PBRShader.setFloat("metallic", (float)row / (float)nrRows);
 			for (int col = 0; col < nrColumns; ++col)
 			{
-				PBRShader.setFloat("roughness", glm::clamp((float)col / (float)nrColumns, 0.05f, 1.0f));
-
 				lightModel = glm::mat4(1.0f);
 
 				lightModel = glm::translate(lightModel, glm::vec3(
@@ -271,7 +250,6 @@ int main() {
 				DrawSphere(PBRShader, lightModel, lightView, lightProjection, sphereVAO, indexNum);
 			}
 		}
-		glCullFace(GL_BACK);
 
 		//--------------------------------------//
 		//---------- NORMAL SCENE -------------//
@@ -288,9 +266,9 @@ int main() {
 		//----------------
 		// DRAW THE SPHERES
 		//-----------------
-		glCullFace(GL_BACK);
 		PBRShader.use();
 		PBRShader.setVec3("camPos", camera.Position);
+		loadedPbrTextures.useTextures();
 
 		for (int row = 0; row < nrRows; ++row)
 		{
@@ -303,7 +281,7 @@ int main() {
 					(row - (nrRows / 2)) * spacing,
 					0.0f
 				));
-				loadedPbrTextures.useTextures();
+				glCullFace(GL_BACK);
 				DrawSphere(PBRShader, model, view, projection, sphereVAO, indexNum);
 			}
 		}
@@ -312,7 +290,7 @@ int main() {
 		for (unsigned int i = 0; i < 5; ++i)
 		{
 			PBRShader.use();
-			if (i<=4)
+			if (i<4)
 			{
 				PBRShader.setVec3("lightPositions[" + std::to_string(i) + "]", lightPositions[i]);
 				PBRShader.setVec3("lightColors[" + std::to_string(i) + "]", lightColors[i]);
@@ -320,11 +298,10 @@ int main() {
 			else
 			{
 				PBRShader.setVec3("lightPositions[" + std::to_string(i) + "]", lightPosition);
-				PBRShader.setVec3("lightColors[" + std::to_string(i) + "]", lightColor);
+				PBRShader.setVec3("lightColors[" + std::to_string(i) + "]", glm::vec3(200.0f, 200.0f, 200.0f));
 			}
 			
 		}
-
 
 		//-----------------------
 		// DRAW THE LIGHT SOURCES
@@ -345,11 +322,6 @@ int main() {
 			useTexture(0, pointLightTexture);
 			DrawPlane(lightSourceShader, model, view, projection, lightVAO);
 		}
-
-		PBRShader.use();
-		PBRShader.setVec3("lightPositions[4]", lightPosition);
-		PBRShader.setVec3("lightColors[4]", lightColors[1]);
-
 		model = glm::mat4(1.0f);
 		model = glm::translate(model, lightPosition);
 		model = glm::scale(model, glm::vec3(0.5f));

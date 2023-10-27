@@ -36,25 +36,15 @@ public:
 
 	PBRTextures(std::vector<PBRTexture> textures, Shader shader)
 	{
-		for (int i = 0; i < textures.size(); i++)
-		{
-			switch (textures[i].type)
-			{
-			case ALBEDO:
-				this->albedo = loadTexture(textures[i].path.c_str(), true);
-			case METALLIC:
-				this->metallic = loadTexture(textures[i].path.c_str(), true);
-			case ROUGHNESS:
-				this->roughness = loadTexture(textures[i].path.c_str(), true);
-			case NORMAL:
-				this->normal = loadTexture(textures[i].path.c_str(), true);
-			case AO:
-				this->ao = loadTexture(textures[i].path.c_str(), true);
-			default:
-				break;
-			}
-		}
+		this->processTextures(textures);
 
+		this->passToShader(shader);
+	}
+
+	PBRTextures(std::string dirPath, Shader shader)
+	{
+		std::vector<PBRTexture> loadedTextures = this->loadTextures(dirPath);
+		this->processTextures(loadedTextures);
 		this->passToShader(shader);
 	}
 
@@ -76,6 +66,50 @@ private:
 		shader.setInt("_normalMap", NORMAL);
 		shader.setInt("_roughnessMap", ROUGHNESS);
 		shader.setInt("_aoMap", AO);
+
+	}
+
+	void processTextures(std::vector<PBRTexture> textures)
+	{
+		for (int i = 0; i < textures.size(); i++)
+		{
+			switch (textures[i].type)
+			{
+			case ALBEDO:
+				this->albedo = loadTexture(textures[i].path.c_str(), true);
+			case METALLIC:
+				this->metallic = loadTexture(textures[i].path.c_str(), true);
+			case ROUGHNESS:
+				this->roughness = loadTexture(textures[i].path.c_str(), true);
+			case NORMAL:
+				this->normal = loadTexture(textures[i].path.c_str(), true);
+			case AO:
+				this->ao = loadTexture(textures[i].path.c_str(), true);
+			default:
+				break;
+			}
+		}
+	}
+
+	std::vector<PBRTexture> loadTextures(std::string dirPath)
+	{
+		std::vector<PBRTexture> pbrTextures;
+		PBRTexture albedo( dirPath + "/albedo.png", ALBEDO);
+		pbrTextures.push_back(albedo);
+
+		PBRTexture metallic(dirPath + "/metallic.png", METALLIC);
+		pbrTextures.push_back(metallic);
+
+		PBRTexture normal(dirPath + "/normal.png", NORMAL);
+		pbrTextures.push_back(normal);
+
+		PBRTexture roughness(dirPath + "/roughness.png", ROUGHNESS);
+		pbrTextures.push_back(roughness);
+
+		PBRTexture ao(dirPath + "/ao.png", AO);
+		pbrTextures.push_back(ao);
+
+		return pbrTextures;
 	}
 
 };
