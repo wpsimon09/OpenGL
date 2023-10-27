@@ -28,7 +28,8 @@ const float PI = 3.14159265359;
 
 vec3 getNormalFromMap()
 {
-    vec3 tangentNormal = texture(_normalMap, fs_in.TexCoords).xyz * 2.0 - 1.0;
+    vec3 tangentNormal = texture(_normalMap, fs_in.TexCoords).rgb * 2.0 - 1.0;
+
 
     vec3 Q1  = dFdx(fs_in.FragPos);
     vec3 Q2  = dFdy(fs_in.FragPos);
@@ -41,6 +42,7 @@ vec3 getNormalFromMap()
     mat3 TBN = mat3(T, B, N);
 
     return normalize(TBN * tangentNormal);
+
 }
 
 // caclulate how much light geths reflected vs how much light gets refracted

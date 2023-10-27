@@ -86,9 +86,6 @@ int main() {
 	unsigned int colums = 5;
 	unsigned int totalAmount = rows * colums;
 
-
-	Shader mainObjShader("VertexShader/AdvancedLightning/AdvancedLightningVertex.glsl", "FragmentShader/AdvancedLightning/AdvancedLightningFragmnet.glsl", "main");
-
 	Shader PBRShader("VertexShader/PBR/PBRVertex.glsl", "FragmentShader/PBR/PBRFragmentTextures.glsl", "PBR shader");
 
 	Shader lightSourceShader("VertexShader/AdvancedLightning/LightSourceVertex.glsl", "FragmentShader/AdvancedLightning/LightSourceFragment.glsl", "light sourece");
@@ -97,10 +94,6 @@ int main() {
 	
 	Shader floorShader("VertexShader/FloorVertex.glsl", "FragmentShader/FloorFragment.glsl", "floor");
 
-	Shader gBufferShader("VertexShader/AdvancedLightning/gBufferVertex.glsl", "FragmentShader/AdvancedLightning/gBufferFragment.glsl", "gBuffer");
-
-	Shader finalShaderStage("VertexShader/AdvancedLightning/FinalVertex.glsl", "FragmentShader/AdvancedLightning/FinalFragment.glsl", "final shader");
-	
 	stbi_set_flip_vertically_on_load(true);
 
 	// plane VAO
@@ -168,7 +161,7 @@ int main() {
 	//--------------------
 	//PBR TEXTURES LOADING
 	//--------------------
-	PBRTextures loadedPbrTextures("Assets/Textures/PBR/RustedIron", PBRShader);
+	PBRTextures pbrTexture("Assets/Textures/PBR/RustedIron", PBRShader);
 
 	floorShader.use();
 	floorShader.setInt("texture_diffuse0", 0);
@@ -268,7 +261,7 @@ int main() {
 		//-----------------
 		PBRShader.use();
 		PBRShader.setVec3("camPos", camera.Position);
-		loadedPbrTextures.useTextures();
+		pbrTexture.useTextures();
 
 		for (int row = 0; row < nrRows; ++row)
 		{
