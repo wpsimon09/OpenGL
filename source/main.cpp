@@ -14,7 +14,6 @@
 #include "DrawingFunctions.h"
 #include "VaoCreation.h"
 #include "Model.h"
-#include "PBRTextureLoader.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
@@ -44,9 +43,6 @@ float lastFrame = 0.0f;
 
 glm::vec3 lightColor = COLOR_SUN;
 
-bool isLightBlinn = true;
-
-
 //light possition
 glm::vec3 lightPosition(0.0f, 2.0f, -1.0f);
 
@@ -71,7 +67,7 @@ int main() {
 	glEnable(GL_DEPTH_TEST);
 
 	//enables gama correction that is build in opengl
-	//glEnable(GL_FRAMEBUFFER_SRGB);
+	glEnable(GL_FRAMEBUFFER_SRGB);
 	glfwSetCursorPosCallback(window, mouse_callback);
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	glfwSetScrollCallback(window, scroll_callback);
@@ -86,24 +82,31 @@ int main() {
 	unsigned int colums = 5;
 	unsigned int totalAmount = rows * colums;
 
-	Shader PBRShader("VertexShader/PBR/PBRVertex.glsl", "FragmentShader/PBR/PBRFragmentTextures.glsl", "PBR shader");
+
+	Shader mainObjShader("VertexShader/AdvancedLightning/AdvancedLightningVertex.glsl", "FragmentShader/AdvancedLightning/AdvancedLightningFragmnet.glsl", "main");
+
+	Shader PBRShader("VertexShader/PBR/PBRVertex.glsl", "FragmentShader/PBR/PBRFragment.glsl", "PBR shader");
 
 	Shader lightSourceShader("VertexShader/AdvancedLightning/LightSourceVertex.glsl", "FragmentShader/AdvancedLightning/LightSourceFragment.glsl", "light sourece");
 
 	Shader shadowMapShader("VertexShader/AdvancedLightning/ShadowMapVertex.glsl", "FragmentShader/AdvancedLightning/ShadowMapFragement.glsl", "shadow map");
-	
+
 	Shader floorShader("VertexShader/FloorVertex.glsl", "FragmentShader/FloorFragment.glsl", "floor");
+
+	Shader gBufferShader("VertexShader/AdvancedLightning/gBufferVertex.glsl", "FragmentShader/AdvancedLightning/gBufferFragment.glsl", "gBuffer");
+
+	Shader finalShaderStage("VertexShader/AdvancedLightning/FinalVertex.glsl", "FragmentShader/AdvancedLightning/FinalFragment.glsl", "final shader");
 
 	stbi_set_flip_vertically_on_load(true);
 
 	// plane VAO
-	unsigned int planeVAO = createVAO(planeVertices, sizeof(planeVertices)/sizeof(float));
+	unsigned int planeVAO = createVAO(planeVertices, sizeof(planeVertices) / sizeof(float));
 
 	//final frame buffer VAO
 	unsigned int screenQuadVAO = createVAO(HDRframeBufferVertecies, sizeof(planeVertices) / sizeof(float), false, true);
 
 	//VBO, EBO and VAO for the square that represents light position
-	unsigned int lightVAO = createVAO(lightVertices,sizeof(lightVertices)/sizeof(float), false);
+	unsigned int lightVAO = createVAO(lightVertices, sizeof(lightVertices) / sizeof(float), false);
 
 	//cube VAO
 	unsigned int cubeVAO = createVAO(cubeVertices, sizeof(cubeVertices) / sizeof(float));
@@ -112,7 +115,7 @@ int main() {
 	unsigned int indexNum;
 	unsigned int instanceCount;
 	unsigned int sphereVAO = createSphereVAO(indexNum);
-	
+
 	//-------------------
 	// SHADOW MAP TEXTURE
 	//-------------------
@@ -123,7 +126,7 @@ int main() {
 	glBindTexture(GL_TEXTURE_2D, depthMap);
 	//NOTE how we set a texture type to be GL_DEPTH_COMPONENT instead GL_RGB or GL_RGBA
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-	float borderColor[] = {1.0f, 1.0f, 1.0f, 1.0f};
+	float borderColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
 	glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
 	//set the textures prameters
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -158,11 +161,6 @@ int main() {
 	unsigned int normalMap = loadTexture("Assets/Textures/AdvancedLightning/brickwall_normal.jpg", false);
 	unsigned int floorNormalMap = loadTexture("Assets/Textures/AdvancedLightning/floor_normal.jpg", false);
 
-	//--------------------
-	//PBR TEXTURES LOADING
-	//--------------------
-	PBRTextures pbrTexture("Assets/Textures/PBR/RustedIron", PBRShader);
-
 	floorShader.use();
 	floorShader.setInt("texture_diffuse0", 0);
 	floorShader.setInt("shadowMap", 1);
@@ -171,6 +169,8 @@ int main() {
 	lightSourceShader.setInt("lightTexture", 0);
 
 	PBRShader.use();
+	PBRShader.setVec3("albedo", colorOf(255.0f, 0.0f, 245.0f));
+	PBRShader.setFloat("ao", 1.0f);
 
 	glm::vec3 lightPositions[] = {
 		glm::vec3(-10.0f,  10.0f, 10.0f),
@@ -231,8 +231,11 @@ int main() {
 		shadowMapShader.use();
 		for (int row = 0; row < nrRows; ++row)
 		{
+			PBRShader.setFloat("metallic", (float)row / (float)nrRows);
 			for (int col = 0; col < nrColumns; ++col)
 			{
+				PBRShader.setFloat("roughness", glm::clamp((float)col / (float)nrColumns, 0.05f, 1.0f));
+
 				lightModel = glm::mat4(1.0f);
 
 				lightModel = glm::translate(lightModel, glm::vec3(
@@ -243,6 +246,7 @@ int main() {
 				DrawSphere(PBRShader, lightModel, lightView, lightProjection, sphereVAO, indexNum);
 			}
 		}
+		glCullFace(GL_BACK);
 
 		//--------------------------------------//
 		//---------- NORMAL SCENE -------------//
@@ -251,7 +255,7 @@ int main() {
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glClearColor(0.01f, 0.01f, 0.01f, 1.0f);
-		
+
 		glm::mat4 view = camera.GetViewMatrix();
 		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
 		glm::mat4 model = glm::mat4(1.0f);
@@ -259,14 +263,17 @@ int main() {
 		//----------------
 		// DRAW THE SPHERES
 		//-----------------
+		glCullFace(GL_BACK);
 		PBRShader.use();
 		PBRShader.setVec3("camPos", camera.Position);
-		pbrTexture.useTextures();
 
 		for (int row = 0; row < nrRows; ++row)
 		{
+			PBRShader.setFloat("metallic", (float)row / (float)nrRows);
 			for (int col = 0; col < nrColumns; ++col)
 			{
+				PBRShader.setFloat("roughness", glm::clamp((float)col / (float)nrColumns, 0.05f, 1.0f));
+
 				model = glm::mat4(1.0f);
 
 				model = glm::translate(model, glm::vec3(
@@ -274,8 +281,7 @@ int main() {
 					(row - (nrRows / 2)) * spacing,
 					0.0f
 				));
-				glCullFace(GL_BACK);
-				PBRShader.setMat3("normalMatrix", glm::transpose(glm::inverse(glm::mat3(model))));
+				PBRShader.setMat3("normalMatrix", glm::transpose(glm::inverse(model)));
 				DrawSphere(PBRShader, model, view, projection, sphereVAO, indexNum);
 			}
 		}
@@ -284,7 +290,7 @@ int main() {
 		for (unsigned int i = 0; i < 5; ++i)
 		{
 			PBRShader.use();
-			if (i<4)
+			if (i <= 4)
 			{
 				PBRShader.setVec3("lightPositions[" + std::to_string(i) + "]", lightPositions[i]);
 				PBRShader.setVec3("lightColors[" + std::to_string(i) + "]", lightColors[i]);
@@ -292,10 +298,11 @@ int main() {
 			else
 			{
 				PBRShader.setVec3("lightPositions[" + std::to_string(i) + "]", lightPosition);
-				PBRShader.setVec3("lightColors[" + std::to_string(i) + "]", glm::vec3(200.0f, 200.0f, 200.0f));
+				PBRShader.setVec3("lightColors[" + std::to_string(i) + "]", lightColor);
 			}
-			
+
 		}
+
 
 		//-----------------------
 		// DRAW THE LIGHT SOURCES
@@ -303,7 +310,7 @@ int main() {
 		lightSourceShader.use();
 		model = glm::mat4(1.0f);
 		model = glm::translate(model, lightPosition);
-		
+
 		for (unsigned int i = 0; i < 4; ++i)
 		{
 			glm::vec3 newPos = lightPositions[i];
@@ -316,6 +323,11 @@ int main() {
 			useTexture(0, pointLightTexture);
 			DrawPlane(lightSourceShader, model, view, projection, lightVAO);
 		}
+
+		PBRShader.use();
+		PBRShader.setVec3("lightPositions[4]", lightPosition);
+		PBRShader.setVec3("lightColors[4]", lightColors[1]);
+
 		model = glm::mat4(1.0f);
 		model = glm::translate(model, lightPosition);
 		model = glm::scale(model, glm::vec3(0.5f));
@@ -323,7 +335,7 @@ int main() {
 		lightSourceShader.setMat4("model", model);
 		lightSourceShader.setVec3("lightColor", lightColor);
 		useTexture(0, dirLightTexture);
-		DrawPlane(lightSourceShader, model, view, projection, lightVAO);	
+		DrawPlane(lightSourceShader, model, view, projection, lightVAO);
 
 		//----------------------
 		// DRAW PLANE AS A FLOOR
@@ -357,7 +369,7 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 	glViewport(0, 0, width, height);
 }
 
-void processInput(GLFWwindow *window)
+void processInput(GLFWwindow* window)
 {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
@@ -402,7 +414,7 @@ float opacityOfTexture(GLFWwindow* window, Shader shader) {
 }
 
 void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
-	
+
 	if (firstMouse) // initially set to true
 	{
 		lastX = xpos;
@@ -420,7 +432,7 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
 
 }
 
-void scroll_callback(GLFWwindow * window, double xoffset, double yoffset)
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
 	camera.ProcessMouseScroll(static_cast<float>(yoffset));
 }
