@@ -106,6 +106,33 @@ unsigned int loadTexture(char const* path)
 	return textureID;
 }
 
+unsigned int loadIrradianceMap(const char *path)
+{
+	unsigned int textureID;
+	int width, height, nrComponents;
+
+	float* data = stbi_loadf(path, &width, &height, &nrComponents, 0);
+
+	if (data)
+	{
+		glGenTextures(1, &textureID);
+		glBindTexture(GL_TEXTURE_2D, textureID);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, width, height, 0, GL_RGB,
+			GL_FLOAT, data);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		stbi_image_free(data);
+	}
+	else
+	{
+		std::cout << "ERROR::FAILED TO LOAD IRRADIANCE MAP :: PATH: \n";
+		std::cout << path << std::endl;
+	}
+	return textureID;
+}
+
 
 void useTexture(unsigned int samplerNumber, unsigned int texture)
 {

@@ -115,6 +115,8 @@
     <None Include="VertexShader\PBR\PBRVertexInstanced.glsl" />
     <None Include="VertexShader\PBR\PBRVertex.glsl" />
     <None Include="FragmentShader\PBR\PBRFragmentTextures.glsl" />
+    <None Include="VertexShader\PBR\HDRtoCubeMapVertex.glsl" />
+    <None Include="FragmentShader\PBR\HDRtoCubeMapFragment.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\Textures\container.jpg">
