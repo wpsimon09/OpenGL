@@ -117,6 +117,7 @@
     <None Include="FragmentShader\PBR\PBRFragmentTextures.glsl" />
     <None Include="VertexShader\PBR\HDRtoCubeMapVertex.glsl" />
     <None Include="FragmentShader\PBR\HDRtoCubeMapFragment.glsl" />
+    <None Include="Assets\Textures\HDR\newport_loft.hdr" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\Textures\container.jpg">

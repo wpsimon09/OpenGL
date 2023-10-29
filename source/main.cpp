@@ -92,7 +92,7 @@ int main() {
 
 	Shader finalShaderStage("VertexShader/AdvancedLightning/FinalVertex.glsl", "FragmentShader/AdvancedLightning/FinalFragment.glsl", "final shader");
 
-	Shader HDRtoCubeMap("VertexShader/PBR/HDRtoCubeMapVertex.glsl", "FragmentShader/PBR/HDRtoCubeMapFragment.glsl", "Cube map shader");
+	Shader hdrToCubeMapShader("VertexShader/PBR/HDRtoCubeMapVertex.glsl", "FragmentShader/PBR/HDRtoCubeMapFragment.glsl", "Cube map shader");
 	stbi_set_flip_vertically_on_load(true);
 
 	// plane VAO
@@ -156,6 +156,7 @@ int main() {
 	unsigned int brickWall = loadTexture("Assets/Textures/AdvancedLightning/brickwall.jpg", false);
 	unsigned int normalMap = loadTexture("Assets/Textures/AdvancedLightning/brickwall_normal.jpg", false);
 	unsigned int floorNormalMap = loadTexture("Assets/Textures/AdvancedLightning/floor_normal.jpg", false);
+	unsigned int equirectangular = loadIrradianceMap("Assets/Textures/HDR/newport_loft.hdr");
 
 	floorShader.use();
 	floorShader.setInt("texture_diffuse0", 0);
@@ -346,6 +347,14 @@ int main() {
 		floorShader.setVec3("lightColor", lightColor);
 		floorShader.setVec3("viewPos", camera.Position);
 		DrawPlane(floorShader, model, view, projection, planeVAO);
+
+		//------------
+		// DRAW SKYBOX
+		//------------
+		hdrToCubeMapShader.use();
+		useTexture(0, equirectangular);
+		model = glm::mat4(1.0f);
+		DrawCube(hdrToCubeMapShader, model, view, projection, cubeVAO);
 
 
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
