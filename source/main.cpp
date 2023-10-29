@@ -112,6 +112,41 @@ int main() {
 	unsigned int instanceCount;
 	unsigned int sphereVAO = createSphereVAO(indexNum);
 
+
+	//------------------------------------------------
+	// Converting from equirectangular to CUBE map FBO
+	//------------------------------------------------
+	unsigned int convetFBO, convertRBO;
+	glGenFramebuffers(1, &convetFBO);
+	glGenRenderbuffers(1, &convertRBO);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, convetFBO);
+	glBindRenderbuffer(GL_RENDERBUFFER, convertRBO);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, 512, 512);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, convertRBO);
+	
+	//generete cube map color buffers
+	unsigned int envCubeMap;
+	glGenTextures(1, &envCubeMap);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, envCubeMap);
+	for (unsigned int i = 0; i < 6; ++i)
+	{
+		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,0, GL_RGB16F,512, 512, 0, GL_RGB, GL_FLOAT, nullptr );
+	}
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE)
+	{
+		std::cout << "Framebuffer configured successfully\n";
+	}
+	else
+		std::cout << "ERROR:BUFFER:FRAME\n Frame buffer not bound successfully \n";
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
 	//-------------------
 	// SHADOW MAP TEXTURE
 	//-------------------
