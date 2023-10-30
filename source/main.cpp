@@ -65,7 +65,7 @@ int main() {
 	glfwMakeContextCurrent(window);
 	gladLoadGL();
 	glEnable(GL_DEPTH_TEST);
-
+	glDepthFunc(GL_LEQUAL);
 	//enables gama correction that is build in opengl
 	glEnable(GL_FRAMEBUFFER_SRGB);
 	glfwSetCursorPosCallback(window, mouse_callback);
@@ -93,6 +93,9 @@ int main() {
 	Shader finalShaderStage("VertexShader/AdvancedLightning/FinalVertex.glsl", "FragmentShader/AdvancedLightning/FinalFragment.glsl", "final shader");
 
 	Shader hdrToCubeMapShader("VertexShader/PBR/HDRtoCubeMapVertex.glsl", "FragmentShader/PBR/HDRtoCubeMapFragment.glsl", "Cube map shader");
+	
+	Shader skyBoxShader("VertexShader/PBR/SkyBoxVertex.glsl", "FragmentShader/PBR/SkyBoxFragment.glsl", "Sky box shader");
+	
 	stbi_set_flip_vertically_on_load(true);
 
 	// plane VAO
@@ -111,41 +114,6 @@ int main() {
 	unsigned int indexNum;
 	unsigned int instanceCount;
 	unsigned int sphereVAO = createSphereVAO(indexNum);
-
-
-	//------------------------------------------------
-	// Converting from equirectangular to CUBE map FBO
-	//------------------------------------------------
-	unsigned int convetFBO, convertRBO;
-	glGenFramebuffers(1, &convetFBO);
-	glGenRenderbuffers(1, &convertRBO);
-
-	glBindFramebuffer(GL_FRAMEBUFFER, convetFBO);
-	glBindRenderbuffer(GL_RENDERBUFFER, convertRBO);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, 512, 512);
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, convertRBO);
-	
-	//generete cube map color buffers
-	unsigned int envCubeMap;
-	glGenTextures(1, &envCubeMap);
-	glBindTexture(GL_TEXTURE_CUBE_MAP, envCubeMap);
-	for (unsigned int i = 0; i < 6; ++i)
-	{
-		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,0, GL_RGB16F,512, 512, 0, GL_RGB, GL_FLOAT, nullptr );
-	}
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE)
-	{
-		std::cout << "Framebuffer configured successfully\n";
-	}
-	else
-		std::cout << "ERROR:BUFFER:FRAME\n Frame buffer not bound successfully \n";
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	//-------------------
 	// SHADOW MAP TEXTURE
@@ -193,6 +161,69 @@ int main() {
 	unsigned int floorNormalMap = loadTexture("Assets/Textures/AdvancedLightning/floor_normal.jpg", false);
 	unsigned int equirectangular = loadIrradianceMap("Assets/Textures/HDR/newport_loft.hdr");
 
+	//------------------------------------------------
+	// Converting from equirectangular to CUBE map FBO
+	//------------------------------------------------
+	unsigned int convertFBO, convertRBO;
+	glGenFramebuffers(1, &convertFBO);
+	glGenRenderbuffers(1, &convertRBO);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, convertFBO);
+	glBindRenderbuffer(GL_RENDERBUFFER, convertRBO);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, 512, 512);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, convertRBO);
+
+	//generete cube map color buffers
+	unsigned int envCubeMap;
+	glGenTextures(1, &envCubeMap);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, envCubeMap);
+	for (unsigned int i = 0; i < 6; ++i)
+	{
+		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F, 512, 512, 0, GL_RGB, GL_FLOAT, nullptr);
+	}
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE)
+	{
+		std::cout << "Framebuffer configured successfully\n";
+	}
+	else
+		std::cout << "ERROR:BUFFER:FRAME\n Frame buffer not bound successfully \n";
+
+	//--------------------------------------//
+	//------ CONVERTING TO CUBEMAP --------//
+	//------------------------------------//
+	glm::mat4 captureProjection = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 10.0f);
+	glm::mat4 captureViews[] =
+	{
+		glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
+		glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(-1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
+		glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  1.0f,  0.0f), glm::vec3(0.0f,  0.0f,  1.0f)),
+		glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f,  0.0f), glm::vec3(0.0f,  0.0f, -1.0f)),
+		glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  0.0f,  1.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
+		glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  0.0f, -1.0f), glm::vec3(0.0f, -1.0f,  0.0f))
+	};
+
+	hdrToCubeMapShader.use();
+	hdrToCubeMapShader.setInt("equirectangularMap", 0);
+	useTexture(0, equirectangular);
+
+	glViewport(0, 0, 512, 512);
+	glBindFramebuffer(GL_FRAMEBUFFER, convertFBO);
+
+	for (int i = 0; i < 6; ++i)
+	{
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, envCubeMap, 0);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		DrawCube(hdrToCubeMapShader, glm::mat4(1.0f), captureProjection, captureViews[i], cubeVAO);
+	}
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
 	floorShader.use();
 	floorShader.setInt("texture_diffuse0", 0);
 	floorShader.setInt("shadowMap", 1);
@@ -203,6 +234,9 @@ int main() {
 	PBRShader.use();
 	PBRShader.setVec3("albedo", colorOf(255.0f, 0.0f, 245.0f));
 	PBRShader.setFloat("ao", 1.0f);
+
+	skyBoxShader.use();
+	skyBoxShader.setInt("enviromentMap", 0);
 
 	glm::vec3 lightPositions[] = {
 		glm::vec3(-10.0f,  10.0f, 10.0f),
@@ -219,7 +253,8 @@ int main() {
 	int nrRows = 7;
 	int nrColumns = 7;
 	float spacing = 2.5;
-
+	
+	
 	//===================================== RENDER LOOP ================================================//
 
 	while (!glfwWindowShouldClose(window))
@@ -372,7 +407,7 @@ int main() {
 		//----------------------
 		// DRAW PLANE AS A FLOOR
 		//----------------------
-		floorShader.use();
+		/*floorShader.use();
 		useTexture(0, floorTexture);
 		useTexture(1, depthMap);
 		model = glm::mat4(1.0f);
@@ -381,15 +416,16 @@ int main() {
 		floorShader.setVec3("lightPos", lightPosition);
 		floorShader.setVec3("lightColor", lightColor);
 		floorShader.setVec3("viewPos", camera.Position);
-		DrawPlane(floorShader, model, view, projection, planeVAO);
+		DrawPlane(floorShader, model, view, projection, planeVAO);*/
 
 		//------------
 		// DRAW SKYBOX
 		//------------
-		hdrToCubeMapShader.use();
-		useTexture(0, equirectangular);
-		model = glm::mat4(1.0f);
-		DrawCube(hdrToCubeMapShader, model, view, projection, cubeVAO);
+		skyBoxShader.use();
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, envCubeMap);
+
+		DrawCube(skyBoxShader, model, view, projection, cubeVAO);
 
 
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)

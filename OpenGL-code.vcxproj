@@ -193,6 +193,7 @@
     <None Include="FragmentShader\PBR\HDRtoCubeMapFragment.glsl" />
     <None Include="FragmentShader\PBR\PBRFragment.glsl" />
     <None Include="FragmentShader\PBR\PBRFragmentTextures.glsl" />
+    <None Include="VertexShader\PBR\SkyBoxVertex.glsl" />
     <None Include="VertexShader\AdvancedLightning\AdvancedLightningVertex.glsl" />
     <None Include="VertexShader\AdvancedLightning\FinalVertex.glsl" />
     <None Include="VertexShader\AdvancedLightning\gBufferVertex.glsl" />
@@ -205,6 +206,7 @@
     <None Include="VertexShader\PBR\HDRtoCubeMapVertex.glsl" />
     <None Include="VertexShader\PBR\PBRVertex.glsl" />
     <None Include="VertexShader\PBR\PBRVertexInstanced.glsl" />
+    <None Include="FragmentShader\PBR\SkyBoxFragment.glsl" />
     <None Include="VertexShader\VertexShader.glsl" />
   </ItemGroup>
   <ItemGroup>
