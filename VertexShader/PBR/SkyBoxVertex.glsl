@@ -2,7 +2,8 @@
 
 layout (location = 0) in vec3 aPos;
 
-uniform mat4 projection, view;
+uniform mat4 projection;
+uniform mat4 view;
 
 out vec3 FragPos;
 
