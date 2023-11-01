@@ -197,7 +197,7 @@ int main() {
 	//--------------------------------------//
 	//------ CONVERTING TO CUBEMAP --------//
 	//------------------------------------//
-	glm::mat4 captureProjection = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 10.0f);
+	glm::mat4 captureProjection = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 40.0f);
 	glm::mat4 captureViews[] =
 	{
 		glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
@@ -215,13 +215,13 @@ int main() {
 	glViewport(0, 0, 512, 512);
 	glBindFramebuffer(GL_FRAMEBUFFER, convertFBO);
 
-	for (int i = 0; i < 6; ++i)
-	{
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, envCubeMap, 0);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X , envCubeMap, 0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		int CUBE_MAP;
+		glGetIntegerv(GL_TEXTURE_CUBE_MAP_POSITIVE_X , &CUBE_MAP);
+		std::cout << "GL_TEXTUre_CUBE_MAP in use is :" << CUBE_MAP<< std::endl;
+		DrawCube(hdrToCubeMapShader, glm::mat4(1.0f), captureProjection, captureViews[2], cubeVAO);
 
-		DrawCube(hdrToCubeMapShader, glm::mat4(1.0f), captureProjection, captureViews[i], cubeVAO);
-	}
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	floorShader.use();
@@ -407,7 +407,7 @@ int main() {
 		//----------------------
 		// DRAW PLANE AS A FLOOR
 		//----------------------
-		/*floorShader.use();
+		floorShader.use();
 		useTexture(0, floorTexture);
 		useTexture(1, depthMap);
 		model = glm::mat4(1.0f);
@@ -416,7 +416,7 @@ int main() {
 		floorShader.setVec3("lightPos", lightPosition);
 		floorShader.setVec3("lightColor", lightColor);
 		floorShader.setVec3("viewPos", camera.Position);
-		DrawPlane(floorShader, model, view, projection, planeVAO);*/
+		DrawPlane(floorShader, model, view, projection, planeVAO);
 
 		//------------
 		// DRAW SKYBOX
@@ -425,6 +425,9 @@ int main() {
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_CUBE_MAP, envCubeMap);
 
+		model = glm::mat4(1.0f);
+		model = glm::translate(model, glm::vec3(0.0, 0.0, -10.0f));
+		model = glm::scale(model, glm::vec3(3.0f, 3.0f, 3.0f));
 		DrawCube(skyBoxShader, model, view, projection, cubeVAO);
 
 
