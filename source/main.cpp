@@ -214,13 +214,16 @@ int main() {
 
 	glViewport(0, 0, 512, 512);
 	glBindFramebuffer(GL_FRAMEBUFFER, convertFBO);
-
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X , envCubeMap, 0);
+	glDisable(GL_CULL_FACE);
+	for (int i = 0; i < 6; ++i)
+	{
+		glBindFramebuffer(GL_FRAMEBUFFER, convertFBO);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, envCubeMap, 0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		int CUBE_MAP;
-		glGetIntegerv(GL_TEXTURE_CUBE_MAP_POSITIVE_X , &CUBE_MAP);
+		int CUBE_MAP = 0;
 		std::cout << "GL_TEXTUre_CUBE_MAP in use is :" << CUBE_MAP<< std::endl;
-		DrawCube(hdrToCubeMapShader, glm::mat4(1.0f), captureProjection, captureViews[2], cubeVAO);
+		DrawCube(hdrToCubeMapShader, glm::mat4(1.0f), captureProjection, captureViews[i], cubeVAO);
+	}
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
