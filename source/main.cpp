@@ -159,7 +159,7 @@ int main() {
 	unsigned int brickWall = loadTexture("Assets/Textures/AdvancedLightning/brickwall.jpg", false);
 	unsigned int normalMap = loadTexture("Assets/Textures/AdvancedLightning/brickwall_normal.jpg", false);
 	unsigned int floorNormalMap = loadTexture("Assets/Textures/AdvancedLightning/floor_normal.jpg", false);
-	unsigned int equirectangular = loadIrradianceMap("Assets/Textures/HDR/newport_loft.hdr");
+	unsigned int hdrTexture = loadIrradianceMap("Assets/Textures/HDR/christams.hdr");
 
 	//------------------------------------------------
 	// Converting from equirectangular to CUBE map FBO
@@ -179,7 +179,7 @@ int main() {
 	glBindTexture(GL_TEXTURE_CUBE_MAP, envCubeMap);
 	for (unsigned int i = 0; i < 6; ++i)
 	{
-		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F, 512, 512, 0, GL_RGB, GL_FLOAT, nullptr);
+		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGBA32F, 512, 512, 0, GL_RGB, GL_FLOAT, nullptr);
 	}
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
@@ -210,7 +210,7 @@ int main() {
 
 	hdrToCubeMapShader.use();
 	hdrToCubeMapShader.setInt("equirectangularMap", 0);
-	useTexture(0, equirectangular);
+	useTexture(0, hdrTexture);
 
 	glViewport(0, 0, 512, 512);
 	glBindFramebuffer(GL_FRAMEBUFFER, convertFBO);
@@ -221,7 +221,7 @@ int main() {
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, envCubeMap, 0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		int CUBE_MAP = 0;
-		std::cout << "GL_TEXTUre_CUBE_MAP in use is :" << CUBE_MAP<< std::endl;
+		std::cout << "GL_TEXTURE_CUBE_MAP in use is :" << CUBE_MAP<< std::endl;
 		DrawCube(hdrToCubeMapShader, glm::mat4(1.0f), captureProjection, captureViews[i], cubeVAO);
 	}
 
