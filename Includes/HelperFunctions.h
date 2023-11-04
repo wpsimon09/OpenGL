@@ -95,6 +95,8 @@ unsigned int loadTexture(char const* path)
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
+		
+
 		stbi_image_free(data);
 	}
 	else
@@ -112,17 +114,24 @@ unsigned int loadIrradianceMap(const char *path)
 	int width, height, nrComponents;
 
 	float* data = stbi_loadf(path, &width, &height, &nrComponents, 0);
+	
 
 	if (data)
 	{
 		glGenTextures(1, &textureID);
 		glBindTexture(GL_TEXTURE_2D, textureID);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, width, height, 0, GL_RGB,
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, width, height, 0, GL_RGB,
 			GL_FLOAT, data);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+		std::cout << "HDRi texture loaded! " << std::endl;
+		std::cout << "Width: " << width << std::endl;
+		std::cout << "Height: " << height << std::endl;
+		std::cout << "Nr components: " << nrComponents << std::endl <<std::endl;
+
 		stbi_image_free(data);
 	}
 	else

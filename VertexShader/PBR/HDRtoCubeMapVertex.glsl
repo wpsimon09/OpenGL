@@ -5,9 +5,14 @@ out vec3 WorldPos;
 
 uniform mat4  projection;
 uniform mat4 view;
-
+uniform mat4 model;
 void main()
 {
 	WorldPos = aPos;
-	gl_Position = projection * view * vec4(WorldPos, 1.0);
+	
+	mat4 rotView = mat4(mat3(view));
+	vec4 clipPos = projection * rotView * vec4(WorldPos, 1.0);
+
+	gl_Position = clipPos.xyww;
+	//gl_Position = projection * view * model * vec4(aPos, 1.0);
 }
