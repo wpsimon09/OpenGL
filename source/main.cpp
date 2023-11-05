@@ -159,7 +159,7 @@ int main() {
 	unsigned int brickWall = loadTexture("Assets/Textures/AdvancedLightning/brickwall.jpg", false);
 	unsigned int normalMap = loadTexture("Assets/Textures/AdvancedLightning/brickwall_normal.jpg", false);
 	unsigned int floorNormalMap = loadTexture("Assets/Textures/AdvancedLightning/floor_normal.jpg", false);
-	unsigned int hdrTexture = loadIrradianceMap("Assets/Textures/HDR/christams.hdr");
+	unsigned int hdrTexture = loadIrradianceMap("Assets/Textures/HDR/christmass_square.hdr");
 
 	//------------------------------------------------
 	// Converting from equirectangular to CUBE map FBO
@@ -175,7 +175,7 @@ int main() {
 	lightSourceShader.setInt("lightTexture", 0);
 
 	PBRShader.use();
-	PBRShader.setVec3("albedo", colorOf(255.0f, 0.0f, 245.0f));
+	PBRShader.setVec3("albedo", colorOf(173.0f, 216.0f, 230.0f));
 	PBRShader.setFloat("ao", 1.0f);
 
 	skyBoxShader.use();

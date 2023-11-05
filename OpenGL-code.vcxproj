@@ -180,6 +180,7 @@
     <None Include="Assets\Model\spaceship\model\texture\spaceShip.fbx" />
     <None Include="Assets\Model\stormtrooper\stormtrooper.mtl" />
     <None Include="Assets\Textures\HDR\christams.hdr" />
+    <None Include="Assets\Textures\HDR\christmass_square.hdr" />
     <None Include="Assets\Textures\HDR\newport_loft.hdr" />
     <None Include="FragmentShader\AdvancedLightning\AdvancedLightningFragmnet.glsl" />
     <None Include="FragmentShader\AdvancedLightning\FinalFragment.glsl" />

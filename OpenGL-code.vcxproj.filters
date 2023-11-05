@@ -121,6 +121,7 @@
     <None Include="VertexShader\PBR\SkyBoxVertex.glsl" />
     <None Include="FragmentShader\PBR\SkyBoxFragment.glsl" />
     <None Include="Assets\Textures\HDR\christams.hdr" />
+    <None Include="Assets\Textures\HDR\christmass_square.hdr" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\Textures\container.jpg">
