@@ -1,8 +1,8 @@
 #version 330 core
 
-//------------------------------------------------
-// OFFSETS FOR THE PCF (percentage close filtering
-//------------------------------------------------
+//-------------------------------------------------
+// OFFSETS FOR THE PCF (percentage close filtering)
+//-------------------------------------------------
 vec3 sampleOffsetDirections[20] = vec3[]
 (
     vec3( 1, 1, 1), vec3( 1, -1, 1), vec3(-1, -1, 1), vec3(-1, 1, 1),
@@ -45,10 +45,11 @@ float caclualteShadow(vec3 FragPos, float bias)
         
     //use the directional vector to sample from the cube map and retrieve the depth value
     float closestDepth = texture(shadowMap, fragToLight).r;
-    //retrieve the length between light and the current fragment 
+    
+		//retrieve the length between light and the current fragment 
     float curentDepth = length(fragToLight);
 
-    //grap the pixel around the targeted fragemnt
+    //grab the pixel around the targeted fragemnt
     for(int i = 0; i <samples; ++i)
     {
         //take the sample that is not direcetly in the direction of the direction vector but slightly moved away
@@ -57,9 +58,9 @@ float caclualteShadow(vec3 FragPos, float bias)
         //right now it is in the range [0, 1] we want it to be in the rangle of [0, far_plane]
         // so that we can compare it later on
         closestDepth *= far_plane;
+
         if(curentDepth - bias > closestDepth)
             shadow += 1.0;
-
     }
 
     //get the average of the shadow strenth
