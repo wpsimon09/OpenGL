@@ -164,8 +164,8 @@ int main() {
 	//------------------------------------------------
 	// Converting from equirectangular to CUBE map FBO
 	//------------------------------------------------
-	const int TEXTURE_WIDTH = 3980;
-	const int TEXTURE_HEIGHT = 3980;
+	const int TEXTURE_WIDTH = 4095;
+	const int TEXTURE_HEIGHT = 4095;
 
 	floorShader.use();
 	floorShader.setInt("texture_diffuse0", 0);
