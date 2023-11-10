@@ -159,13 +159,13 @@ int main() {
 	unsigned int brickWall = loadTexture("Assets/Textures/AdvancedLightning/brickwall.jpg", false);
 	unsigned int normalMap = loadTexture("Assets/Textures/AdvancedLightning/brickwall_normal.jpg", false);
 	unsigned int floorNormalMap = loadTexture("Assets/Textures/AdvancedLightning/floor_normal.jpg", false);
-	unsigned int hdrTexture = loadIrradianceMap("Assets/Textures/HDR/christmass_square.hdr");
+	unsigned int hdrTexture = loadIrradianceMap("Assets/Textures/HDR/farmhouse.hdr");
 
 	//------------------------------------------------
 	// Converting from equirectangular to CUBE map FBO
 	//------------------------------------------------
-	const int TEXTURE_WIDTH = 4095;
-	const int TEXTURE_HEIGHT = 4095;
+	const int TEXTURE_WIDTH = 4000;
+	const int TEXTURE_HEIGHT = 4000;
 
 	floorShader.use();
 	floorShader.setInt("texture_diffuse0", 0);
@@ -175,7 +175,7 @@ int main() {
 	lightSourceShader.setInt("lightTexture", 0);
 
 	PBRShader.use();
-	PBRShader.setVec3("albedo", colorOf(173.0f, 216.0f, 230.0f));
+	PBRShader.setVec3("albedo", colorOf(165.0f, 42.0f, 42.0f));
 	PBRShader.setFloat("ao", 1.0f);
 
 	skyBoxShader.use();
@@ -217,7 +217,7 @@ int main() {
 	glBindTexture(GL_TEXTURE_CUBE_MAP, envCubeMap);
 	for (int i = 0; i < 6; ++i)
 	{
-		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB32F, TEXTURE_WIDTH, TEXTURE_HEIGHT, 0, GL_RGB, GL_FLOAT, nullptr);
+		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F, TEXTURE_WIDTH, TEXTURE_HEIGHT, 0, GL_RGB, GL_FLOAT, nullptr);
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
