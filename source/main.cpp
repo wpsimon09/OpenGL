@@ -82,7 +82,7 @@ int main() {
 	unsigned int colums = 5;
 	unsigned int totalAmount = rows * colums;
 
-	Shader PBRShader("VertexShader/PBR/PBRVertex.glsl", "FragmentShader/PBR/PBRFragment.glsl", "PBR shader");
+	Shader PBRShader("VertexShader/PBR/PBRVertex.glsl", "FragmentShader/PBR/PBRFragmentIBL_DIffuse.glsl", "PBR shader");
 
 	Shader lightSourceShader("VertexShader/AdvancedLightning/LightSourceVertex.glsl", "FragmentShader/AdvancedLightning/LightSourceFragment.glsl", "light sourece");
 
@@ -161,7 +161,7 @@ int main() {
 	unsigned int brickWall = loadTexture("Assets/Textures/AdvancedLightning/brickwall.jpg", false);
 	unsigned int normalMap = loadTexture("Assets/Textures/AdvancedLightning/brickwall_normal.jpg", false);
 	unsigned int floorNormalMap = loadTexture("Assets/Textures/AdvancedLightning/floor_normal.jpg", false);
-	unsigned int hdrTexture = loadIrradianceMap("Assets/Textures/HDR/christams.hdr");
+	unsigned int hdrTexture = loadIrradianceMap("Assets/Textures/HDR/newport_loft.hdr");
 
 	//------------------------------------------------
 	// Converting from equirectangular to CUBE map FBO
@@ -289,12 +289,13 @@ int main() {
 	glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
 	for (unsigned int i = 0; i < 6; ++i)
 	{
-		envToIrrandianceShader.setMat4("view", captureViews[i]);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, irradianceMap, 0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		DrawCube(envToIrrandianceShader, glm::mat4(1.0), captureViews[i], captureProjection, cubeVAO);
 	}
 
+	PBRShader.use();
+	PBRShader.setInt("irradianceMap", 0);
 
 	//=====================================================================================//
 	//==================================== RENDER LOOOP ===================================//
@@ -338,6 +339,8 @@ int main() {
 		//draw the scene to the depth map
 		glCullFace(GL_FRONT);
 		shadowMapShader.use();
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, irradianceMap);
 		for (int row = 0; row < nrRows; ++row)
 		{
 			PBRShader.setFloat("metallic", (float)row / (float)nrRows);
@@ -465,7 +468,7 @@ int main() {
 		//------------
 		skyBoxShader.use();
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_CUBE_MAP, irradianceMap);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, envCubeMap);
 		DrawCube(skyBoxShader, model, view, projection, cubeVAO);
 
 

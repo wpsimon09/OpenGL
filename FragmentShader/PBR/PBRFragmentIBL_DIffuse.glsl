@@ -11,6 +11,8 @@ in VS_OUT {
     float hasNormalMap;
 }fs_in;
 
+uniform samplerCube irradianceMap;
+
 uniform vec3 lightPositions[5];
 uniform vec3 lightColors[5];
 uniform vec3 camPos;
@@ -28,6 +30,11 @@ const float PI = 3.14159265359;
 vec3 FresnelShlick(float cosTheta, vec3 F0)
 {
     return F0 + (1.0 - F0) * pow(1.0 - cosTheta, 5.0);   
+}
+
+vec3 FresnelShlickRoughness(float cosTheta, vec3 F0, float roughness)
+{
+    return F0 + (max(vec3(1.0 - roughness), F0) - F0) * pow(1.0 - cosTheta, 5.0);
 }
 
 // N in the eqation
@@ -132,14 +139,38 @@ void main()
         Lo += (kD * albedo /PI + specular) * radiance * NdotL;
     }
 
-    vec3 ambient = vec3(0.03) * albedo * ao;
+    //--------------------
+    // DIFFUSE IRRANDIANCE
+    //--------------------
+    vec3 kS = FresnelShlickRoughness(max(dot(N, V), 0.0), F0, roughness);
+    vec3 kD = 1.0 - kS;
+    vec3 irradiance = texture(irradianceMap, N).rgb;
+    vec3 diffuse = irradiance * albedo;
+    vec3 ambient = (kD * diffuse) * ao;
+    
     vec3 color = ambient + Lo;
 
     //HDR
-    color = color/ (color + vec3(1.0));
+    color = color / (color + vec3(1.0));
     
     // gamma corection
     color = pow(color,vec3(1.0/2.2));
+    if(gl_FragCoord.x<600)
+    {
+        FragColor = vec4(color, 1.0);
+    }
+    else{
+         vec3 ambient = vec3(0.03) * albedo * ao;
+            vec3 color = ambient + Lo;
 
-    FragColor = vec4(color, 1.0);
+            //HDR
+            color = color/ (color + vec3(1.0));
+            
+            // gamma corection
+            color = pow(color,vec3(1.0/2.2));
+
+            FragColor = vec4(color, 1.0);
+    }
+   
+
 }
