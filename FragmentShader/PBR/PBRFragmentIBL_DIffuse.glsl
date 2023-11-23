@@ -142,7 +142,7 @@ void main()
     //--------------------
     // DIFFUSE IRRANDIANCE
     //--------------------
-    vec3 kS = FresnelShlickRoughness(max(dot(N, V), 0.0), F0, roughness);
+    vec3 kS = FresnelShlick(max(dot(N, V), 0.0), F0);
     vec3 kD = 1.0 - kS;
     vec3 irradiance = texture(irradianceMap, N).rgb;
     vec3 diffuse = irradiance * albedo;
@@ -155,22 +155,7 @@ void main()
     
     // gamma corection
     color = pow(color,vec3(1.0/2.2));
-    if(gl_FragCoord.x<600)
-    {
-        FragColor = vec4(color, 1.0);
-    }
-    else{
-         vec3 ambient = vec3(0.03) * albedo * ao;
-            vec3 color = ambient + Lo;
-
-            //HDR
-            color = color/ (color + vec3(1.0));
-            
-            // gamma corection
-            color = pow(color,vec3(1.0/2.2));
-
-            FragColor = vec4(color, 1.0);
-    }
-   
+    
+    FragColor = vec4(color , 1.0);
 
 }

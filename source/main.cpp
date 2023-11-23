@@ -161,7 +161,7 @@ int main() {
 	unsigned int brickWall = loadTexture("Assets/Textures/AdvancedLightning/brickwall.jpg", false);
 	unsigned int normalMap = loadTexture("Assets/Textures/AdvancedLightning/brickwall_normal.jpg", false);
 	unsigned int floorNormalMap = loadTexture("Assets/Textures/AdvancedLightning/floor_normal.jpg", false);
-	unsigned int hdrTexture = loadIrradianceMap("Assets/Textures/HDR/newport_loft.hdr");
+	unsigned int hdrTexture = loadIrradianceMap("Assets/Textures/HDR/christams.hdr");
 
 	//------------------------------------------------
 	// Converting from equirectangular to CUBE map FBO
