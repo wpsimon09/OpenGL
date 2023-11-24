@@ -26,8 +26,8 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 
 //screen coordinates
-int SCR_WIDTH = 1800;
-int SCR_HEIGHT = 1600;
+int SCR_WIDTH = 800;
+int SCR_HEIGHT = 600;
 
 // camera
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
@@ -49,6 +49,8 @@ bool isLightBlinn = true;
 //light possition
 glm::vec3 lightPosition(0.0f, 2.0f, -1.0f);
 
+float roughness = 0.0;
+float metellness = 0.0;
 
 int main() {
 	glfwInit();
@@ -230,26 +232,8 @@ int main() {
 		glm::mat4 lightModel = glm::mat4(1.0f);
 		lightModel = glm::scale(lightModel, glm::vec3(6.0f));
 		//draw the scene to the depth map
-		glCullFace(GL_FRONT);
-		shadowMapShader.use();
-		for (int row = 0; row < nrRows; ++row)
-		{
-			PBRShader.setFloat("metallic", (float)row / (float)nrRows);
-			for (int col = 0; col < nrColumns; ++col)
-			{
-				PBRShader.setFloat("roughness", glm::clamp((float)col / (float)nrColumns, 0.05f, 1.0f));
-
-				lightModel = glm::mat4(1.0f);
-
-				lightModel = glm::translate(lightModel, glm::vec3(
-					(col - (nrColumns / 2)) * spacing,
-					(row - (nrRows / 2)) * spacing,
-					0.0f
-				));
-				DrawSphere(PBRShader, lightModel, lightView, lightProjection, sphereVAO, indexNum);
-			}
-		}
-		glCullFace(GL_BACK);
+		//glCullFace(GL_FRONT);
+		DrawCube(shadowMapShader, lightModel, lightView, lightProjection, cubeVAO);
 
 		//--------------------------------------//
 		//---------- NORMAL SCENE -------------//
@@ -258,7 +242,8 @@ int main() {
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glClearColor(0.01f, 0.01f, 0.01f, 1.0f);
-		
+		glDisable(GL_CULL_FACE);
+
 		glm::mat4 view = camera.GetViewMatrix();
 		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
 		glm::mat4 model = glm::mat4(1.0f);
@@ -270,23 +255,15 @@ int main() {
 		PBRShader.use();
 		PBRShader.setVec3("camPos", camera.Position);
 
-		for (int row = 0; row < nrRows; ++row)
-		{
-			PBRShader.setFloat("metallic", (float)row / (float)nrRows);
-			for (int col = 0; col < nrColumns; ++col)
-			{
-				PBRShader.setFloat("roughness", glm::clamp((float)col / (float)nrColumns, 0.05f, 1.0f));
+		PBRShader.setFloat("metallic", metellness);
 
-				model = glm::mat4(1.0f);
+		PBRShader.setFloat("roughness", roughness);
 
-				model = glm::translate(model, glm::vec3(
-					(col - (nrColumns / 2)) * spacing,
-					(row - (nrRows / 2)) * spacing,
-					0.0f
-				));
-				DrawSphere(PBRShader, model, view, projection, sphereVAO, indexNum);
-			}
-		}
+		model = glm::mat4(1.0f);
+		model = glm::translate(model, glm::vec3(0.0f, 1.0f, 0.0f));
+
+		DrawCube(PBRShader, model, view, projection, cubeVAO);
+		
 
 		//set light properties
 		for (unsigned int i = 0; i < 5; ++i)
@@ -346,12 +323,12 @@ int main() {
 		useTexture(0, floorTexture);
 		useTexture(1, depthMap);
 		model = glm::mat4(1.0f);
-		model = glm::translate(model, glm::vec3(0.0f, -10.0f, 0.0f));
 		floorShader.setMat4("lightMatrix", lightSpaceMatrix);
 		floorShader.setVec3("lightPos", lightPosition);
 		floorShader.setVec3("lightColor", lightColor);
 		floorShader.setVec3("viewPos", camera.Position);
 		DrawPlane(floorShader, model, view, projection, planeVAO);
+		glEnable(GL_CULL_FACE);
 
 
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
@@ -399,9 +376,13 @@ void processInput(GLFWwindow *window)
 	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
 		lightPosition.y += lightSpeed;
 	if (glfwGetKey(window, GLFW_KEY_N) == GLFW_PRESS)
-		hasNormalMap = 1.0f;
+		metellness += 0.001f;
 	if (glfwGetKey(window, GLFW_KEY_M) == GLFW_PRESS)
-		hasNormalMap = 0.0f;
+		metellness -= 0.001;
+	if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS)
+		roughness += 0.001f;
+	if (glfwGetKey(window, GLFW_KEY_T) == GLFW_PRESS)
+		roughness -= 0.001f;
 
 }
 
