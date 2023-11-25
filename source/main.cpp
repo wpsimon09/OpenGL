@@ -174,7 +174,7 @@ int main() {
 	lightSourceShader.setInt("lightTexture", 0);
 
 	PBRShader.use();
-	PBRShader.setVec3("albedo", colorOf(255.0f, 0.0f, 245.0f));
+	PBRShader.setVec3("albedo", colorOf(22.0f, 22.0f, 22.0f));
 	PBRShader.setFloat("ao", 1.0f);
 
 	glm::vec3 lightPositions[] = {
@@ -228,12 +228,13 @@ int main() {
 		//combine them together to get the matrix that transfoms coordinates from view space to light space
 		// in the notes as T 
 		glm::mat4 lightSpaceMatrix = lightProjection * lightView;
-
+		shadowMapShader.use();
+		shadowMapShader.setMat4("lightSpaceMatrix", lightSpaceMatrix);
+	
 		glm::mat4 lightModel = glm::mat4(1.0f);
-		lightModel = glm::scale(lightModel, glm::vec3(6.0f));
 		//draw the scene to the depth map
 		//glCullFace(GL_FRONT);
-		DrawCube(shadowMapShader, lightModel, lightView, lightProjection, cubeVAO);
+		DrawShadowMapCube(shadowMapShader, lightModel, cubeVAO);
 
 		//--------------------------------------//
 		//---------- NORMAL SCENE -------------//
