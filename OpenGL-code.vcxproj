@@ -199,6 +199,7 @@
     <None Include="FragmentShader\PBR\PBRFragment.glsl" />
     <None Include="FragmentShader\PBR\PBRFragmentIBL_DIffuse.glsl" />
     <None Include="FragmentShader\PBR\PBRFragmentTextures.glsl" />
+    <None Include="FragmentShader\PBR\PrefilteringHDRFragment.glsl" />
     <None Include="VertexShader\PBR\SkyBoxVertex.glsl" />
     <None Include="VertexShader\AdvancedLightning\AdvancedLightningVertex.glsl" />
     <None Include="VertexShader\AdvancedLightning\FinalVertex.glsl" />

@@ -98,6 +98,8 @@ int main() {
 
 	Shader skyBoxShader("VertexShader/PBR/SkyBoxVertex.glsl", "FragmentShader/PBR/SkyBoxFragment.glsl", "Sky box shader");
 	
+	Shader envToPrefilterHDR("VertexShader/PBR/HDRtoCubeMapVertex.glsl","FragmentShader/PBR/PrefilteringHDRFragment.glsl" )
+
 	stbi_set_flip_vertically_on_load(true);
 
 	// plane VAO
@@ -293,6 +295,25 @@ int main() {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		DrawCube(envToIrrandianceShader, glm::mat4(1.0), captureViews[i], captureProjection, cubeVAO);
 	}
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	//---------------------------------
+	// ENV TO PREFILTER MAP (roughness)
+	//---------------------------------
+	unsigned int prefilterMap;
+	glGenTextures(1, &prefilterMap);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, prefilterMap);
+	for (int i = 0; i < 6; ++i)
+	{
+		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X, 0, GL_RGB16F, 128, 128, 0, GL_RGB, GL_FLOAT, nullptr);
+	}
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER,GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
+
 
 	PBRShader.use();
 	PBRShader.setInt("irradianceMap", 0);
