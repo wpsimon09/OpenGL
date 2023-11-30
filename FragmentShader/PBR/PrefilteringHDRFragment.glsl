@@ -51,7 +51,7 @@ vec3 importanceSampleGGX(vec2 Xi, vec3 N, float rougness)
 
 void main()
 {
-	const uint SAMPLE_COUNT = 4096u;
+	const uint SAMPLE_COUNT = 1096u;
 	//get normal, reflection and view direction vectors
 	vec3 N = normalize(localPos); //w_o output direction
 	vec3 R = N;

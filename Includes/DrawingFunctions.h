@@ -12,8 +12,6 @@
 /// <param name="view">View matrix that will be used NOTE: name of uniform must be "view"</param>
 /// <param name="projection">Projection matrix that will be used NOTE: name of uniform must be "projection"</param>
 /// <param name="VAO">VAO that holds data for rendering</param>
-/// <param name="texture">actual texture image to use</param>
-/// <param name="textureSamplerNumber">texture image sampler number</param>
 /// <param name=""></param>
 void DrawCube(Shader shader, glm::mat4 model, glm::mat4 view, glm::mat4 projection, unsigned int VAO)
 {
