@@ -95,7 +95,7 @@ vec2 IntagrateBRDF(float NdotV, float roughness)
 		vec3 H = importanceSampleGGX(Xi, N, roughness);
 
 		//calculate the light direction
-		vec3 L = normalize(2* dot(V, H) * H-V);
+		vec3 L = normalize(2.0* dot(V, H) * H-V);
 
 		float NdotL = max(L.z, 0.0);
 		float NdotH = max(H.z, 0.0);
@@ -114,7 +114,7 @@ vec2 IntagrateBRDF(float NdotV, float roughness)
 	A /= float(SAMPLE_COUNT);
 	B /= float(SAMPLE_COUNT);
 
-	return vec2 (A,B);
+	return vec2(A,B);
 }
 
 void main()

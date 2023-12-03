@@ -108,7 +108,7 @@ int main() {
 	stbi_set_flip_vertically_on_load(true);
 
 	// plane VAO
-	unsigned int planeVAO = createVAO(screeneSpaceQuadVertecies, sizeof(screeneSpaceQuadVertecies) / sizeof(float), false);
+	unsigned int planeVAO = createVAO(screeneSpaceQuadVertecies, sizeof(screeneSpaceQuadVertecies) / sizeof(float), false, true);
 	
 	//VBO, EBO and VAO for the square that represents light position
 	unsigned int lightVAO = createVAO(lightVertices, sizeof(lightVertices) / sizeof(float), false);
@@ -553,8 +553,6 @@ int main() {
 		lutDebug.use();
 		useTexture(0, brdfLUTTexture);
 		DrawPlane(lutDebug, glm::mat4(1.0), glm::mat4(1.0), glm::mat4(1.0), planeVAO, GL_TRIANGLE_STRIP, 4);
-
-
 
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
 		// -------------------------------------------------------------------------------
