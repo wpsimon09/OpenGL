@@ -194,12 +194,16 @@
     <None Include="FragmentShader\FloorFragment.glsl" />
     <None Include="FragmentShader\FragmentShader.glsl" />
     <None Include="FragmentShader\LightFragmentShader.glsl" />
+    <None Include="FragmentShader\LutTextureDebugFragment.glsl" />
+    <None Include="FragmentShader\PBR\BRDFLutFragment.glsl" />
     <None Include="FragmentShader\PBR\EnviromentToIrradianceFragment.glsl" />
     <None Include="FragmentShader\PBR\HDRtoCubeMapFragment.glsl" />
     <None Include="FragmentShader\PBR\PBRFragment.glsl" />
     <None Include="FragmentShader\PBR\PBRFragmentIBL_DIffuse.glsl" />
     <None Include="FragmentShader\PBR\PBRFragmentTextures.glsl" />
     <None Include="FragmentShader\PBR\PrefilteringHDRFragment.glsl" />
+    <None Include="VertexShader\LutTextureDebugVertex.glsl" />
+    <None Include="VertexShader\PBR\LutTextureVertex.glsl" />
     <None Include="VertexShader\PBR\SkyBoxVertex.glsl" />
     <None Include="VertexShader\AdvancedLightning\AdvancedLightningVertex.glsl" />
     <None Include="VertexShader\AdvancedLightning\FinalVertex.glsl" />

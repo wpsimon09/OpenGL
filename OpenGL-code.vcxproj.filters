@@ -127,6 +127,10 @@
     <None Include="FragmentShader\PBR\EnviromentToIrradianceFragment.glsl" />
     <None Include="FragmentShader\PBR\PBRFragmentIBL_DIffuse.glsl" />
     <None Include="FragmentShader\PBR\PrefilteringHDRFragment.glsl" />
+    <None Include="FragmentShader\PBR\BRDFLutFragment.glsl" />
+    <None Include="VertexShader\PBR\LutTextureVertex.glsl" />
+    <None Include="VertexShader\LutTextureDebugVertex.glsl" />
+    <None Include="FragmentShader\LutTextureDebugFragment.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\Textures\container.jpg">

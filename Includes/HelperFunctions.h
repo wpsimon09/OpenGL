@@ -216,6 +216,14 @@ float planeVertices[] = {
 	 200.0f, -0.5f, -200.0f,  0.0f, 1.0f, 0.0f,  200.0f, 200.0f
 };
 
+float screeneSpaceQuadVertecies[] = {
+	// positions        // texture Coords
+   -1.0f,  1.0f, 0.0f, 0.0f, 1.0f,
+   -1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
+	1.0f,  1.0f, 0.0f, 1.0f, 1.0f,
+	1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
+};
+
 float lightVertices[] = {
 	// positions          // texture coords
 	0.0f, 0.0f, 0.0f,	  0.0f, 0.0f,

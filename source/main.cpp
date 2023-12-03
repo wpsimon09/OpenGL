@@ -101,14 +101,15 @@ int main() {
 	
 	Shader envToPrefilter("VertexShader/PBR/HDRtoCubeMapVertex.glsl", "FragmentShader/PBR/PrefilteringHDRFragment.glsl", "Prefiltering cube map");
 
+	Shader brdfLutTextureShader("VertexShader/PBR/LutTextureVertex.glsl", "FragmentShader/PBR/BRDFLutFragment.glsl", "LUT_Textue map");
+
+	Shader lutDebug("VertexShader/LutTextureDebugVertex.glsl", "FragmentShader/LutTextureDebugFragment.glsl", "LUT_Texture_DEBUG");
+
 	stbi_set_flip_vertically_on_load(true);
 
 	// plane VAO
-	unsigned int planeVAO = createVAO(planeVertices, sizeof(planeVertices) / sizeof(float));
-
-	//final frame buffer VAO
-	unsigned int screenQuadVAO = createVAO(HDRframeBufferVertecies, sizeof(planeVertices) / sizeof(float), false, true);
-
+	unsigned int planeVAO = createVAO(screeneSpaceQuadVertecies, sizeof(screeneSpaceQuadVertecies) / sizeof(float), false);
+	
 	//VBO, EBO and VAO for the square that represents light position
 	unsigned int lightVAO = createVAO(lightVertices, sizeof(lightVertices) / sizeof(float), false);
 
@@ -346,11 +347,33 @@ int main() {
 	}
 	glBindFramebuffer(0, GL_FRAMEBUFFER);
 
+	unsigned int brdfLUTTexture;
+	glGenTextures(1, &brdfLUTTexture);
+	glBindTexture(GL_TEXTURE_2D, brdfLUTTexture);
 
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RG16F, 512, 512, 0, GL_RG, GL_FLOAT, 0);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
+	glBindRenderbuffer(GL_RENDERBUFFER, captureRBO);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, 512,512);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, brdfLUTTexture, 0);
+
+	glViewport(0, 0, 512, 512);
+	brdfLutTextureShader.use();
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	DrawPlane(brdfLutTextureShader, glm::mat4(1.0), glm::mat4(1.0), glm::mat4(1.0), planeVAO, GL_TRIANGLE_STRIP, 4);
+	
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	PBRShader.use();
 	PBRShader.setInt("irradianceMap", 0);
 
+	lutDebug.use();
+	lutDebug.setInt("LUTTexture", 0);
 	//=====================================================================================//
 	//==================================== RENDER LOOOP ===================================//
 	//=====================================================================================//
@@ -469,7 +492,6 @@ int main() {
 
 		}
 
-
 		//-----------------------
 		// DRAW THE LIGHT SOURCES
 		//-----------------------
@@ -501,7 +523,7 @@ int main() {
 		lightSourceShader.setMat4("model", model);
 		lightSourceShader.setVec3("lightColor", lightColor);
 		useTexture(0, dirLightTexture);
-		DrawPlane(lightSourceShader, model, view, projection, lightVAO);
+		DrawPlane(lightSourceShader, model, view, projection, planeVAO);
 
 		//----------------------
 		// DRAW PLANE AS A FLOOR
@@ -524,6 +546,14 @@ int main() {
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_CUBE_MAP, envCubeMap);
 		DrawCube(skyBoxShader, model, view, projection, cubeVAO);
+		
+		//----------------------
+		// DRAW BRDF LUT TEXTURE
+		//----------------------
+		lutDebug.use();
+		useTexture(0, brdfLUTTexture);
+		DrawPlane(lutDebug, glm::mat4(1.0), glm::mat4(1.0), glm::mat4(1.0), planeVAO, GL_TRIANGLE_STRIP, 4);
+
 
 
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
