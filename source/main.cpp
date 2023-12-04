@@ -83,7 +83,7 @@ int main() {
 	unsigned int colums = 5;
 	unsigned int totalAmount = rows * colums;
 
-	Shader PBRShader("VertexShader/PBR/PBRVertex.glsl", "FragmentShader/PBR/PBRFragmentIBL_DIffuse.glsl", "PBR shader");
+	Shader PBRShader("VertexShader/PBR/PBRVertex.glsl", "FragmentShader/PBR/PBRFragmentIBL_diffuse-specular.glsl", "PBR shader");
 
 	Shader lightSourceShader("VertexShader/AdvancedLightning/LightSourceVertex.glsl", "FragmentShader/AdvancedLightning/LightSourceFragment.glsl", "light sourece");
 
@@ -124,6 +124,7 @@ int main() {
 	//-------------------
 	// SHADOW MAP TEXTURE
 	//-------------------
+
 	//resolution of the depth map
 	const unsigned int SHADOW_HEIGHT = 1980, SHADOW_WIDTH = 1980;
 	unsigned int depthMap;
@@ -371,6 +372,8 @@ int main() {
 
 	PBRShader.use();
 	PBRShader.setInt("irradianceMap", 0);
+	PBRShader.setInt("prefilterMap", 1);
+	PBRShader.setInt("BRDFTexture", 2);
 
 	lutDebug.use();
 	lutDebug.setInt("LUTTexture", 0);
@@ -416,8 +419,8 @@ int main() {
 		//draw the scene to the depth map
 		glCullFace(GL_FRONT);
 		shadowMapShader.use();
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_CUBE_MAP, irradianceMap);
+
+
 		for (int row = 0; row < nrRows; ++row)
 		{
 			PBRShader.setFloat("metallic", (float)row / (float)nrRows);
@@ -452,10 +455,19 @@ int main() {
 		//----------------
 		// DRAW THE SPHERES
 		//-----------------
-		glCullFace(GL_BACK);
+		glDisable(GL_CULL_FACE);
 		PBRShader.use();
 		PBRShader.setVec3("camPos", camera.Position);
 
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, irradianceMap);
+
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, prefilterMap);
+
+		glActiveTexture(GL_TEXTURE2);
+		glBindTexture(GL_TEXTURE_2D, brdfLUTTexture);
+		
 		for (int row = 0; row < nrRows; ++row)
 		{
 			PBRShader.setFloat("metallic", (float)row / (float)nrRows);
@@ -471,6 +483,7 @@ int main() {
 					0.0f
 				));
 				PBRShader.setMat3("normalMatrix", glm::transpose(glm::inverse(model)));
+				
 				DrawSphere(PBRShader, model, view, projection, sphereVAO, indexNum);
 			}
 		}
@@ -509,7 +522,7 @@ int main() {
 			lightSourceShader.setMat4("model", model);
 			lightSourceShader.setVec3("lightColor", lightColors[i]);
 			useTexture(0, pointLightTexture);
-			DrawPlane(lightSourceShader, model, view, projection, lightVAO);
+			DrawPlane(lightSourceShader, model, view, projection, lightVAO, GL_TRIANGLES, 6);
 		}
 
 		PBRShader.use();
@@ -550,9 +563,9 @@ int main() {
 		//----------------------
 		// DRAW BRDF LUT TEXTURE
 		//----------------------
-		lutDebug.use();
+		/*lutDebug.use();
 		useTexture(0, brdfLUTTexture);
-		DrawPlane(lutDebug, glm::mat4(1.0), glm::mat4(1.0), glm::mat4(1.0), planeVAO, GL_TRIANGLE_STRIP, 4);
+		DrawPlane(lutDebug, glm::mat4(1.0), glm::mat4(1.0), glm::mat4(1.0), planeVAO, GL_TRIANGLE_STRIP, 4);*/
 
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
 		// -------------------------------------------------------------------------------

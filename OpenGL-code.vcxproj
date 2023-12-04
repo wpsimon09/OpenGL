@@ -199,6 +199,7 @@
     <None Include="FragmentShader\PBR\EnviromentToIrradianceFragment.glsl" />
     <None Include="FragmentShader\PBR\HDRtoCubeMapFragment.glsl" />
     <None Include="FragmentShader\PBR\PBRFragment.glsl" />
+    <None Include="FragmentShader\PBR\PBRFragmentIBL_diffuse-specular.glsl" />
     <None Include="FragmentShader\PBR\PBRFragmentIBL_DIffuse.glsl" />
     <None Include="FragmentShader\PBR\PBRFragmentTextures.glsl" />
     <None Include="FragmentShader\PBR\PrefilteringHDRFragment.glsl" />
