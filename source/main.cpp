@@ -103,7 +103,7 @@ int main() {
 
 	Shader brdfLutTextureShader("VertexShader/PBR/LutTextureVertex.glsl", "FragmentShader/PBR/BRDFLutFragment.glsl", "LUT_Textue map");
 
-	Shader lutDebug("VertexShader/LutTextureDebugVertex.glsl", "FragmentShader/LutTextureDebugFragment.glsl", "LUT_Texture_DEBUG");
+	Shader lutDebug("VertexShader/LutTextureDebugVertex.glsl", "FragmentShader/LutTextureDebugFragment.glsl", "LUT_Texture_qDEBUG");
 
 	stbi_set_flip_vertically_on_load(true);
 
@@ -373,7 +373,7 @@ int main() {
 	PBRShader.use();
 	PBRShader.setInt("irradianceMap", 0);
 	PBRShader.setInt("prefilterMap", 1);
-	PBRShader.setInt("BRDFTexture", 2);
+	PBRShader.setInt("BRDFtexture", 2);
 
 	lutDebug.use();
 	lutDebug.setInt("LUTTexture", 0);

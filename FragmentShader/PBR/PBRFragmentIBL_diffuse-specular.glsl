@@ -124,7 +124,7 @@ void main()
         vec3 F = FresnelShlick(max(dot(H, V), 0.0), F0);
 
         //Cook tolerance
-        //for forking with metallic materials
+        //for working with metallic materials
         //specifiing the metallness of the object
         vec3 numerator = NDF * G * F;
         float denominator = 4.0 * max(dot(N,V), 0.0) * max(dot(N,L), 0.0);
@@ -144,26 +144,25 @@ void main()
         Lo += (kD * albedo /PI + specular) * radiance * NdotL;
     }
 
-    //--------------------
-    // DIFFUSE IRRANDIANCE
-    //--------------------
+    //----------------------
+    // IMAGE BASED LIGHTING
+    //----------------------
     vec3 F = FresnelShlickRoughness(max(dot(N,V),0.0), F0, roughness);
     
     vec3 kS = F;
-    vec3 kD = 1.0 - kS;
+    vec3 kD = vec3(1.0) - kS;
     kD *= 1.0 - metallic;
 
     vec3 irradiance = texture(irradianceMap, N).rgb;
-    vec3 diffuse = irradiance * albedo;
+    vec3 diffuse = irradiance * albedo ;
     
     const float MAX_REFLECTION_LOD = 4.0;
     vec3 prefilterColor = textureLod(prefilterMap, R, roughness * MAX_REFLECTION_LOD).rgb;
- 
 
-    vec2 envBRDF = texture(BRDFtexture, vec2(max(dot(N,V), 0.0), roughness)).rg;
-    vec3 specular = prefilterColor * (F * envBRDF.x + envBRDF.y);
+    vec2 brdf = texture(BRDFtexture, vec2(max(dot(N,V), 0.0), roughness)).rg;
+    vec3 specular = prefilterColor * (kS * brdf.x +  brdf.y);
     
-    vec3 ambient = (kD * diffuse + specular) * ao;
+    vec3 ambient = (kD * diffuse + specular ) * ao ;
     vec3 color = ambient + Lo;
 
     //HDR
@@ -172,6 +171,6 @@ void main()
     // gamma corection
     color = pow(color,vec3(1.0/2.2));
     
-    FragColor = vec4(color , 1.0);
+    FragColor = vec4(color, 1.0);
 
 }
