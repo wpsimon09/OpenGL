@@ -76,7 +76,7 @@ private:
 			switch (textures[i].type)
 			{
 			case ALBEDO: {
-				this->albedo = loadTexture(textures[i].path.c_str());
+				this->albedo = loadTexture(textures[i].path.c_str(), true);
 				break;
 			}
 			case METALLIC: {
