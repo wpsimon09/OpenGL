@@ -367,8 +367,10 @@ int main() {
 	PBRShader.setInt("BRDFtexture", 2);
 
 
-	PBRTextures pbrTextures("Assets/Textures/PBR/Gold", PBRShader);
-	
+	PBRTextures gold("Assets/Textures/PBR/Gold", PBRShader);
+	PBRTextures rustedIron("Assets/Textures/PBR/RustedIron", PBRShader);
+	PBRTextures wall("Assets/Textures/PBR/Wall", PBRShader);
+
 
 	lutDebug.use();
 	lutDebug.setInt("LUTTexture", 0);
@@ -475,8 +477,17 @@ int main() {
 		//-------------
 
 		PBRShader.setMat3("normalMatrix", glm::transpose(glm::inverse(model)));
-		pbrTextures.useTextures();
+	    gold.useTextures();
+		DrawSphere(PBRShader, model, view, projection, sphereVAO, indexNum);
+		
+		model = glm::translate(model, glm::vec3(2.0f, 0.0f, 0.0f));
+		PBRShader.setMat3("normalMatrix", glm::transpose(glm::inverse(model)));
+		rustedIron.useTextures();
+		DrawSphere(PBRShader, model, view, projection, sphereVAO, indexNum);
 
+		model = glm::translate(model, glm::vec3(2.0f, 0.0f, 0.0f));
+		PBRShader.setMat3("normalMatrix", glm::transpose(glm::inverse(model)));
+		wall.useTextures();
 		DrawSphere(PBRShader, model, view, projection, sphereVAO, indexNum);
 
 		//set light properties
