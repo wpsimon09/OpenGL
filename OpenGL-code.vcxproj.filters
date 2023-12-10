@@ -132,6 +132,7 @@
     <None Include="VertexShader\LutTextureDebugVertex.glsl" />
     <None Include="FragmentShader\LutTextureDebugFragment.glsl" />
     <None Include="FragmentShader\PBR\PBRFragmentIBL_diffuse-specular.glsl" />
+    <None Include="FragmentShader\PBR\PBRFragment-IBL-textured.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\Textures\container.jpg">

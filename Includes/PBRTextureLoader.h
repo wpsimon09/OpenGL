@@ -6,11 +6,11 @@
 
 enum TextureType
 {
-	ALBEDO = 0,
-	METALLIC = 1,
-	NORMAL = 2,
-	ROUGHNESS = 3,
-	AO = 4
+	ALBEDO = 3,
+	METALLIC = 4,
+	NORMAL = 5,
+	ROUGHNESS = 6,
+	AO = 7
 };
 
 struct PBRTexture

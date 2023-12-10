@@ -14,6 +14,7 @@
 #include "DrawingFunctions.h"
 #include "VaoCreation.h"
 #include "Model.h"
+#include "PBRTextureLoader.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
@@ -83,7 +84,7 @@ int main() {
 	unsigned int colums = 5;
 	unsigned int totalAmount = rows * colums;
 
-	Shader PBRShader("VertexShader/PBR/PBRVertex.glsl", "FragmentShader/PBR/PBRFragmentIBL_diffuse-specular.glsl", "PBR shader");
+	Shader PBRShader("VertexShader/PBR/PBRVertex.glsl", "FragmentShader/PBR/PBRFragment-IBL-textured.glsl", "PBR shader");
 
 	Shader lightSourceShader("VertexShader/AdvancedLightning/LightSourceVertex.glsl", "FragmentShader/AdvancedLightning/LightSourceFragment.glsl", "light sourece");
 
@@ -174,19 +175,6 @@ int main() {
 	const int TEXTURE_WIDTH = 1980;
 	const int TEXTURE_HEIGHT = 1980;
 
-	floorShader.use();
-	floorShader.setInt("texture_diffuse0", 0);
-	floorShader.setInt("shadowMap", 1);
-
-	lightSourceShader.use();
-	lightSourceShader.setInt("lightTexture", 0);
-
-	PBRShader.use();
-	PBRShader.setVec3("albedo", COLOR_BLACK);
-	PBRShader.setFloat("ao", 1.0f);
-
-	skyBoxShader.use();
-	skyBoxShader.setInt("enviromentMap", 0);
 
 	glm::vec3 lightPositions[] = {
 		glm::vec3(-10.0f,  10.0f, 10.0f),
@@ -374,9 +362,21 @@ int main() {
 	PBRShader.setInt("irradianceMap", 0);
 	PBRShader.setInt("prefilterMap", 1);
 	PBRShader.setInt("BRDFtexture", 2);
+	PBRTextures pbrTextures("Assets/Textures/PBR/Gold", PBRShader);
+	
 
 	lutDebug.use();
 	lutDebug.setInt("LUTTexture", 0);
+
+	floorShader.use();
+	floorShader.setInt("texture_diffuse0", 0);
+	floorShader.setInt("shadowMap", 1);
+
+	lightSourceShader.use();
+	lightSourceShader.setInt("lightTexture", 0);
+
+	skyBoxShader.use();
+	skyBoxShader.setInt("enviromentMap", 0);
 	//=====================================================================================//
 	//==================================== RENDER LOOOP ===================================//
 	//=====================================================================================//
@@ -423,11 +423,8 @@ int main() {
 
 		for (int row = 0; row < nrRows; ++row)
 		{
-			PBRShader.setFloat("metallic", (float)row / (float)nrRows);
 			for (int col = 0; col < nrColumns; ++col)
 			{
-				PBRShader.setFloat("roughness", glm::clamp((float)col / (float)nrColumns, 0.05f, 1.0f));
-
 				lightModel = glm::mat4(1.0f);
 
 				lightModel = glm::translate(lightModel, glm::vec3(
@@ -470,11 +467,10 @@ int main() {
 		
 		for (int row = 0; row < nrRows; ++row)
 		{
-			PBRShader.setFloat("metallic", (float)row / (float)nrRows);
+	
 			for (int col = 0; col < nrColumns; ++col)
 			{
-				PBRShader.setFloat("roughness", glm::clamp((float)col / (float)nrColumns, 0.05f, 1.0f));
-
+				
 				model = glm::mat4(1.0f);
 
 				model = glm::translate(model, glm::vec3(
@@ -482,8 +478,9 @@ int main() {
 					(row - (nrRows / 2)) * spacing,
 					0.0f
 				));
-				PBRShader.setMat3("normalMatrix", glm::transpose(glm::inverse(model)));
 				
+				PBRShader.setMat3("normalMatrix", glm::transpose(glm::inverse(model)));
+				pbrTextures.useTextures();
 				DrawSphere(PBRShader, model, view, projection, sphereVAO, indexNum);
 			}
 		}
