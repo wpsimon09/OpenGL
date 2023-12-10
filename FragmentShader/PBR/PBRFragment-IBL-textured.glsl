@@ -120,8 +120,9 @@ void main()
     ao = texture(_aoMap, fs_in.TexCoords).r;
 
     //normal
-    vec3 N = normalize(fs_in.Normal);
-    //vec3 N = getNormalFromMap();
+    //vec3 N = normalize(fs_in.Normal);
+    vec3 N = getNormalFromMap();
+    //vec3 N = texture(_normalMap, fs_in.TexCoords).xyz;
 
     //view direction;
     vec3 V = normalize(camPos - fs_in.FragPos);
@@ -200,7 +201,7 @@ void main()
     color = color / (color + vec3(1.0));
     
     // gamma corection
-    //color = pow(color,vec3(1.0/2.2));
+    color = pow(color,vec3(1.0/2.2));
     
     FragColor = vec4(color, 1.0);
 
