@@ -361,23 +361,13 @@ int main() {
 	//------------------
 	// LOAD PBR TEXTURES
 	//------------------
-	unsigned int albedo = loadTexture("Assets/Textures/PBR/Gold/albedo.png");
-	unsigned int ao = loadTexture("Assets/Textures/PBR/Gold/ao.png");
-	unsigned int metallic = loadTexture("Assets/Textures/PBR/Gold/metallic.png");
-	unsigned int normal = loadTexture("Assets/Textures/PBR/Gold/normal.png");
-	unsigned int roughness = loadTexture("Assets/Textures/PBR/Gold/roughness.png");
-
 	PBRShader.use();
 	PBRShader.setInt("irradianceMap", 0);
 	PBRShader.setInt("prefilterMap", 1);
 	PBRShader.setInt("BRDFtexture", 2);
-	PBRShader.setInt("_albedoMap", 3);
-	PBRShader.setInt("_metallnesMap", 4);
-	PBRShader.setInt("_normalMap", 5);
-	PBRShader.setInt("_roughnessMap", 6);
-	PBRShader.setInt("_aoMap", 7);
 
-	//PBRTextures pbrTextures("Assets/Textures/PBR/Gold", PBRShader);
+
+	PBRTextures pbrTextures("Assets/Textures/PBR/Gold", PBRShader);
 	
 
 	lutDebug.use();
@@ -485,12 +475,7 @@ int main() {
 		//-------------
 
 		PBRShader.setMat3("normalMatrix", glm::transpose(glm::inverse(model)));
-		//pbrTextures.useTextures();
-		useTexture(3, albedo);
-		useTexture(4, metallic);
-		useTexture(5, normal);
-		useTexture(6, roughness);
-		useTexture(7, ao);
+		pbrTextures.useTextures();
 
 		DrawSphere(PBRShader, model, view, projection, sphereVAO, indexNum);
 

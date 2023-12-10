@@ -51,7 +51,7 @@ public:
 	void useTextures()
 	{
 		useTexture(ALBEDO, this->albedo);
-		useTexture(METALLIC, this->normal);
+		useTexture(METALLIC, this->metallic);
 		useTexture(NORMAL, this->normal);
 		useTexture(ROUGHNESS, this->roughness);
 		useTexture(AO, this->ao);
@@ -75,16 +75,26 @@ private:
 		{
 			switch (textures[i].type)
 			{
-			case ALBEDO:
-				this->albedo = loadTexture(textures[i].path.c_str(), true);
-			case METALLIC:
-				this->metallic = loadTexture(textures[i].path.c_str(), true);
-			case ROUGHNESS:
-				this->roughness = loadTexture(textures[i].path.c_str(), true);
-			case NORMAL:
-				this->normal = loadTexture(textures[i].path.c_str(), true);
-			case AO:
-				this->ao = loadTexture(textures[i].path.c_str(), true);
+			case ALBEDO: {
+				this->albedo = loadTexture(textures[i].path.c_str());
+				break;
+			}
+			case METALLIC: {
+				this->metallic = loadTexture(textures[i].path.c_str());
+				break;
+			}
+			case ROUGHNESS:{
+				this->roughness = loadTexture(textures[i].path.c_str());
+				break;
+			}
+			case NORMAL:{
+				this->normal = loadTexture(textures[i].path.c_str());
+				break;
+			}
+			case AO:{
+				this->ao = loadTexture(textures[i].path.c_str());
+				break;
+			}
 			default:
 				break;
 			}
