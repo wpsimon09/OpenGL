@@ -167,7 +167,7 @@ int main() {
 	unsigned int brickWall = loadTexture("Assets/Textures/AdvancedLightning/brickwall.jpg", false);
 	unsigned int normalMap = loadTexture("Assets/Textures/AdvancedLightning/brickwall_normal.jpg", false);
 	unsigned int floorNormalMap = loadTexture("Assets/Textures/AdvancedLightning/floor_normal.jpg", false);
-	unsigned int hdrTexture = loadIrradianceMap("Assets/Textures/HDR/sunset.hdr");
+	unsigned int hdrTexture = loadIrradianceMap("Assets/Textures/HDR/sunrise.hdr");
 
 	//------------------------------------------------
 	// Converting from equirectangular to CUBE map FBO
@@ -478,17 +478,17 @@ int main() {
 
 		PBRShader.setMat3("normalMatrix", glm::transpose(glm::inverse(model)));
 	    gold.useTextures();
-		DrawSphere(PBRShader, model, view, projection, sphereVAO, indexNum);
+		DrawCube(PBRShader, model, view, projection, cubeVAO);
 		
 		model = glm::translate(model, glm::vec3(2.0f, 0.0f, 0.0f));
 		PBRShader.setMat3("normalMatrix", glm::transpose(glm::inverse(model)));
 		rustedIron.useTextures();
-		DrawSphere(PBRShader, model, view, projection, sphereVAO, indexNum);
+		DrawCube(PBRShader, model, view, projection, cubeVAO);
 
 		model = glm::translate(model, glm::vec3(2.0f, 0.0f, 0.0f));
 		PBRShader.setMat3("normalMatrix", glm::transpose(glm::inverse(model)));
 		wall.useTextures();
-		DrawSphere(PBRShader, model, view, projection, sphereVAO, indexNum);
+		DrawCube(PBRShader, model, view, projection, cubeVAO);
 
 		//set light properties
 		for (unsigned int i = 0; i < 5; ++i)
@@ -538,7 +538,7 @@ int main() {
 		lightSourceShader.setMat4("model", model);
 		lightSourceShader.setVec3("lightColor", lightColor);
 		useTexture(0, dirLightTexture);
-		DrawPlane(lightSourceShader, model, view, projection, planeVAO);
+		DrawPlane(lightSourceShader, model, view, projection, lightVAO);
 
 		//----------------------
 		// DRAW PLANE AS A FLOOR

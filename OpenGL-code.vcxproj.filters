@@ -133,6 +133,8 @@
     <None Include="FragmentShader\LutTextureDebugFragment.glsl" />
     <None Include="FragmentShader\PBR\PBRFragmentIBL_diffuse-specular.glsl" />
     <None Include="FragmentShader\PBR\PBRFragment-IBL-textured.glsl" />
+    <None Include="Assets\Textures\HDR\sunset.hdr" />
+    <None Include="Assets\Textures\HDR\sunrise.hdr" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\Textures\container.jpg">

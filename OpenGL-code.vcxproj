@@ -184,6 +184,8 @@
     <None Include="Assets\Textures\HDR\farmhouse.hdr" />
     <None Include="Assets\Textures\HDR\forest.hdr" />
     <None Include="Assets\Textures\HDR\newport_loft.hdr" />
+    <None Include="Assets\Textures\HDR\sunrise.hdr" />
+    <None Include="Assets\Textures\HDR\sunset.hdr" />
     <None Include="FragmentShader\AdvancedLightning\AdvancedLightningFragmnet.glsl" />
     <None Include="FragmentShader\AdvancedLightning\FinalFragment.glsl" />
     <None Include="FragmentShader\AdvancedLightning\gBufferFragment.glsl" />
