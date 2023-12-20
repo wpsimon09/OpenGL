@@ -176,6 +176,8 @@
     <None Include="Assets\Model\cyborg\cyborg.blend1" />
     <None Include="Assets\Model\cyborg\cyborg.mtl" />
     <None Include="Assets\Model\fluttershy\fg_funkoFluttershy.mtl" />
+    <None Include="Assets\Model\helmet\helmet_zer0.glb" />
+    <None Include="Assets\Model\helmet\source\helmet.fbx" />
     <None Include="Assets\Model\horse\Scaniverse.mtl" />
     <None Include="Assets\Model\spaceship\model\texture\spaceShip.fbx" />
     <None Include="Assets\Model\stormtrooper\stormtrooper.mtl" />
@@ -205,6 +207,7 @@
     <None Include="FragmentShader\PBR\PBRFragmentIBL_diffuse-specular.glsl" />
     <None Include="FragmentShader\PBR\PBRFragmentIBL_DIffuse.glsl" />
     <None Include="FragmentShader\PBR\PBRFragmentTextures.glsl" />
+    <None Include="FragmentShader\PBR\PBRModelFragmentDebug.glsl" />
     <None Include="FragmentShader\PBR\PrefilteringHDRFragment.glsl" />
     <None Include="VertexShader\LutTextureDebugVertex.glsl" />
     <None Include="VertexShader\PBR\LutTextureVertex.glsl" />
@@ -248,6 +251,16 @@
     <Image Include="Assets\Model\fluttershy\fg_funkoFluttershy_metal.jpg" />
     <Image Include="Assets\Model\fluttershy\fg_funkoFluttershy_nrm.jpg" />
     <Image Include="Assets\Model\fluttershy\fg_funkoFluttershy_scattering.jpg" />
+    <Image Include="Assets\Model\helmet\textures\Material.001_Base_Color.png" />
+    <Image Include="Assets\Model\helmet\textures\Material.001_Normal_OpenGL.png" />
+    <Image Include="Assets\Model\helmet\textures\Material.001_Roughness.png" />
+    <Image Include="Assets\Model\helmet\textures\Material.002_Base_Color.png" />
+    <Image Include="Assets\Model\helmet\textures\Material.002_Metallic.png" />
+    <Image Include="Assets\Model\helmet\textures\Material.002_Normal_OpenGL.png" />
+    <Image Include="Assets\Model\helmet\textures\Material.002_Roughness.png" />
+    <Image Include="Assets\Model\helmet\textures\Material.004_Metallic.png" />
+    <Image Include="Assets\Model\helmet\textures\Material.004_Normal_OpenGL.png" />
+    <Image Include="Assets\Model\helmet\textures\Material.004_Roughness.png" />
     <Image Include="Assets\Model\horse\Scaniverse.jpg" />
     <Image Include="Assets\Model\spaceship\model\texture\auxielieryMat_alpha.png" />
     <Image Include="Assets\Model\spaceship\model\texture\auxielieryMat_diffuse.png" />

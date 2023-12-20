@@ -106,6 +106,8 @@ int main() {
 
 	Shader lutDebug("VertexShader/LutTextureDebugVertex.glsl", "FragmentShader/LutTextureDebugFragment.glsl", "LUT_Texture_qDEBUG");
 
+	Shader pbrModelDebugShader("VertexShader/PBR/PBRVertex.glsl", "FragmentShader/PBR/PBRModelFragmentDebug.glsl", "PBR DEBUG SHADER");
+
 	stbi_set_flip_vertically_on_load(true);
 
 	// plane VAO
@@ -121,6 +123,8 @@ int main() {
 	unsigned int indexNum;
 	unsigned int instanceCount;
 	unsigned int sphereVAO = createSphereVAO(indexNum);
+
+	Model helmet("Assets/Model/helmet/helmet_zer0.glb");
 
 	//-------------------
 	// SHADOW MAP TEXTURE
@@ -506,6 +510,18 @@ int main() {
 			}
 
 		}
+
+		//---------------
+		// DRAW THE MODEL
+		//---------------
+		pbrModelDebugShader.use();
+		model = glm::mat4(1.0f);
+		model = glm::translate(model, glm::vec3(0.0f, 0.0f, 4.0f));
+		model = glm::rotate(model, glm::radians(45.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+		pbrModelDebugShader.setMat4("model", model);
+		pbrModelDebugShader.setMat4("projection", projection);
+		pbrModelDebugShader.setMat4("view", view);
+		helmet.Draw(pbrModelDebugShader);
 
 		//-----------------------
 		// DRAW THE LIGHT SOURCES

@@ -41,7 +41,7 @@ class Model {
 		void loadModel(std::string path);
 		void processNode(aiNode* node, const aiScene* scene);
 		Mesh processMesh(aiMesh* mesh, const aiScene* scene);
-		std::vector<Texture> loadMaterialTextures(aiMaterial* mat, aiTextureType type, std::string typeName);
+		std::vector<Texture> loadMaterialTextures(aiMaterial* mat, aiTextureType type, std::string typeName,aiScene scene);
 };
 
 /*
@@ -191,20 +191,18 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene) {
 		// load diffuse textures
 		aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
 		
-		std::vector<Texture> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
+		std::vector<Texture> diffuseMaps = loadMaterialTextures(material, aiTextureType_BASE_COLOR, "texture_diffuse", *scene);
 		//insert on the end of texture vector
 		//from diffuse maps begin to diffuse map end
 		textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
 
 		// load specular textures
-		std::vector<Texture> specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
+		std::vector<Texture> specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular", *scene);
 
 		textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
 
 		// load normal	
-		std::vector<Texture> normalMaps = loadMaterialTextures(material, aiTextureType_HEIGHT, "texture_normal");
-
-		textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
+		std::vector<Texture> normalMaps = loadMaterialTextures(material, aiTextureType_HEIGHT, "texture_normal", *scene);
 	}
 	else 
 		std::cout << "ERROR::ASSIMP::PROCCESSING::MATERIALS - There are no materials to be proccessed\n";
@@ -218,13 +216,18 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene) {
 	return Mesh(vertecies, indecies, textures);
 }
 
-std::vector<Texture> Model::loadMaterialTextures(aiMaterial* mat, aiTextureType type, std::string typeName) {
+std::vector<Texture> Model::loadMaterialTextures(aiMaterial* mat, aiTextureType type, std::string typeName, aiScene scene) {
 	std::vector<Texture> textures;
+
+
 
 	for (unsigned int i = 0; i < mat->GetTextureCount(type); i++)
 	{
+
 		aiString str;
-		mat->GetTexture(type, i, &str);
+		mat->Get(AI_MATKEY_TEXTURE(type, 0), str );
+		scene.GetEmbeddedTexture(str.C_Str());
+		std::cout << str.C_Str() << std::endl;
 		bool skip = false;
 		for (unsigned int j = 0; j < textures_loaded.size(); j++)
 		{

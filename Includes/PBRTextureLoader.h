@@ -48,6 +48,7 @@ public:
 		this->passToShader(shader);
 	}
 
+
 	void useTextures()
 	{
 		useTexture(ALBEDO, this->albedo);

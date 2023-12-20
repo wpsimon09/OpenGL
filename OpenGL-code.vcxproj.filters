@@ -135,6 +135,9 @@
     <None Include="FragmentShader\PBR\PBRFragment-IBL-textured.glsl" />
     <None Include="Assets\Textures\HDR\sunset.hdr" />
     <None Include="Assets\Textures\HDR\sunrise.hdr" />
+    <None Include="Assets\Model\helmet\source\helmet.fbx" />
+    <None Include="FragmentShader\PBR\PBRModelFragmentDebug.glsl" />
+    <None Include="Assets\Model\helmet\helmet_zer0.glb" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\Textures\container.jpg">
@@ -326,6 +329,36 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="Assets\Textures\PBR\RustedIron\roughness.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Assets\Model\helmet\textures\Material.001_Base_Color.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Assets\Model\helmet\textures\Material.001_Normal_OpenGL.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Assets\Model\helmet\textures\Material.001_Roughness.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Assets\Model\helmet\textures\Material.002_Base_Color.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Assets\Model\helmet\textures\Material.002_Metallic.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Assets\Model\helmet\textures\Material.002_Normal_OpenGL.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Assets\Model\helmet\textures\Material.002_Roughness.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Assets\Model\helmet\textures\Material.004_Metallic.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Assets\Model\helmet\textures\Material.004_Normal_OpenGL.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Assets\Model\helmet\textures\Material.004_Roughness.png">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>
